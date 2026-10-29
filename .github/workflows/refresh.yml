@@ -1,0 +1,44 @@
+# Rebuilds the page once a day so the embedded snapshot and the "since launch" history stay current.
+# The live page does not depend on this: it reads the network directly in the visitor's browser.
+name: Refresh data
+
+on:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/cache@v4
+        with:
+          path: archive
+          key: archive-${{ github.run_id }}
+          restore-keys: archive-
+      - name: Download chain archive
+        run: python3 tools/fetch_archive.py archive
+      - name: Daily history
+        run: python3 tools/history.py archive history.json
+      - name: Build page
+        run: python3 build.py history.json
+      - name: Commit if changed
+        run: |
+          if git diff --quiet -- docs dist; then echo "No changes"; exit 0; fi
+          git config user.name "brc-pulse-bot"
+          git config user.email "brc-pulse-bot@users.noreply.github.com"
+          git add docs dist
+          git commit -m "Refresh snapshot and history"
+          git push
