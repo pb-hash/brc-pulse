@@ -534,7 +534,7 @@ const NS = 'http://www.w3.org/2000/svg';
 const S = {
   mode: 'snapshot', source: SNAP.source, at: SNAP.at, win: DAY, hist: 'top', netHr: 0,
   blocks: SNAP.rows.map(([h, ts, bits, mi, ntx]) => ({ h, ts, bits, miner: SNAP.miners[mi], ntx })),
-  helpers: SNAP.helpers, peers: SNAP.stats.peerCount, freshFrom: Infinity,
+  helpers: SNAP.helpers, peers: SNAP.stats.peerCount, freshFrom: Infinity, seen: {},
 };
 
 /* ---------- maths ---------- */
@@ -561,6 +561,9 @@ const now = () => (S.mode === 'live' ? Date.now() / 1000 : S.mode === 'replay' ?
 // Same clock, interpolated between replay steps so the frame moves smoothly at 60 fps.
 const nowSmooth = () => (S.mode === 'replay' ? S.vnow + Math.min(0.1, (performance.now() - (S.vnowAt || 0)) / 1000) * SPEED : now());
 const last = () => S.blocks[S.blocks.length - 1];
+// When this page watched a block arrive, time it from the arrival. Header timestamps are set by the miner
+// and often reach the helpers 1 to 4 minutes "old", which made the timer start partway through.
+const seenAt = (b) => S.seen[b.h] || b.ts;
 function median(a) { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; }
 function windowOf(sec) {
   const L = last(), win = S.blocks.filter((b) => b.ts > L.ts - sec);
@@ -592,7 +595,7 @@ function render() {
     if (prev != null && L.h > prev) { replay($('tip'), 'roll'); toast(L); landRing(); }
   }
   $('tip').innerHTML = `<span class="h">#</span>${fmt(L.h)}`;
-  $('tip-meta').innerHTML = `<span class="chip"><i style="background:${colorOf(L.miner)}"></i>${nameHtml(L.miner)}</span><span data-ago="${L.ts}">${ago(now() - L.ts)}</span><span class="muted">${L.ntx} transaction${L.ntx === 1 ? '' : 's'}</span>`;
+  $('tip-meta').innerHTML = `<span class="chip"><i style="background:${colorOf(L.miner)}"></i>${nameHtml(L.miner)}</span><span data-ago="${seenAt(L)}">${ago(now() - seenAt(L))}</span><span class="muted">${L.ntx} transaction${L.ntx === 1 ? '' : 's'}</span>`;
   let w = 0; for (let i = 1; i < day.win.length; i++) w += work(day.win[i].bits);
   const span = day.win[day.win.length - 1].ts - day.win[0].ts, gaps = day.win.slice(1).map((b, i) => Math.max(0, b.ts - day.win[i].ts));
   S.netHr = span > 0 ? w / span : 0;
@@ -645,7 +648,7 @@ function drawTrace() {
   // Glyph proportions from the mark: flat, rise, deep fall, rise, flat.
   const u = narrow ? 5 : 6, dotR = narrow ? 9 : 11, xe = W - padR + 4, cxd = xe + dotR + 8;
   const xs = []; let lastX = -Infinity;
-  for (const b of S.blocks) { if (b.ts <= t0 || b.ts > t1) continue; const x = X(b.ts); if (x - 2 * u < padL || x - lastX < 4.2 * u) continue; lastX = x; xs.push([x, b.h]); }
+  for (const b of S.blocks) { const bt = seenAt(b); if (bt <= t0 || bt > t1) continue; const x = X(bt); if (x - 2 * u < padL || x - lastX < 4.2 * u) continue; lastX = x; xs.push([x, b.h]); }
   const spike = (x) => ` L${x - 2 * u},${base} L${x - u},${base - up} L${x + 0.6 * u},${base + down} L${x + 1.8 * u},${base}`;
   const p = Math.min(1, (performance.now() - (S.beatT || -1e9)) / 1100), e = 1 - Math.pow(1 - p, 3), n = xs.length;
   const anim = p < 1 && n > 0 && xs[n - 1][1] === last().h;
@@ -718,7 +721,7 @@ function renderRecent() {
   for (let i = b.length - 1; i >= b.length - 8; i--) {
     const x = b[i], gap = Math.max(0, x.ts - b[i - 1].ts), tr = document.createElement('tr');
     if (x.h >= S.freshFrom) tr.className = 'fresh';
-    tr.innerHTML = `<td class="blk">${fmt(x.h)}</td><td class="muted" data-ago="${x.ts}">${ago(now() - x.ts)}</td><td class="r">${mmss(gap)}</td><td><span class="sw" style="background:${colorOf(x.miner)}"></span>${nameHtml(x.miner)}</td><td class="r">${x.ntx}</td>`;
+    tr.innerHTML = `<td class="blk">${fmt(x.h)}</td><td class="muted" data-ago="${seenAt(x)}">${ago(now() - seenAt(x))}</td><td class="r">${mmss(gap)}</td><td><span class="sw" style="background:${colorOf(x.miner)}"></span>${nameHtml(x.miner)}</td><td class="r">${x.ntx}</td>`;
     tb.append(tr);
   }
 }
@@ -801,7 +804,7 @@ const LAPS = ['var(--brand)', 'var(--c3)'];
 function ringFrame() {
   if (S.mode !== 'snapshot' || !S.ringInit) {
     S.ringInit = true;
-    const s = Math.max(0, nowSmooth() - last().ts), k = Math.floor(s / TARGET), f = s / TARGET - k, c = LAPS[k % 2];
+    const s = Math.max(0, nowSmooth() - seenAt(last())), k = Math.floor(s / TARGET), f = s / TARGET - k, c = LAPS[k % 2];
     const ring = $('ring');
     ring.style.stroke = c; ring.style.strokeDashoffset = 100 - 100 * f;
     $('ring-track').style.stroke = k ? LAPS[(k - 1) % 2] : 'currentColor';
@@ -817,7 +820,7 @@ function landRing() {
 }
 
 function tick() {
-  const s = Math.max(0, now() - last().ts);
+  const s = Math.max(0, now() - seenAt(last()));
   $('since').textContent = mmss(s);
   $('since-cap').textContent = s < TARGET ? 'since the last block · expected every 2:30'
     : `since the last block · ${mmss(s - TARGET)} past expected`;
@@ -937,7 +940,7 @@ async function goLive() {
     n++;
     try {
       const t = await get(S.source, '/tip'), have = last().h;
-      if (t.height > have) { S.freshFrom = have + 1; merge(await range(S.source, have - 3, t.height)); render(); }
+      if (t.height > have) { const at = Date.now() / 1000; S.freshFrom = have + 1; merge(await range(S.source, have - 3, t.height)); for (const b of S.blocks) if (b.h > have && !S.seen[b.h]) S.seen[b.h] = at; render(); }
       if (n % 10 === 0) { S.helpers = await probe(); try { S.peers = (await get(S.source, '/stats')).peerCount; } catch {} renderHelpers(); }
     } catch { const q = await probe(), alt = q.filter((x) => x.ok).sort((a, b) => a.ms - b.ms)[0]; S.helpers = q; if (alt) S.source = alt.host; renderHelpers(); }
   }, 6000);
