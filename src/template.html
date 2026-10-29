@@ -1115,7 +1115,7 @@ async function catchUp() {
 }
 function msg(text, cls = '') { const m = $('lookup-msg'); m.hidden = !text; m.className = `msg ${cls}`; m.textContent = text || ''; }
 function setView(v) { document.body.dataset.view = v; }
-async function show(addr) {
+async function show(addr, mine = false) {
   const token = ++M.token; msg('');
   $('acct').hidden = true; $('addr-in').value = addr;
   let shard;
@@ -1131,7 +1131,7 @@ async function show(addr) {
   if (SAMPLE && !rec) { msg('This preview only includes the sample addresses below. On pb-hash.github.io/brc-pulse, any address works.'); return; }
   Object.assign(M, { addr, acc: rec ? toAcc(rec) : emptyAcc(), applied: shard.h || 0, started: shard.h || 0, d0: shard.d0 || new Date().toISOString().slice(0, 10), hd: shard.hd || 0, idxH: shard.h, known: !!rec });
   if (!shard.h) { M.applied = Math.max(0, last().h - 1); M.started = M.applied; }
-  if (!SAMPLE) { store.set(addr); }
+  if (mine && !SAMPLE) store.set(addr);
   $('remembered').hidden = store.get() !== addr;
   $('acct').hidden = false; renderAcct();
   if (S.mode === 'live') catchUp();
@@ -1191,16 +1191,17 @@ function route() {
   }
   setView('my'); scrollTo(0, 0); renderTry();
   const addr = (m[1] || store.get() || '').toLowerCase();
-  if (addr) show(addr); else { $('acct').hidden = true; M.addr = null; setTimeout(() => $('addr-in').focus(), 50); }
+  if (addr) show(addr, M.pasted === addr); else { $('acct').hidden = true; M.addr = null; setTimeout(() => $('addr-in').focus(), 50); }
 }
 $('lookup').addEventListener('submit', (e) => {
   e.preventDefault();
   const raw = $('addr-in').value.trim(), v = raw.toLowerCase().replace(/^0x/, '');
   if (/privatekey|"type"\s*:\s*"browsercoin-wallet"/i.test(raw)) { msg("That's your wallet file, which includes your private key. Don't paste it anywhere. This page only needs your address.", 'danger'); $('addr-in').value = ''; return; }
   if (!/^[0-9a-f]{64}$/.test(v)) { msg('A BrowserCoin address is 64 characters, using only 0–9 and a–f. Check that the whole address was pasted.'); return; }
-  if (location.hash === `#my=${v}`) show(v); else location.hash = `my=${v}`;
+  M.pasted = v;
+  if (location.hash === `#my=${v}`) show(v, true); else location.hash = `my=${v}`;
 });
-$('try').addEventListener('click', (e) => { const b = e.target.closest('button[data-a]'); if (b) location.hash = `my=${b.dataset.a}`; });
+$('try').addEventListener('click', (e) => { const b = e.target.closest('button[data-a]'); if (b) { M.pasted = null; location.hash = `my=${b.dataset.a}`; } });
 $('forget').addEventListener('click', () => { store.set(null); $('remembered').hidden = true; });
 $('a-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(M.addr); $('a-copy').textContent = 'Copied'; setTimeout(() => ($('a-copy').textContent = 'Copy address'), 1500); } catch {} });
 addEventListener('hashchange', route);
