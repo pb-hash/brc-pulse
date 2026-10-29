@@ -108,10 +108,11 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .live-mark figcaption { display: grid; justify-items: center; gap: 2px; text-align: center; }
 .live-mark b { font-size: 2.3rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
 .live-mark .cap { font-size: .85rem; color: var(--muted); font-weight: 500; }
-#ring { stroke-dasharray: 100; stroke-dashoffset: 100; transition: stroke-dashoffset 1s linear; }
+#ring, #ring-land { stroke-dasharray: 100; stroke-dashoffset: 100; }
+#ring-land { opacity: 0; }
+#ring-glint { stroke: #fff; opacity: 0; }
 #beat path { stroke-dasharray: 100; stroke-dashoffset: 0; }
 #beat.draw path { animation: draw 1.2s cubic-bezier(.6,0,.2,1) both; }
-.replaying #ring { transition-duration: .12s; }
 .replay-note { margin-top: 6px; font-size: .76rem; font-weight: 600; color: var(--brand-deep); background: var(--brand-tint); padding: 3px 10px; border-radius: 999px; }
 .replay-note[hidden] { display: none; }
 @keyframes draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
@@ -343,8 +344,10 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <svg viewBox="307.6 90 1316 1316" aria-hidden="true">
       <defs><mask id="hm-d" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="hm-f" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs>
       <g mask="url(#hm-f)">
-        <path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="currentColor" stroke-width="107.8"/>
+        <path id="ring-track" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="currentColor" stroke-width="107.8"/>
         <path id="ring" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" pathLength="100" fill="none" stroke="var(--brand)" stroke-width="107.8"/>
+        <path id="ring-land" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" pathLength="100" fill="none" stroke="var(--brand)" stroke-width="107.8"/>
+        <path id="ring-glint" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" pathLength="100" fill="none" stroke-width="36" stroke-linecap="round"/>
       </g>
       <g id="beat" mask="url(#hm-d)" fill="none" stroke-miterlimit="6">
         <path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" pathLength="100" stroke="var(--mark-lo)" stroke-width="124"/>
@@ -401,7 +404,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       </div>
       <div class="strip" id="strip"></div>
       <div class="axis"><span id="ax-from"></span><span>Top = 10 min wait</span><span id="ax-to"></span></div>
-      <div class="tbl"><table><thead><tr><th>Block</th><th>Found</th><th class="r">Wait</th><th>Miner</th><th class="r">Txs</th></tr></thead><tbody id="recent"></tbody></table></div>
+      <div class="tbl"><table><thead><tr><th>Block</th><th>Found</th><th class="r">Wait</th><th>Miner</th><th class="r" title="Coin transfers and script transactions in the block. The 50 BRC reward is not counted.">Transactions</th></tr></thead><tbody id="recent"></tbody></table></div>
     </section>
   </div>
 
@@ -480,7 +483,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   </div>
 
   <div class="facts">
-    <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg><h3>Straight from the network</h3><p>Your browser reads the public helper servers directly and checks for new blocks every 20 seconds. No middleman, no server of ours.</p></div>
+    <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6 4 12 2.5-6H21"/></svg><h3>Straight from the network</h3><p>Your browser reads the public helper servers directly and checks for new blocks every 6 seconds. No middleman, no server of ours.</p></div>
     <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg><h3>No account, nothing tracked</h3><p>No sign-up, no cookies and no analytics. The page asks the network about blocks and nothing about you.</p></div>
     <div class="fact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><h3>One file</h3><p>The whole dashboard is a single page. Save it, host it anywhere, or open it from your desktop, and it still runs live.</p></div>
   </div>
@@ -557,6 +560,8 @@ const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const name = (a) => (LABELS[a] ? LABELS[a].name : short(a));
 const nameHtml = (a) => (LABELS[a] ? LABELS[a].name : `<span class="mono">${short(a)}</span>`);
 const now = () => (S.mode === 'live' ? Date.now() / 1000 : S.mode === 'replay' ? S.vnow : S.at / 1000);
+// Same clock, interpolated between replay steps so the frame moves smoothly at 60 fps.
+const nowSmooth = () => (S.mode === 'replay' ? S.vnow + Math.min(0.1, (performance.now() - (S.vnowAt || 0)) / 1000) * SPEED : now());
 const last = () => S.blocks[S.blocks.length - 1];
 function median(a) { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.floor(s.length / 2)]; }
 function windowOf(sec) {
@@ -586,7 +591,7 @@ function render() {
   if (L.h !== S.shownTip) {
     const prev = S.shownTip; S.shownTip = L.h;
     replay($('beat'), 'draw'); replay($('ripple'), 'go'); S.beatT = performance.now(); animTrace();
-    if (prev != null && L.h > prev) { replay($('tip'), 'roll'); toast(L); }
+    if (prev != null && L.h > prev) { replay($('tip'), 'roll'); toast(L); landRing(); }
   }
   $('tip').innerHTML = `<span class="h">#</span>${fmt(L.h)}`;
   $('tip-meta').innerHTML = `<span class="chip"><i style="background:${colorOf(L.miner)}"></i>${nameHtml(L.miner)}</span><span data-ago="${L.ts}">${ago(now() - L.ts)}</span><span class="muted">${L.ntx} transaction${L.ntx === 1 ? '' : 's'}</span>`;
@@ -606,10 +611,10 @@ function render() {
   const when = new Date(S.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
   if (S.mode === 'live') {
     $('mode').className = 'pill live'; $('mode-text').innerHTML = `Live<span class="pt"> · ${S.source}</span>`;
-    $('foot-mode').textContent = `Live from ${S.source}, checked every 20 seconds. History through block ${fmt(SNAP.history.archivedHeight)} comes from the chain archive.`;
+    $('foot-mode').textContent = `Live from ${S.source}, checked every 6 seconds. History through block ${fmt(SNAP.history.archivedHeight)} comes from the chain archive.`;
   } else if (S.mode === 'replay') {
     $('mode').className = 'pill replay'; $('mode-text').innerHTML = `Replay<span class="pt"> · real blocks at ${SPEED}×</span>`;
-    $('foot-mode').textContent = `This preview can't reach the network, so it replays the last ${REPLAY_N} real blocks before the ${when} snapshot at ${SPEED}× speed. Hosted on its own website or opened as a file, the page runs live and checks for new blocks every 20 seconds.`;
+    $('foot-mode').textContent = `This preview can't reach the network, so it replays the last ${REPLAY_N} real blocks before the ${when} snapshot at ${SPEED}× speed. Hosted on its own website or opened as a file, the page runs live and checks for new blocks every 6 seconds.`;
   } else {
     $('mode').className = 'pill'; $('mode-text').innerHTML = `Snapshot<span class="pt"> · ${when}</span>`;
     $('foot-mode').textContent = `Snapshot taken ${when} from ${S.source}. This view can't reach the network. Opened as a file or on its own website, the page switches to live updates by itself.`;
@@ -703,7 +708,7 @@ function renderStrip() {
     bar.style.height = `${Math.max(3, Math.sqrt(Math.min(gap, 600) / 600) * 100)}%`;
     bar.style.background = colorOf(b[i].miner);
     if (b[i].h >= S.freshFrom) bar.className = 'new';
-    bar.title = `#${fmt(b[i].h)} · waited ${mmss(gap)} · ${name(b[i].miner)} · ${b[i].ntx} tx`;
+    bar.title = `#${fmt(b[i].h)} · waited ${mmss(gap)} · ${name(b[i].miner)} · ${b[i].ntx} transaction${b[i].ntx === 1 ? '' : 's'}`;
     el.append(bar);
   }
   const t = (x) => new Date(x.ts * 1000).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
@@ -792,13 +797,37 @@ function renderCoin() {
   $('halv-l').textContent = `${((100 * tipH) / HALVING).toFixed(1)}% of the way`;
 }
 
+/* The frame is a stopwatch: it goes round once every 2:30 (the target), smoothly, with a glint at its
+   leading edge. Past the target it keeps lapping in alternating indigo tones, so it never sits still.
+   When a block lands, the current lap sweeps to full, flashes and clears, and a new lap starts. */
+const LAPS = ['var(--brand)', 'var(--c3)'];
+function ringFrame() {
+  if (S.mode !== 'snapshot' || !S.ringInit) {
+    S.ringInit = true;
+    const s = Math.max(0, nowSmooth() - last().ts), k = Math.floor(s / TARGET), f = s / TARGET - k, c = LAPS[k % 2];
+    const ring = $('ring'), glint = $('ring-glint');
+    ring.style.stroke = c; ring.style.strokeDashoffset = 100 - 100 * f;
+    $('ring-track').style.stroke = k ? LAPS[(k - 1) % 2] : 'currentColor';
+    const g = 2.6; glint.style.strokeDasharray = `${g} ${100 - g}`; glint.style.strokeDashoffset = g - 100 * f;
+    glint.style.opacity = S.mode === 'snapshot' || 100 * f < g ? 0 : 0.5;
+    S.ringF = f; S.ringC = c;
+  }
+  requestAnimationFrame(ringFrame);
+}
+function landRing() {
+  const land = $('ring-land'); if (!land.animate) return;
+  land.style.stroke = S.ringC || 'var(--brand)';
+  land.animate([{ strokeDashoffset: 100 - 100 * (S.ringF || 0), opacity: 1 }, { strokeDashoffset: 0, opacity: 1, offset: 0.4 },
+    { strokeDashoffset: 0, opacity: 1, offset: 0.55 }, { strokeDashoffset: 0, opacity: 0 }], { duration: 1100, easing: 'cubic-bezier(.4,0,.2,1)' });
+}
+
 function tick() {
   const s = Math.max(0, now() - last().ts);
   $('since').textContent = mmss(s);
-  const ring = $('ring'); ring.style.strokeDashoffset = 100 - Math.min(100, (100 * s) / TARGET); ring.classList.toggle('over', s > TARGET);
-  $('since-cap').textContent = s > TARGET ? `since the last block, ${mmss(s - TARGET)} past the 2:30 target` : 'since the last block · the frame fills at 2:30';
+  $('since-cap').textContent = s < TARGET ? 'since the last block · the frame goes round every 2:30'
+    : `since the last block · ${Math.min(99, Math.round(100 * (1 - Math.exp(-s / TARGET))))}% of blocks come sooner`;
   $('since-note').hidden = S.mode !== 'replay';
-  if (S.mode !== 'snapshot') { document.title = `${mmss(s)} · #${fmt(last().h)} · BRC Pulse`; setFav(Math.min(100, (100 * s) / TARGET)); }
+  if (S.mode !== 'snapshot') { document.title = `${mmss(s)} · #${fmt(last().h)} · BRC Pulse`; setFav(100 * ((s % TARGET) / TARGET)); }
   for (const el of document.querySelectorAll('[data-ago]')) el.textContent = ago(now() - Number(el.dataset.ago));
   drawTrace();
 }
@@ -914,9 +943,9 @@ async function goLive() {
     try {
       const t = await get(S.source, '/tip'), have = last().h;
       if (t.height > have) { S.freshFrom = have + 1; merge(await range(S.source, have - 3, t.height)); render(); }
-      if (n % 3 === 0) { S.helpers = await probe(); try { S.peers = (await get(S.source, '/stats')).peerCount; } catch {} renderHelpers(); }
+      if (n % 10 === 0) { S.helpers = await probe(); try { S.peers = (await get(S.source, '/stats')).peerCount; } catch {} renderHelpers(); }
     } catch { const q = await probe(), alt = q.filter((x) => x.ok).sort((a, b) => a.ms - b.ms)[0]; S.helpers = q; if (alt) S.source = alt.host; renderHelpers(); }
-  }, 20000);
+  }, 6000);
   return true;
 }
 
@@ -926,19 +955,19 @@ const SPEED = 20, REPLAY_N = 20;
 function startReplay() {
   const all = S.blocks.slice(), start = Math.max(2, all.length - REPLAY_N), end = S.at / 1000;
   let next = start, hold = 0;
-  const reset = () => { S.blocks = all.slice(0, start); S.vnow = S.blocks[S.blocks.length - 1].ts + 3; S.freshFrom = Infinity; next = start; };
+  const reset = () => { S.blocks = all.slice(0, start); S.vnow = S.blocks[S.blocks.length - 1].ts + 3; S.vnowAt = performance.now(); S.freshFrom = Infinity; next = start; };
   reset(); S.mode = 'replay'; document.body.classList.add('replaying'); render();
   setInterval(() => {
     if (S.mode !== 'replay') return;
     if (hold > 0) { if (--hold === 0) { reset(); render(); } return; }
-    S.vnow += 0.1 * SPEED; let fresh = false;
+    S.vnow += 0.1 * SPEED; S.vnowAt = performance.now(); let fresh = false;
     while (next < all.length && all[next].ts <= S.vnow) { if (!fresh) S.freshFrom = all[next].h; S.blocks.push(all[next++]); fresh = true; }
     if (fresh) render(); else tick();
     if (next >= all.length && S.vnow >= end) hold = 30;
   }, 100);
 }
 
-render(); drawHistory();
+render(); drawHistory(); requestAnimationFrame(ringFrame);
 setInterval(() => { if (S.mode === 'live') tick(); }, 1000);
 let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawTrace(); }, 120); }).observe(document.body);
 goLive().then((ok) => { if (!ok) startReplay(); });

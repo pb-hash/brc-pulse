@@ -33,7 +33,7 @@ What it shows
 
 How it gets its data
 --------------------
-- Live: every 20 seconds the page asks the fastest synced helper server
+- Live: every 6 seconds the page asks the fastest synced helper server
   (api1/api2.browsercoin.org, api1.cryptec.tech, api1.taitech.eu) for new
   blocks, and re-checks all helpers every minute. Block headers are decoded in
   the page. Hashrate is the expected work behind each block's difficulty,
