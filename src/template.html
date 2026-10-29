@@ -819,8 +819,8 @@ function landRing() {
 function tick() {
   const s = Math.max(0, now() - last().ts);
   $('since').textContent = mmss(s);
-  $('since-cap').textContent = s < TARGET ? 'since the last block · the frame goes round every 2:30'
-    : `since the last block · ${Math.min(99, Math.round(100 * (1 - Math.exp(-s / TARGET))))}% of blocks come sooner`;
+  $('since-cap').textContent = s < TARGET ? 'since the last block · expected every 2:30'
+    : `since the last block · ${mmss(s - TARGET)} past expected`;
   $('since-note').hidden = S.mode !== 'replay';
   if (S.mode !== 'snapshot') { document.title = `${mmss(s)} · #${fmt(last().h)} · BRC Pulse`; setFav(100 * ((s % TARGET) / TARGET)); }
   for (const el of document.querySelectorAll('[data-ago]')) el.textContent = ago(now() - Number(el.dataset.ago));
