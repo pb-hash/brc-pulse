@@ -104,7 +104,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .intro p { font-size: 1.12rem; color: var(--muted); max-width: 34rem; }
 .intro p strong { color: var(--ink); font-weight: 600; }
 .live-mark { margin: 0; display: grid; justify-items: center; gap: 14px; }
-.live-mark svg { width: 292px; height: 292px; display: block; overflow: visible; color: var(--mark); filter: drop-shadow(0 18px 30px rgba(89,86,253,.14)); }
+.live-mark svg { width: 292px; height: 292px; display: block; overflow: visible; color: var(--mark); }
 .live-mark figcaption { display: grid; justify-items: center; gap: 2px; text-align: center; }
 .live-mark b { font-size: 2.3rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
 .live-mark .cap { font-size: .85rem; color: var(--muted); font-weight: 500; }
@@ -792,7 +792,7 @@ function toast(L) {
 const FAV = (p) => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="307.6 90 1316 1316"><defs><mask id="id" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="if" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs><rect x="307.6" y="90" width="1316" height="1316" rx="252.6" fill="#ffffff"/><g mask="url(#if)"><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="#353535" stroke-width="107.8"/><path d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100 - p}" fill="none" stroke="#5956FD" stroke-width="107.8"/></g><g mask="url(#id)" fill="none" stroke-miterlimit="6"><path d="M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0" stroke="#111114" stroke-width="124"/><path d="M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0" stroke="#3a3a3a" stroke-width="62.0"/></g><circle cx="1272.4" cy="800" r="114" fill="#5956FD"/></svg>`;
 let favAt = -1;
 function setFav(pct) {
-  const q = Math.round(pct / 4) * 4, el = $('fav'); if (q === favAt || !el) return; favAt = q;
+  const q = Math.round(pct / 10) * 10, el = $('fav'); if (q === favAt || !el) return; favAt = q;
   el.href = 'data:image/svg+xml,' + encodeURIComponent(FAV(q));
 }
 
@@ -919,7 +919,9 @@ function renderCoin() {
 /* The frame is a stopwatch: it goes round once every 2:30 (the target), smoothly. Past the target it keeps lapping in alternating indigo tones, so it never sits still.
    When a block lands, the current lap sweeps to full, flashes and clears, and a new lap starts. */
 const LAPS = ['var(--brand)', 'var(--c3)'];
+// 10 updates a second: at 2:30 a lap that is under a pixel per step, so it looks smooth and costs little.
 function ringFrame() {
+  if (document.hidden) return;
   if (S.mode !== 'snapshot' || !S.ringInit) {
     S.ringInit = true;
     const s = Math.max(0, nowSmooth() - seenAt(last())), k = Math.floor(s / TARGET), f = s / TARGET - k, c = LAPS[k % 2];
@@ -928,7 +930,6 @@ function ringFrame() {
     $('ring-track').style.stroke = k ? LAPS[(k - 1) % 2] : 'currentColor';
     S.ringF = f; S.ringC = c;
   }
-  requestAnimationFrame(ringFrame);
 }
 function landRing() {
   const land = $('ring-land'); if (!land.animate) return;
@@ -1255,7 +1256,7 @@ function startReplay() {
   }, 100);
 }
 
-render(); drawHistory(); requestAnimationFrame(ringFrame); route();
+render(); drawHistory(); ringFrame(); setInterval(ringFrame, 100); route();
 setInterval(() => { if (S.mode === 'live') tick(); }, 1000);
 let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawTrace(); }, 120); }).observe(document.body);
 goLive().then((ok) => { if (!ok) startReplay(); });
