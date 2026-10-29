@@ -1,0 +1,58 @@
+# Builds and publishes the site every hour: the page with a fresh snapshot, the "since launch" history,
+# and the My BRC address index. Nothing is committed; GitHub Pages serves the result of this workflow.
+name: Publish site
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Today's date (archive cache key)
+        id: day
+        run: echo "day=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache@v4
+        with:
+          path: archive
+          key: archive-${{ steps.day.outputs.day }}
+          restore-keys: archive-
+      - name: Download chain archive
+        run: python3 tools/fetch_archive.py archive
+      - name: Daily history
+        run: python3 tools/history.py archive history.json
+      - name: My BRC address index
+        run: python3 tools/accounts.py archive _site/a
+      - name: Build page
+        run: python3 build.py history.json --site _site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

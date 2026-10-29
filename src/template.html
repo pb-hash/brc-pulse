@@ -177,6 +177,60 @@ main.wrap { display: grid; gap: 20px; padding-bottom: 20px; }
 .toast b { font-weight: 700; display: block; }
 .toast span { color: var(--muted); }
 
+/* views: Network and My BRC share one page */
+body[data-view="my"] .net-only { display: none !important; }
+body:not([data-view="my"]) .my-only { display: none !important; }
+.nav a.my-link { white-space: nowrap; color: var(--brand-deep); background: var(--brand-tint); padding: 5px 12px; border-radius: 999px; font-weight: 700; }
+.nav a.my-link:hover { color: var(--brand-deep); }
+body[data-view="my"] .nav a.my-link { background: var(--brand); color: #fff; }
+.cta { display: inline-flex; align-items: center; gap: 10px; justify-self: start; height: 46px; padding: 0 18px 0 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--hairline); box-shadow: var(--shadow); color: var(--ink); font-weight: 700; font-size: .95rem; }
+.cta:hover { text-decoration: none; border-color: var(--brand); }
+.cta svg { width: 26px; height: 26px; color: var(--mark); }
+.cta span { color: var(--muted); font-weight: 500; }
+.my-intro { padding-block: 40px 24px; display: grid; gap: 16px; }
+.my-intro h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 750; line-height: 1.04; letter-spacing: -0.035em; }
+.my-intro > p { font-size: 1.08rem; color: var(--muted); max-width: 44rem; }
+.my-intro > p strong { color: var(--ink); font-weight: 600; }
+.lookup { display: flex; gap: 10px; max-width: 820px; }
+.lookup input { flex: 1; min-width: 0; height: 54px; padding: 0 18px; border-radius: 14px; border: 1px solid var(--hairline-strong); background: var(--surface); color: var(--ink); font: 500 .92rem var(--mono); box-shadow: var(--shadow); }
+.lookup input:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-tint); }
+.lookup button { height: 54px; padding: 0 24px; border: 0; border-radius: 14px; background: var(--brand); color: #fff; font: 700 .95rem var(--sans); cursor: pointer; }
+.lookup button:hover { background: var(--brand-deep); }
+.try { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: .82rem; color: var(--muted); }
+.try button { appearance: none; height: 30px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-2); font: 600 .79rem var(--sans); cursor: pointer; }
+.try button:hover { border-color: var(--brand); color: var(--brand-deep); }
+.msg { max-width: 820px; padding: 12px 14px; border-radius: var(--r-md); background: var(--caution-tint); color: var(--ink-2); font-size: .9rem; }
+.msg.danger { background: var(--danger-tint); }
+.msg[hidden] { display: none; }
+.privacy { font-size: .8rem; color: var(--muted); max-width: 820px; }
+.privacy button { appearance: none; border: 0; background: none; padding: 0; color: var(--brand-deep); font: inherit; font-weight: 600; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+#acct[hidden] { display: none; }
+.acct-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 24px; align-items: start; padding: 24px 26px 22px; }
+.who { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.who b { font-size: 1.02rem; font-weight: 700; }
+.addr { font: 500 .84rem var(--mono); color: var(--muted); overflow-wrap: anywhere; margin-top: 6px; max-width: 46rem; }
+.bal { font-size: clamp(2.6rem, 7vw, 4.4rem); font-weight: 750; letter-spacing: -0.035em; line-height: 1; margin-top: 16px; }
+.bal small { font-size: .36em; font-weight: 700; letter-spacing: 0; color: var(--muted); }
+.bal.bump { animation: bump 1.4s var(--ease); }
+@keyframes bump { 0% { color: var(--good); transform: translateY(-3px); } 100% { color: var(--ink); transform: none; } }
+.sub { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+.btn-ghost { appearance: none; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-2); font: 600 .8rem var(--sans); cursor: pointer; white-space: nowrap; }
+.btn-ghost:hover { border-color: var(--hairline-strong); color: var(--ink); }
+.kpi .v.sm { font-size: 1.3rem; }
+.share-big { font-size: clamp(2.4rem, 6vw, 3.4rem); font-weight: 750; letter-spacing: -0.035em; line-height: 1; margin-top: 18px; }
+.days { display: flex; align-items: flex-end; gap: 3px; height: 92px; margin-top: 22px; border-bottom: 1px solid var(--hairline-strong); }
+.days i { flex: 1 1 0; min-width: 0; background: var(--brand); border-radius: 3px 3px 1px 1px; }
+.days i.z { background: var(--rest); }
+.days i:last-child { background: var(--brand-deep); }
+.mini-list { list-style: none; margin: 14px 0 0; padding: 0; }
+.mini-list li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--hairline); font-size: .9rem; }
+.mini-list li span:last-child { font-weight: 700; white-space: nowrap; }
+.amt-in { color: var(--good); font-weight: 700; }
+.amt-out { font-weight: 700; }
+td small { display: block; color: var(--muted); font-size: .74rem; }
+.who-link { color: inherit; }
+.who-link:hover { color: var(--brand-deep); }
+
 /* miner share */
 .share-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; margin-top: 22px; }
 .big { font-size: clamp(2.8rem, 7.5vw, 4rem); font-weight: 750; letter-spacing: -0.035em; line-height: .95; font-variant-numeric: proportional-nums; }
@@ -290,6 +344,9 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 
 @media (max-width: 920px) { .row { grid-template-columns: minmax(0, 1fr); } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi:nth-child(3) { border-left: 0; } .kpi:nth-child(n+3) { border-top: 1px solid var(--hairline); } .nav { display: none; } .live-mark svg { width: 220px; height: 220px; } .intro { gap: 24px 36px; } }
 @media (max-width: 640px) {
+  .lookup { flex-direction: column; } .lookup input { flex: none; } .lookup button { height: 48px; }
+  .acct-top { grid-template-columns: minmax(0, 1fr); padding: 20px 18px; }
+  .my-intro { padding-block: 24px 18px; }
   .topbar .wrap { gap: 10px; } .family .wordmark, .pill .pt { display: none; } .pill { padding: 0 10px; }
   .intro { padding-block: 24px 22px; grid-template-columns: minmax(0, 1fr); }
   .live-mark { order: -1; grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; gap: 20px; }
@@ -324,7 +381,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <header class="topbar" id="topbar">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="BRC Pulse"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark" aria-hidden="true"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></a>
-    <nav class="nav" aria-label="Sections"><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a></nav>
+    <nav class="nav" aria-label="Sections"><a href="#my" class="my-link">My BRC</a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a></nav>
     <span class="spacer"></span>
     <nav class="family" aria-label="BRC tools">
       <span class="cur" aria-current="page"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></span>
@@ -334,10 +391,11 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   </div>
 </header>
 
-<div class="wrap intro" id="top">
+<div class="wrap intro net-only" id="top">
   <div class="intro-text">
     <h1>BrowserCoin, beat by beat.</h1>
     <p>Every block, every miner and every helper server, read straight from the network. <strong>Nothing to install, no account, nothing tracked.</strong></p>
+    <a class="cta" href="#my"><svg aria-hidden="true"><use href="#pulse-mark"/></svg>My BRC <span>Look up your balance and mining</span></a>
   </div>
   <figure class="live-mark" aria-label="Time since the last block">
     <svg viewBox="307.6 90 1316 1316" aria-hidden="true">
@@ -358,7 +416,65 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   </figure>
 </div>
 
-<main class="wrap">
+<div class="wrap my-intro my-only" id="my-top">
+  <h1>My BRC</h1>
+  <p>Your balance, your mining and your payouts, worked out from the whole chain and kept up to date block by block. Paste a wallet <strong>address</strong>: 64 letters and numbers, shown in your BrowserCoin wallet. <strong>Never paste your private key, here or anywhere.</strong></p>
+  <form class="lookup" id="lookup" autocomplete="off"><input id="addr-in" type="text" inputmode="text" spellcheck="false" autocapitalize="off" placeholder="Paste a BrowserCoin address" aria-label="BrowserCoin address"><button type="submit">Look up</button></form>
+  <div class="try" id="try"></div>
+  <p class="msg" id="lookup-msg" role="status" hidden></p>
+  <p class="privacy">Your address never leaves your browser in full: the page downloads a small file of addresses that start with the same three characters and finds yours on your device. <span id="remembered" hidden>It's remembered on this device. <button type="button" id="forget">Forget it</button></span></p>
+</div>
+
+<main class="wrap my-only" id="acct" hidden>
+  <section class="card" aria-labelledby="a-bal">
+    <div class="acct-top">
+      <div>
+        <div class="who"><b id="a-name">Address</b><span class="tag pool" id="a-tag" hidden>Pool</span></div>
+        <div class="addr" id="a-addr"></div>
+        <div class="bal" id="a-bal">–</div>
+        <p class="sub" id="a-sub"></p>
+      </div>
+      <button type="button" class="btn-ghost" id="a-copy">Copy address</button>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><span class="label">Blocks found</span><span class="v" id="a-m">–</span><span class="s" id="a-m-s"></span></div>
+      <div class="kpi"><span class="label">Received</span><span class="v sm" id="a-in">–</span><span class="s" id="a-in-s"></span></div>
+      <div class="kpi"><span class="label">Sent</span><span class="v sm" id="a-out">–</span><span class="s" id="a-out-s"></span></div>
+      <div class="kpi"><span class="label">First seen</span><span class="v sm" id="a-first">–</span><span class="s" id="a-first-s"></span></div>
+    </div>
+  </section>
+
+  <div class="row">
+    <section class="card pad" aria-labelledby="am-h">
+      <div class="sh">
+        <svg class="ic" aria-hidden="true"><use href="#i-calc"/></svg>
+        <h2 id="am-h">Mining</h2>
+        <p id="am-p">Blocks this address found itself. Pool miners are paid by their pool instead; see who pays you.</p>
+      </div>
+      <div id="am-body"></div>
+    </section>
+    <section class="card pad" aria-labelledby="ap-h">
+      <div class="sh">
+        <svg class="ic" aria-hidden="true"><use href="#i-pool"/></svg>
+        <h2 id="ap-h">Who pays you</h2>
+        <p>The addresses that have sent this one the most BRC. Pool payouts show up here.</p>
+      </div>
+      <ul class="mini-list" id="ap-list"></ul>
+    </section>
+  </div>
+
+  <section class="card pad" aria-labelledby="aa-h">
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-hist"/></svg>
+      <h2 id="aa-h">Activity</h2>
+      <p id="aa-p">Coins in and out, newest first.</p>
+    </div>
+    <div class="tbl" style="margin-top:12px"><table><thead><tr><th>When</th><th>Block</th><th>What</th><th>With</th><th class="r">Amount</th></tr></thead><tbody id="aa-rows"></tbody></table></div>
+    <p class="fine" id="aa-note"></p>
+  </section>
+</main>
+
+<main class="wrap net-only">
   <section class="card" aria-labelledby="tip">
     <div class="live-top">
       <div>
@@ -557,6 +673,7 @@ function ago(s) { s = Math.max(0, Math.round(s)); if (s < 60) return `${s}s ago`
 const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const name = (a) => (LABELS[a] ? LABELS[a].name : short(a));
 const nameHtml = (a) => (LABELS[a] ? LABELS[a].name : `<span class="mono">${short(a)}</span>`);
+const nameLink = (a) => `<a class="who-link" href="#my=${a}" title="Look up in My BRC">${nameHtml(a)}</a>`;
 const now = () => (S.mode === 'live' ? Date.now() / 1000 : S.mode === 'replay' ? S.vnow : S.at / 1000);
 // Same clock, interpolated between replay steps so the frame moves smoothly at 60 fps.
 const nowSmooth = () => (S.mode === 'replay' ? S.vnow + Math.min(0.1, (performance.now() - (S.vnowAt || 0)) / 1000) * SPEED : now());
@@ -594,8 +711,9 @@ function render() {
     replay($('beat'), 'draw'); replay($('ripple'), 'go'); S.beatT = performance.now(); animTrace();
     if (prev != null && L.h > prev) { replay($('tip'), 'roll'); toast(L); landRing(); }
   }
+  if (M.addr) { if (S.mode === 'live') catchUp(); renderAcct(); }
   $('tip').innerHTML = `<span class="h">#</span>${fmt(L.h)}`;
-  $('tip-meta').innerHTML = `<span class="chip"><i style="background:${colorOf(L.miner)}"></i>${nameHtml(L.miner)}</span><span data-ago="${seenAt(L)}">${ago(now() - seenAt(L))}</span><span class="muted">${L.ntx} transaction${L.ntx === 1 ? '' : 's'}</span>`;
+  $('tip-meta').innerHTML = `<span class="chip"><i style="background:${colorOf(L.miner)}"></i>${nameLink(L.miner)}</span><span data-ago="${seenAt(L)}">${ago(now() - seenAt(L))}</span><span class="muted">${L.ntx} transaction${L.ntx === 1 ? '' : 's'}</span>`;
   let w = 0; for (let i = 1; i < day.win.length; i++) w += work(day.win[i].bits);
   const span = day.win[day.win.length - 1].ts - day.win[0].ts, gaps = day.win.slice(1).map((b, i) => Math.max(0, b.ts - day.win[i].ts));
   S.netHr = span > 0 ? w / span : 0;
@@ -690,7 +808,7 @@ function renderConc() {
     shown += n;
     const s = document.createElement('span'); s.style.flex = `${n} 0 0`; s.style.background = colorOf(a); s.title = `${name(a)}: ${n} blocks`; stack.append(s);
     const l = LABELS[a], li = document.createElement('li');
-    li.innerHTML = `<span class="rk">${i + 1}</span><span class="sw" style="background:${colorOf(a)}"></span><span class="nm">${l ? `<a href="${l.url}" target="_blank" rel="noopener">${l.name}</a><span class="tag pool">Pool</span>` : `<span class="mono">${short(a)}</span><span class="tag">Unlabeled</span>`}</span><span class="cnt">${n} blocks</span><span class="pct">${((100 * n) / W.total).toFixed(1)}%</span>`;
+    li.innerHTML = `<span class="rk">${i + 1}</span><span class="sw" style="background:${colorOf(a)}"></span><span class="nm">${l ? `${nameLink(a)}<span class="tag pool">Pool</span>` : `${nameLink(a)}<span class="tag">Unlabeled</span>`}</span><span class="cnt">${n} blocks</span><span class="pct">${((100 * n) / W.total).toFixed(1)}%</span>`;
     list.append(li);
   });
   const rest = W.total - shown;
@@ -721,7 +839,7 @@ function renderRecent() {
   for (let i = b.length - 1; i >= b.length - 8; i--) {
     const x = b[i], gap = Math.max(0, x.ts - b[i - 1].ts), tr = document.createElement('tr');
     if (x.h >= S.freshFrom) tr.className = 'fresh';
-    tr.innerHTML = `<td class="blk">${fmt(x.h)}</td><td class="muted" data-ago="${seenAt(x)}">${ago(now() - seenAt(x))}</td><td class="r">${mmss(gap)}</td><td><span class="sw" style="background:${colorOf(x.miner)}"></span>${nameHtml(x.miner)}</td><td class="r">${x.ntx}</td>`;
+    tr.innerHTML = `<td class="blk">${fmt(x.h)}</td><td class="muted" data-ago="${seenAt(x)}">${ago(now() - seenAt(x))}</td><td class="r">${mmss(gap)}</td><td><span class="sw" style="background:${colorOf(x.miner)}"></span>${nameLink(x.miner)}</td><td class="r">${x.ntx}</td>`;
     tb.append(tr);
   }
 }
@@ -914,6 +1032,178 @@ $('presets').addEventListener('click', (e) => { const b = e.target.closest('butt
 $('calc-hs').addEventListener('input', renderCalc);
 addEventListener('scroll', () => $('topbar').classList.toggle('scrolled', scrollY > 4), { passive: true });
 
+/* ---------- My BRC ----------
+   Each address record comes from the daily-to-hourly index (tools/accounts.py), which replays the whole
+   chain archive with BrowserCoin's own rules. The page then applies every newer block itself, straight
+   from the helper servers, so the balance is current to the latest block. */
+const ACCT_BASE = 'https://pb-hash.github.io/brc-pulse/a/';
+const SAMPLE = SNAP.accounts || null;
+const DEAD = '000000000000000000000000000000000000000000000000000000000000dead';
+const WEI = 100000000n;
+const M = { addr: null, acc: null, applied: 0, d0: null, hd: 0, busy: false, token: 0 };
+const store = { get() { try { return localStorage.getItem('brc-pulse:addr'); } catch { return null; } }, set(v) { try { v ? localStorage.setItem('brc-pulse:addr', v) : localStorage.removeItem('brc-pulse:addr'); } catch {} } };
+const rewardWei = (h) => (5000000000n >> BigInt(Math.floor(h / HALVING)));
+function brc(w, unit = true) {
+  w = BigInt(w); const neg = w < 0n; if (neg) w = -w;
+  const whole = w / WEI, frac = (w % WEI).toString().padStart(8, '0').slice(0, whole >= 1000n ? 2 : whole >= 1n ? 4 : 8).replace(/0+$/, '');
+  return `${neg ? '−' : ''}${whole.toLocaleString('en-US')}${frac ? '.' + frac : ''}${unit ? '<small> BRC</small>' : ''}`;
+}
+const dayOf = (ts) => Math.floor(ts / DAY);
+const when = (ts) => (now() - ts < 2 * DAY ? ago(now() - ts) : new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: now() - ts > 300 * DAY ? 'numeric' : undefined }));
+function parseTxs(x) {
+  const n = parseInt(x.slice(296, 304), 16), out = []; let p = 304;
+  const u64 = (a) => BigInt('0x' + x.slice(a, a + 16));
+  for (let i = 0; i < n; i++) {
+    const tag = x.slice(p, p + 8);
+    if (tag === 'c01dfeed') { out.push({ k: 't', from: x.slice(p + 8, p + 72), to: x.slice(p + 72, p + 136), amt: u64(p + 136), fee: u64(p + 152) }); p += 304; }
+    else if (tag === '4c4f434b') { out.push({ k: 'l', from: x.slice(p + 16, p + 80), amt: u64(p + 80), fee: u64(p + 96) }); p += 312; }
+    else if (tag === '52444d31') {
+      const to = x.slice(p + 72, p + 136), amt = u64(p + 136), fee = u64(p + 152); let q = p + 168;
+      q += 4 + 2 * parseInt(x.slice(q, q + 4), 16);
+      const wc = parseInt(x.slice(q, q + 2), 16); q += 2;
+      for (let j = 0; j < wc; j++) q += 4 + 2 * parseInt(x.slice(q, q + 4), 16);
+      out.push({ k: 'r', to, amt, fee }); p = q;
+    } else throw new Error('unknown transaction type');
+  }
+  return out;
+}
+function toAcc(r) {
+  return { bal: BigInt(r.b), m: r.m, mw: BigInt(r.mw), iw: BigInt(r.iw), ow: BigInt(r.ow), fw: BigInt(r.fw), ni: r.ni, no: r.no, f: r.f, l: r.l, fm: r.fm, lm: r.lm, rk: r.rk,
+    d: r.d ? r.d.slice() : Array(30).fill(0), p: r.p.map(([a, w]) => [a, BigInt(w)]), r: r.r.map(([h, t, k, c, w, fe]) => [h, t, k, c, BigInt(w), BigInt(fe)]), fresh: 0 };
+}
+const emptyAcc = () => toAcc({ b: '0', m: 0, mw: '0', iw: '0', ow: '0', fw: '0', ni: 0, no: 0, f: null, l: null, fm: null, lm: null, rk: null, d: null, p: [], r: [] });
+function applyRaw(x) {
+  const h = parseInt(x.slice(0, 8), 16); if (h <= M.applied) return; M.applied = h;
+  const A = M.addr, a = M.acc, ts = parseInt(x.slice(200, 216), 16), miner = x.slice(232, 296);
+  let fees = 0n, moved = false;
+  for (const t of parseTxs(x)) {
+    fees += t.fee;
+    if ((t.k === 't' || t.k === 'l') && t.from === A) {
+      a.bal -= t.amt + t.fee; a.ow += t.amt; a.fw += t.fee; a.no++; moved = true;
+      a.r.unshift([h, ts, t.k === 't' ? 'out' : 'lock', t.to || '', t.amt, t.fee]);
+    }
+    if (t.k === 't' && t.to === A) {
+      a.bal += t.amt; a.iw += t.amt; a.ni++; moved = true; a.r.unshift([h, ts, 'in', t.from, t.amt, 0n]);
+      const p = a.p.find((e) => e[0] === t.from); if (p) p[1] += t.amt; else a.p.push([t.from, t.amt]);
+    }
+    if (t.k === 'r' && t.to === A) { const pay = t.amt - t.fee; if (pay > 0n) { a.bal += pay; a.iw += pay; a.ni++; } moved = true; a.r.unshift([h, ts, 'redeem', '', pay, 0n]); }
+  }
+  if (miner === A) {
+    const got = rewardWei(h) + fees; a.bal += got; a.m++; a.mw += got; a.lm = h; if (a.fm == null) a.fm = h; moved = true;
+    let i = dayOf(ts) - dayOf(Date.parse(M.d0 + 'T00:00:00Z') / 1000);
+    if (i > 29) { const shift = i - 29; a.d = a.d.slice(shift).concat(Array(Math.min(shift, 30)).fill(0)).slice(-30); M.d0 = new Date((Date.parse(M.d0 + 'T00:00:00Z') / 1000 + shift * DAY) * 1000).toISOString().slice(0, 10); i = 29; }
+    if (i >= 0) a.d[i]++;
+    if (M.applied > M.started) toastMine(h, got);
+  }
+  if (moved) { if (a.f == null) a.f = h; a.l = h; if (M.applied > M.started) a.fresh = performance.now(); }
+}
+function toastMine(h, got) {
+  $('toast-t').textContent = `${M.addr === store.get() ? 'You' : name(M.addr)} found block #${fmt(h)}`;
+  $('toast-s').innerHTML = `+${brc(got, false)} BRC`;
+  const t = $('toast'); t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 5000);
+}
+async function rawRange(host, from, to) {
+  const out = []; for (let f = from; f <= to; f += 200) out.push(...(await get(host, `/blocks?fromHeight=${f}&max=${Math.min(200, to - f + 1)}`, 15000)).blocks);
+  return out;
+}
+async function catchUp() {
+  if (M.busy || !M.addr) return; const tipH = last().h; if (M.applied >= tipH) return;
+  if (tipH - M.applied > 4000) return;
+  M.busy = true; const token = M.token;
+  try { const xs = await rawRange(S.source, M.applied + 1, tipH); if (token === M.token) { xs.forEach(applyRaw); renderAcct(); } } catch {} finally { M.busy = false; }
+}
+function msg(text, cls = '') { const m = $('lookup-msg'); m.hidden = !text; m.className = `msg ${cls}`; m.textContent = text || ''; }
+function setView(v) { document.body.dataset.view = v; }
+async function show(addr) {
+  const token = ++M.token; msg('');
+  $('acct').hidden = true; $('addr-in').value = addr;
+  let shard;
+  if (SAMPLE) shard = SAMPLE;
+  else {
+    try {
+      const r = await fetch(`${ACCT_BASE}${addr.slice(0, 3)}.json`, { cache: 'no-cache' });
+      if (r.status === 404) shard = { h: null, a: {} }; else if (!r.ok) throw new Error(); else shard = await r.json();
+    } catch { if (token === M.token) msg("Couldn't load the address index. Check your connection and try again.", 'danger'); return; }
+  }
+  if (token !== M.token) return;
+  const rec = shard.a[addr];
+  if (SAMPLE && !rec) { msg('This preview only includes the sample addresses below. On pb-hash.github.io/brc-pulse, any address works.'); return; }
+  Object.assign(M, { addr, acc: rec ? toAcc(rec) : emptyAcc(), applied: shard.h || 0, started: shard.h || 0, d0: shard.d0 || new Date().toISOString().slice(0, 10), hd: shard.hd || 0, idxH: shard.h, known: !!rec });
+  if (!shard.h) { M.applied = Math.max(0, last().h - 1); M.started = M.applied; }
+  if (!SAMPLE) { store.set(addr); }
+  $('remembered').hidden = store.get() !== addr;
+  $('acct').hidden = false; renderAcct();
+  if (S.mode === 'live') catchUp();
+}
+function renderAcct() {
+  const A = M.addr, a = M.acc; if (!A || !a) return;
+  const L = LABELS[A];
+  $('a-name').textContent = L ? L.name : A === DEAD ? 'Burn address' : A === store.get() ? 'Your address' : 'Address';
+  $('a-tag').hidden = !L; $('a-addr').textContent = A;
+  const bal = $('a-bal'), html = brc(a.bal);
+  if (bal.innerHTML !== html) { bal.innerHTML = html; if (a.fresh && performance.now() - a.fresh < 3000) replay(bal, 'bump'); }
+  const asOf = M.applied > (M.idxH || 0) ? `live to block ${fmt(M.applied)}` : M.idxH ? `as of block ${fmt(M.idxH)}` : 'live';
+  $('a-sub').textContent = !M.known && !a.no && !a.ni && !a.m ? `No activity found for this address yet (${asOf}).`
+    : `${a.rk ? `#${fmt(a.rk)} by balance of ${fmt(M.hd)} holders · ` : ''}${asOf}`;
+  $('a-m').textContent = fmt(a.m); $('a-m-s').innerHTML = a.m ? `${brc(a.mw, false)} BRC earned` : 'None yet';
+  $('a-in').innerHTML = brc(a.iw); $('a-in-s').textContent = `${fmt(a.ni)} payment${a.ni === 1 ? '' : 's'}`;
+  $('a-out').innerHTML = brc(a.ow); $('a-out-s').innerHTML = `${fmt(a.no)} sent · ${brc(a.fw, false)} BRC fees`;
+  const fh = a.f, fb = fh != null ? S.blocks.find((b) => b.h === fh) : null;
+  $('a-first').textContent = fh != null ? `#${fmt(fh)}` : '–';
+  $('a-first-s').textContent = fh != null ? (fb ? new Date(fb.ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : `Last active #${fmt(a.l)}`) : 'Never active';
+  // mining
+  const day = windowOf(DAY), mine = day.win.filter((b) => b.miner === A), body = $('am-body');
+  if (!a.m) {
+    body.innerHTML = `<p class="muted" style="margin-top:18px">This address hasn't found a block itself. If you mine through a pool, the pool finds the blocks and pays you out, so your earnings show under <strong style="color:var(--ink)">Who pays you</strong>.</p>`;
+  } else {
+    const share = mine.length / day.total, found = S.blocks.filter((b) => b.miner === A).slice(-5).reverse();
+    const lastB = S.blocks.filter((b) => b.miner === A).pop(), mx = Math.max(1, ...a.d);
+    body.innerHTML = `<div class="share-big">${(100 * share).toFixed(share < 0.01 ? 2 : 1)}%</div>`
+      + `<p class="muted" style="margin-top:8px">of blocks in the last 24 hours: ${mine.length} of ${day.total}${mine.length ? `, about ${brc(BigInt(Math.round(share * 576 * 50 * 1e8)), false)} BRC a day at this pace` : ''}. Last block found ${lastB ? ago(now() - seenAt(lastB)) : `at #${fmt(a.lm)}`}.</p>`
+      + `<div class="days" role="img" aria-label="Blocks found per day, last 30 days">${a.d.map((n, i) => `<i class="${n ? '' : 'z'}" style="height:${n ? Math.max(4, (100 * n) / mx) : 3}%" title="${new Date(Date.parse(M.d0 + 'T00:00:00Z') + i * DAY * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })}: ${n} block${n === 1 ? '' : 's'}"></i>`).join('')}</div>`
+      + `<div class="axis"><span>30 days ago</span><span>Today</span></div>`
+      + (found.length ? `<ul class="mini-list">${found.map((b) => `<li><span>Block #${fmt(b.h)} · ${ago(now() - seenAt(b))}</span><span>+${brc(rewardWei(b.h), false)} BRC</span></li>`).join('')}</ul>` : '');
+  }
+  // payers
+  const payers = a.p.slice().sort((x, y) => (y[1] > x[1] ? 1 : y[1] < x[1] ? -1 : 0)).slice(0, 5);
+  $('ap-list').innerHTML = payers.length ? payers.map(([p, w]) => `<li><span>${nameLink(p)}${LABELS[p] ? ' <span class="tag pool">Pool</span>' : ''}</span><span>${brc(w)}</span></li>`).join('')
+    : '<li><span class="muted">No coins received yet.</span><span></span></li>';
+  // activity
+  const what = { in: 'Received', out: 'Sent', lock: 'Locked in a script', redeem: 'Script payout' };
+  const rows = a.r.slice(0, 40);
+  $('aa-rows').innerHTML = rows.length ? rows.map(([h, t, k, c, w, fe]) => {
+    const sign = k === 'in' || k === 'redeem' ? '+' : '−', cls = sign === '+' ? 'amt-in' : 'amt-out';
+    return `<tr class="${a.fresh && h > M.started && performance.now() - a.fresh < 3000 ? 'fresh' : ''}"><td class="muted">${when(t)}</td><td>${fmt(h)}</td><td>${what[k]}</td><td>${c ? nameLink(c) : '–'}</td><td class="r"><span class="${cls}">${sign}${brc(w, false)}</span>${fe > 0n ? `<small>fee ${brc(fe, false)}</small>` : ''}</td></tr>`;
+  }).join('') : '<tr><td colspan="5" class="muted">No transfers yet.</td></tr>';
+  $('aa-note').textContent = a.ni + a.no > rows.length ? `Showing the latest ${rows.length} of ${fmt(a.ni + a.no)} transfers. Block rewards are counted under Mining.` : 'Block rewards are counted under Mining.';
+}
+function renderTry() {
+  const picks = SAMPLE ? Object.keys(SAMPLE.a) : [...new Set([...Object.keys(LABELS), ...windowOf(DAY).ranked.slice(0, 2).map(([x]) => x)])];
+  $('try').innerHTML = '<span>Or look at</span>' + picks.slice(0, 5).map((x) => `<button type="button" data-a="${x}">${name(x)}</button>`).join('');
+}
+function route() {
+  const m = location.hash.match(/^#my(?:=([0-9a-fA-F]{64}))?$/);
+  if (!m) {
+    setView('net'); M.addr = null; M.token++;
+    const el = location.hash.length > 1 && document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView();
+    return;
+  }
+  setView('my'); scrollTo(0, 0); renderTry();
+  const addr = (m[1] || store.get() || '').toLowerCase();
+  if (addr) show(addr); else { $('acct').hidden = true; M.addr = null; setTimeout(() => $('addr-in').focus(), 50); }
+}
+$('lookup').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const raw = $('addr-in').value.trim(), v = raw.toLowerCase().replace(/^0x/, '');
+  if (/privatekey|"type"\s*:\s*"browsercoin-wallet"/i.test(raw)) { msg("That's your wallet file, which includes your private key. Don't paste it anywhere. This page only needs your address.", 'danger'); $('addr-in').value = ''; return; }
+  if (!/^[0-9a-f]{64}$/.test(v)) { msg('A BrowserCoin address is 64 characters, using only 0–9 and a–f. Check that the whole address was pasted.'); return; }
+  if (location.hash === `#my=${v}`) show(v); else location.hash = `my=${v}`;
+});
+$('try').addEventListener('click', (e) => { const b = e.target.closest('button[data-a]'); if (b) location.hash = `my=${b.dataset.a}`; });
+$('forget').addEventListener('click', () => { store.set(null); $('remembered').hidden = true; });
+$('a-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(M.addr); $('a-copy').textContent = 'Copied'; setTimeout(() => ($('a-copy').textContent = 'Copy address'), 1500); } catch {} });
+addEventListener('hashchange', route);
+
 /* ---------- live mode ---------- */
 async function get(host, path, ms = 6000) {
   const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
@@ -965,7 +1255,7 @@ function startReplay() {
   }, 100);
 }
 
-render(); drawHistory(); requestAnimationFrame(ringFrame);
+render(); drawHistory(); requestAnimationFrame(ringFrame); route();
 setInterval(() => { if (S.mode === 'live') tick(); }, 1000);
 let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawTrace(); }, 120); }).observe(document.body);
 goLive().then((ok) => { if (!ok) startReplay(); });

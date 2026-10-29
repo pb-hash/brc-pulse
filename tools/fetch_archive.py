@@ -25,8 +25,15 @@ def main():
     got = 0
     for i, c in enumerate(chunks):
         path = os.path.join(out, c['file'])
+        # Keep a cached chunk only if it is complete: one downloaded while it was still filling must be
+        # fetched again once the archive has moved on to the next chunk.
+        want = min(c['toHeight'], manifest['archivedHeight']) - c['fromHeight'] + 1
         if os.path.exists(path) and i < len(chunks) - 1:
-            continue
+            try:
+                if len(json.load(open(path))['blocks']) == want:
+                    continue
+            except ValueError:
+                pass
         open(path, 'wb').write(fetch('blocks/' + c['file'])); got += 1
     print('archived height', manifest['archivedHeight'], 'chunks', len(chunks), 'downloaded', got)
 

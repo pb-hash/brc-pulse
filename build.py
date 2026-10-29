@@ -11,9 +11,12 @@ The published page carries a Content-Security-Policy: its own script only (pinne
 embedded in the page, and network access limited to the four helper servers. No analytics, no cookies,
 no third-party requests.
 
-    python3 build.py history.json --preview out.html   # variant without CSP, fonts from Google, for previews
+    python3 build.py history.json --preview out.html --accounts site/a   # preview variant (no CSP, Google fonts,
+                                                                        # a few sample My BRC addresses embedded)
+    python3 build.py history.json --site _site          # the published site: page, preview image (My BRC index
+                                                        # files are written into _site/a by tools/accounts.py)
 """
-import base64, hashlib, json, os, re, sys, time, urllib.error, urllib.request
+import base64, hashlib, json, os, re, shutil, sys, time, urllib.error, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HELPERS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu']
@@ -82,14 +85,32 @@ def font_face(family, path, weights):
 
 def main():
     args = sys.argv[1:]
-    preview = None
-    if '--preview' in args:
-        i = args.index('--preview'); preview = args[i + 1]; del args[i:i + 2]
+
+    def opt(flag):
+        if flag in args:
+            i = args.index(flag); v = args[i + 1]; del args[i:i + 2]; return v
+        return None
+    preview, accounts, site = opt('--preview'), opt('--accounts'), opt('--site')
     hist = json.load(open(args[0] if args else 'history.json'))
     snap, probes = snapshot(hist)
     tpl = open(os.path.join(HERE, 'src', 'template.html')).read()
     html = tpl.replace('/*__SNAPSHOT__*/null', json.dumps(snap, separators=(',', ':')))
 
+    if preview and accounts:
+        # Sample addresses for My BRC: the labelled pools and today's busiest miners.
+        tally = {}
+        for r in snap['rows']:
+            tally[r[3]] = tally.get(r[3], 0) + 1
+        picks = ['ff811ae0d83c0bde47bc10db95d1e869641d897975c1fe7fc61884efa6d5c698', '89d081ad360f4ee55e704b449b6f4491619fa8bddf0c35eedaafa0b6a306b768']
+        picks += [snap['miners'][i] for i, _ in sorted(tally.items(), key=lambda kv: -kv[1])[:4] if snap['miners'][i] not in picks]
+        sample = None
+        for a in picks:
+            shard = json.load(open(os.path.join(accounts, a[:3] + '.json')))
+            if sample is None:
+                sample = dict(h=shard['h'], t=shard['t'], d0=shard['d0'], hd=shard['hd'], a={})
+            if a in shard['a']:
+                sample['a'][a] = shard['a'][a]
+        html = tpl.replace('/*__SNAPSHOT__*/null', json.dumps(dict(snap, accounts=sample), separators=(',', ':')))
     if preview:
         fonts = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
                  '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400;500&family=Manrope:wght@400..800&display=swap">')
@@ -113,7 +134,7 @@ def main():
         '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
         '<!-- Only this page\'s own script runs, and it can only talk to the BrowserCoin helper servers. -->',
         f'<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'sha256-{sha}\'; style-src \'unsafe-inline\'; '
-        f'font-src data:; img-src data:; connect-src {connect}; base-uri \'none\'; form-action \'none\'">',
+        f'font-src data:; img-src data:; connect-src {connect} https://pb-hash.github.io; base-uri \'none\'; form-action \'none\'">',
         '<meta name="referrer" content="no-referrer">',
         '<meta name="theme-color" content="#f5f6f8">',
         '<meta property="og:type" content="website">',
@@ -126,8 +147,13 @@ def main():
         '<meta name="twitter:card" content="summary_large_image">',
     ]) + '\n'
     html = '<!doctype html>\n<html lang="en">\n' + html.replace('<!--__HEAD__-->\n', head)
-    for p in ('dist/brc-pulse.html', 'docs/index.html'):
-        open(os.path.join(HERE, p), 'w').write(html)
+    if site:
+        os.makedirs(site, exist_ok=True)
+        open(os.path.join(site, 'index.html'), 'w').write(html)
+        open(os.path.join(site, '.nojekyll'), 'w').write('')
+        shutil.copy(os.path.join(HERE, 'brand', 'brc-pulse-social.png'), os.path.join(site, 'og.png'))
+    os.makedirs(os.path.join(HERE, 'dist'), exist_ok=True)
+    open(os.path.join(HERE, 'dist', 'brc-pulse.html'), 'w').write(html)
     digest = hashlib.sha256(html.encode()).hexdigest()
     open(os.path.join(HERE, 'dist', 'SHA256.txt'), 'w').write(f'{digest}  brc-pulse.html\n')
     print('tip', snap['tip'], 'from', snap['source'], 'helpers', [(p['host'], p['ok']) for p in probes], 'bytes', len(html), 'sha256', digest)

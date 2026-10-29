@@ -31,6 +31,24 @@ What it shows
   and miners per day.
 - Supply, burned coins, script locks and the countdown to the first halving.
 
+My BRC
+------
+Paste any address (https://pb-hash.github.io/brc-pulse/#my) to see its
+balance, the blocks it found and its 30-day mining, who pays it (pool payouts),
+and its recent transfers. Click any miner name on the dashboard to look it up.
+
+- Balances come from replaying the whole chain with BrowserCoin's own rules
+  (tools/accounts.py, following src/chain/state.ts): transfers, script locks
+  and redeems, and 50 BRC plus fees per block found. The replay checks every
+  nonce, never lets a balance go negative, and confirms that all balances plus
+  locked coins equal exactly 50 BRC times the blocks mined.
+- The page then applies every newer block itself, fetched from the helper
+  servers, so the balance is current to the latest block.
+- Your address never leaves your browser in full: the index is split into
+  small files by the first three characters of the address, and the page finds
+  yours on your device. It is remembered on your device only, until you click
+  Forget.
+
 How it gets its data
 --------------------
 - Live: every 6 seconds the page asks the fastest synced helper server
@@ -42,27 +60,32 @@ How it gets its data
   from the chain archive (github.com/swompythesecond/browsercoin-archive), so
   the page shows real data before it connects. If it can't reach the network
   at all, it replays the last 20 real blocks at 20x speed and says so.
-- A GitHub Action (.github/workflows/refresh.yml) rebuilds the page once a day
-  so the snapshot and history stay current.
+- A GitHub Action (.github/workflows/pages.yml) rebuilds and publishes the
+  site every hour: snapshot, history and the My BRC index. Nothing is
+  committed; GitHub Pages serves the workflow's output.
 
 Privacy
 -------
 The published page carries a Content-Security-Policy: only its own script
 runs (pinned by SHA-256), fonts are embedded in the page, and it can connect
-only to the four helper servers above. It loads nothing from anywhere else.
+only to the four helper servers above and to this site (for the My BRC
+index). It loads nothing from anywhere else.
 
 Verify your copy
 ----------------
 dist/SHA256.txt holds the SHA-256 of dist/brc-pulse.html:
     shasum -a 256 dist/brc-pulse.html
-The hash changes with each daily refresh, because the embedded snapshot does.
+The hash changes whenever the page is rebuilt, because the embedded snapshot
+does. The copy in dist/ is updated with code changes; the hourly published
+page has a fresher snapshot.
 
 Build
 -----
 Python 3, no packages needed.
     python3 tools/fetch_archive.py archive          # chain archive, cached
     python3 tools/history.py archive history.json   # daily history
-    python3 build.py history.json                   # writes dist/ and docs/
+    python3 tools/accounts.py archive _site/a       # My BRC address index
+    python3 build.py history.json --site _site      # the site, plus dist/
 
 Pool labels
 -----------
