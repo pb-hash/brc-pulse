@@ -29,7 +29,7 @@
   --good: #0d7a5f; --good-tint: #e6f4ef;
   --caution: #8c5800; --caution-tint: #fbf3e2;
   --danger: #b8321c; --danger-tint: #fbece8;
-  --c1: #5956fd; --c2: #353535; --c3: #a5a3ff; --c4: #14a39a; --c5: #e8962e; --c6: #8a919c; --c7: #e0598b;
+  --c1: #5956fd; --c2: #353535; --c3: #a5a3ff; --c4: #14a39a; --c5: #e8962e; --c6: #8a919c; --c7: #e0598b; --c8: #2f7fd1; --c9: #9c6a3c; --c10: #5c9e44;
   --rest: #dde1e7;
   --shadow: 0 1px 2px rgba(16,19,24,.04), 0 8px 24px -6px rgba(16,19,24,.08), 0 32px 64px -24px rgba(16,19,24,.12);
   --logo: "Geist", ui-sans-serif, system-ui, sans-serif;
@@ -43,7 +43,7 @@
     --canvas: #0f1115; --surface: #171a20; --sunken: #13161b; --ink: #eef0f4; --ink-2: #c0c5ce; --muted: #8b929e; --faint: #626976;
     --hairline: #252a33; --hairline-strong: #323844; --mark: #e8eaee; --mark-hi: #ffffff; --mark-lo: #bfc3cc; --brand: #7d7aff; --brand-deep: #a09eff; --brand-tint: #1f1f42;
     --good: #34c495; --good-tint: #10281f; --caution: #e5a845; --caution-tint: #2b2211; --danger: #f2735e; --danger-tint: #321612;
-    --c1: #7d7aff; --c2: #d6d9df; --c3: #bdbbff; --c4: #2fc2b6; --c5: #f0aa50; --c6: #8f96a2; --c7: #ef7aa2; --rest: #323844;
+    --c1: #7d7aff; --c2: #d6d9df; --c3: #bdbbff; --c4: #2fc2b6; --c5: #f0aa50; --c6: #8f96a2; --c7: #ef7aa2; --c8: #5aa3ea; --c9: #c48a57; --c10: #82c46a; --rest: #323844;
     --shadow: 0 1px 2px rgba(0,0,0,.35), 0 14px 34px -14px rgba(0,0,0,.55);
     color-scheme: dark;
   }
@@ -52,7 +52,7 @@
   --canvas: #0f1115; --surface: #171a20; --sunken: #13161b; --ink: #eef0f4; --ink-2: #c0c5ce; --muted: #8b929e; --faint: #626976;
   --hairline: #252a33; --hairline-strong: #323844; --mark: #e8eaee; --mark-hi: #ffffff; --mark-lo: #bfc3cc; --brand: #7d7aff; --brand-deep: #a09eff; --brand-tint: #1f1f42;
   --good: #34c495; --good-tint: #10281f; --caution: #e5a845; --caution-tint: #2b2211; --danger: #f2735e; --danger-tint: #321612;
-  --c1: #7d7aff; --c2: #d6d9df; --c3: #bdbbff; --c4: #2fc2b6; --c5: #f0aa50; --c6: #8f96a2; --c7: #ef7aa2; --rest: #323844;
+  --c1: #7d7aff; --c2: #d6d9df; --c3: #bdbbff; --c4: #2fc2b6; --c5: #f0aa50; --c6: #8f96a2; --c7: #ef7aa2; --c8: #5aa3ea; --c9: #c48a57; --c10: #82c46a; --rest: #323844;
   --shadow: 0 1px 2px rgba(0,0,0,.35), 0 14px 34px -14px rgba(0,0,0,.55);
   color-scheme: dark;
 }
@@ -643,7 +643,7 @@ const PRESETS = [
   { label: 'Rented H100 GPU', hs: 2097, src: 'developer benchmark' },
 ];
 const EVENTS = [{ d: '2026-06-04', label: 'Launch' }, { d: '2026-07-05', label: 'Scripts fork' }, { d: '2026-07-22', label: 'Sandglass fork' }];
-const PAL = ['--c1', '--c2', '--c3', '--c4', '--c5', '--c6', '--c7'];
+const TOP = 10, PAL = ['--c1', '--c2', '--c3', '--c4', '--c5', '--c6', '--c7', '--c8', '--c9', '--c10'];
 const $ = (id) => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -699,7 +699,7 @@ function hourly() {
 
 /* ---------- render ---------- */
 let CM;
-function colorsFor(ranked) { CM = new Map(); ranked.slice(0, 7).forEach(([a], i) => CM.set(a, `var(${PAL[i]})`)); }
+function colorsFor(ranked) { CM = new Map(); ranked.slice(0, TOP).forEach(([a], i) => CM.set(a, `var(${PAL[i]})`)); }
 const colorOf = (a) => CM.get(a) || 'var(--rest)';
 
 function replay(el, cls) { el.classList.remove(cls); el.getBoundingClientRect(); el.classList.add(cls); }
@@ -722,7 +722,7 @@ function render() {
   const pace = day.total / 576;
   $('k-blocks-s').textContent = pace > 1.05 ? 'Ahead of target pace' : pace < 0.95 ? 'Behind target pace' : 'On target pace';
   $('k-miners').textContent = day.ranked.length;
-  $('k-miners-s').textContent = S.peers != null ? `${S.peers} tabs on the seed helper` : 'Addresses that found a block';
+  $('k-miners-s').textContent = S.peers != null ? `${S.peers} tab${S.peers === 1 ? "" : "s"} on the seed helper` : 'Addresses that found a block';
   $('k-gap').textContent = mmss(median(gaps));
   const hrs = hourly();
   spark('sp-hr', hrs.map((h) => h.hr)); spark('sp-blocks', hrs.map((h) => h.n), 24); spark('sp-miners', hrs.map((h) => h.miners)); spark('sp-gap', hrs.map((h) => h.gap), TARGET);
@@ -804,7 +804,7 @@ function renderConc() {
   const f = $('conc-chip'); f.className = `flag ${cls}`; f.lastElementChild.textContent = txt;
   const stack = $('stack'), list = $('list'); stack.textContent = ''; list.textContent = '';
   let shown = 0;
-  W.ranked.slice(0, 7).forEach(([a, n], i) => {
+  W.ranked.slice(0, TOP).forEach(([a, n], i) => {
     shown += n;
     const s = document.createElement('span'); s.style.flex = `${n} 0 0`; s.style.background = colorOf(a); s.title = `${name(a)}: ${n} blocks`; stack.append(s);
     const l = LABELS[a], li = document.createElement('li');
@@ -815,7 +815,7 @@ function renderConc() {
   if (rest > 0) {
     const s = document.createElement('span'); s.style.flex = `${rest} 0 0`; s.style.background = 'var(--rest)'; stack.append(s);
     const li = document.createElement('li');
-    li.innerHTML = `<span class="rk"></span><span class="sw" style="background:var(--rest)"></span><span class="nm">Everyone else<span class="tag">${W.ranked.length - 7} miners</span></span><span class="cnt">${rest} blocks</span><span class="pct">${((100 * rest) / W.total).toFixed(1)}%</span>`;
+    li.innerHTML = `<span class="rk"></span><span class="sw" style="background:var(--rest)"></span><span class="nm">Everyone else<span class="tag">${W.ranked.length - TOP} miners</span></span><span class="cnt">${rest} blocks</span><span class="pct">${((100 * rest) / W.total).toFixed(1)}%</span>`;
     list.append(li);
   }
 }
