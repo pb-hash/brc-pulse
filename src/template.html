@@ -180,16 +180,18 @@ main.wrap { display: grid; gap: 20px; padding-bottom: 20px; }
 /* views: Network and My BRC share one page */
 body[data-view="my"] .net-only { display: none !important; }
 body:not([data-view="my"]) .my-only { display: none !important; }
-.nav a.my-link { white-space: nowrap; color: var(--brand-deep); background: var(--brand-tint); padding: 5px 12px; border-radius: 999px; font-weight: 700; }
+.nav a.my-link { white-space: nowrap; color: var(--brand-deep); background: var(--brand-tint); padding: 6px 12px; border-radius: 999px; }
+.nav a.my-link .wordmark { font-size: .92rem; }
 .nav a.my-link:hover { color: var(--brand-deep); }
 body[data-view="my"] .nav a.my-link { background: var(--brand); color: #fff; }
 .cta { display: inline-flex; align-items: center; gap: 10px; justify-self: start; height: 46px; padding: 0 18px 0 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--hairline); box-shadow: var(--shadow); color: var(--ink); font-weight: 700; font-size: .95rem; }
 .cta:hover { text-decoration: none; border-color: var(--brand); }
 .cta svg { width: 26px; height: 26px; color: var(--mark); }
-.cta span { color: var(--muted); font-weight: 500; }
-.my-intro { padding-block: 40px 24px; display: grid; gap: 16px; }
-.my-intro h1 { font-size: clamp(2.4rem, 6vw, 3.6rem); font-weight: 750; line-height: 1.04; letter-spacing: -0.035em; }
-.my-intro > p { font-size: 1.08rem; color: var(--muted); max-width: 44rem; }
+.cta .cta-sub { color: var(--muted); font-weight: 500; }
+.cta .wordmark { font-size: 1.08rem; color: var(--mark); }
+.my-intro { gap: 16px; }
+.intro h1.wm-title { max-width: none; font-weight: 400; font-family: var(--logo); font-size: clamp(3rem, 8vw, 5rem); line-height: .9; letter-spacing: -0.066em; text-transform: uppercase; color: var(--mark); white-space: nowrap; }
+.my-intro > p { font-size: 1.05rem; color: var(--muted); max-width: 40rem; }
 .my-intro > p strong { color: var(--ink); font-weight: 600; }
 .lookup { display: flex; gap: 10px; max-width: 820px; }
 .lookup input { flex: 1; min-width: 0; height: 54px; padding: 0 18px; border-radius: 14px; border: 1px solid var(--hairline-strong); background: var(--surface); color: var(--ink); font: 500 .92rem var(--mono); box-shadow: var(--shadow); }
@@ -346,7 +348,6 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 @media (max-width: 640px) {
   .lookup { flex-direction: column; } .lookup input { flex: none; } .lookup button { height: 48px; }
   .acct-top { grid-template-columns: minmax(0, 1fr); padding: 20px 18px; }
-  .my-intro { padding-block: 24px 18px; }
   .topbar .wrap { gap: 10px; } .family .wordmark, .pill .pt { display: none; } .pill { padding: 0 10px; }
   .intro { padding-block: 24px 22px; grid-template-columns: minmax(0, 1fr); }
   .live-mark { order: -1; grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; gap: 20px; }
@@ -381,7 +382,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <header class="topbar" id="topbar">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="BRC Pulse"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark" aria-hidden="true"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></a>
-    <nav class="nav" aria-label="Sections"><a href="#my" class="my-link">My BRC</a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a></nav>
+    <nav class="nav" aria-label="Sections"><a href="#my" class="my-link" aria-label="My BRC"><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span></a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a></nav>
     <span class="spacer"></span>
     <nav class="family" aria-label="BRC tools">
       <span class="cur" aria-current="page"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></span>
@@ -391,11 +392,19 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   </div>
 </header>
 
-<div class="wrap intro net-only" id="top">
-  <div class="intro-text">
+<div class="wrap intro" id="top">
+  <div class="intro-text net-only">
     <h1>BrowserCoin, beat by beat.</h1>
     <p>Every block, every miner and every helper server, read straight from the network. <strong>Nothing to install, no account, nothing tracked.</strong></p>
-    <a class="cta" href="#my"><svg aria-hidden="true"><use href="#pulse-mark"/></svg>My BRC <span>Look up your balance and mining</span></a>
+    <a class="cta" href="#my"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span><span class="cta-sub">Look up your balance and mining</span></a>
+  </div>
+  <div class="intro-text my-intro my-only" id="my-top">
+    <h1 class="wm-title" aria-label="My BRC"><span class="wm-b">MY</span><span class="wm-l">BRC</span></h1>
+    <p>Your balance, your mining and your payouts, worked out from the whole chain and kept up to date block by block. Paste a wallet <strong>address</strong>: 64 letters and numbers, shown in your BrowserCoin wallet. <strong>Never paste your private key, here or anywhere.</strong></p>
+    <form class="lookup" id="lookup" autocomplete="off"><input id="addr-in" type="text" inputmode="text" spellcheck="false" autocapitalize="off" placeholder="Paste a BrowserCoin address" aria-label="BrowserCoin address"><button type="submit">Look up</button></form>
+    <div class="try" id="try"></div>
+    <p class="msg" id="lookup-msg" role="status" hidden></p>
+    <p class="privacy">Your address never leaves your browser in full: the page downloads a small file of addresses that start with the same three characters and finds yours on your device. <span id="remembered" hidden>It's remembered on this device. <button type="button" id="forget">Forget it</button></span></p>
   </div>
   <figure class="live-mark" aria-label="Time since the last block">
     <svg viewBox="307.6 90 1316 1316" aria-hidden="true">
@@ -414,15 +423,6 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     </svg>
     <figcaption><b id="since">–</b><span class="cap" id="since-cap">since the last block</span><span class="replay-note" id="since-note" hidden>Replaying real blocks at 20× speed</span></figcaption>
   </figure>
-</div>
-
-<div class="wrap my-intro my-only" id="my-top">
-  <h1>My BRC</h1>
-  <p>Your balance, your mining and your payouts, worked out from the whole chain and kept up to date block by block. Paste a wallet <strong>address</strong>: 64 letters and numbers, shown in your BrowserCoin wallet. <strong>Never paste your private key, here or anywhere.</strong></p>
-  <form class="lookup" id="lookup" autocomplete="off"><input id="addr-in" type="text" inputmode="text" spellcheck="false" autocapitalize="off" placeholder="Paste a BrowserCoin address" aria-label="BrowserCoin address"><button type="submit">Look up</button></form>
-  <div class="try" id="try"></div>
-  <p class="msg" id="lookup-msg" role="status" hidden></p>
-  <p class="privacy">Your address never leaves your browser in full: the page downloads a small file of addresses that start with the same three characters and finds yours on your device. <span id="remembered" hidden>It's remembered on this device. <button type="button" id="forget">Forget it</button></span></p>
 </div>
 
 <main class="wrap my-only" id="acct" hidden>
