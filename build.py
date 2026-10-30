@@ -20,6 +20,8 @@ import base64, hashlib, json, os, re, shutil, sys, time, urllib.error, urllib.re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 HELPERS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu']
+# drand quicknet relays (League of Entropy), for stamps' "made after" beacon. Signatures are checked in the page.
+DRAND = ['drand.cloudflare.com', 'api.drand.sh', 'api2.drand.sh', 'api3.drand.sh']
 SITE = 'https://pb-hash.github.io/brc-pulse/'
 DESC = 'BrowserCoin, beat by beat: the latest block, who is mining, a mining calculator, pools, helper servers and history since launch.'
 
@@ -94,6 +96,8 @@ def main():
     hist = json.load(open(args[0] if args else 'history.json'))
     snap, probes = snapshot(hist)
     tpl = open(os.path.join(HERE, 'src', 'template.html')).read()
+    # drand signature checking, built from BRC Seal's src/drand-core.js (see vendor/README.txt).
+    tpl = tpl.replace('/*__DRAND__*/', open(os.path.join(HERE, 'vendor', 'brc-drand.js')).read().strip())
     html = tpl.replace('/*__SNAPSHOT__*/null', json.dumps(snap, separators=(',', ':')))
 
     if preview and accounts:
@@ -129,10 +133,10 @@ def main():
     scripts = re.findall(r'<script>(.*?)</script>', html, re.S)
     assert len(scripts) == 1, 'expected exactly one inline script'
     sha = base64.b64encode(hashlib.sha256(scripts[0].encode()).digest()).decode()
-    connect = ' '.join(f'https://{h}' for h in HELPERS)
+    connect = ' '.join(f'https://{h}' for h in HELPERS + DRAND)
     head = '\n'.join([
         '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
-        '<!-- Only this page\'s own script runs, and it can only talk to the BrowserCoin helper servers. -->',
+        '<!-- Only this page\'s own script runs, and it can only talk to the BrowserCoin helper servers and the drand beacon. -->',
         f'<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'sha256-{sha}\'; style-src \'unsafe-inline\'; '
         f'font-src data:; img-src data:; connect-src {connect} https://pb-hash.github.io; base-uri \'none\'; form-action \'none\'">',
         '<meta name="referrer" content="no-referrer">',

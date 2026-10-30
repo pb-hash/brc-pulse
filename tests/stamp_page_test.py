@@ -8,6 +8,8 @@ page_path, fx_path, out = sys.argv[1], sys.argv[2], pathlib.Path(sys.argv[3])
 out.mkdir(parents=True, exist_ok=True)
 fx = json.load(open(fx_path))
 blocks = {int(k): v for k, v in fx['blocks'].items()}
+FAKE_DRAND = {'on': False}
+DRAND_HOSTS = {'drand.cloudflare.com', 'api.drand.sh', 'api2.drand.sh', 'api3.drand.sh'}
 HELPERS = {'api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'}
 calls = []
 LIAR = {'host': None, 'mode': None}
@@ -16,6 +18,11 @@ CORS = {'Access-Control-Allow-Origin': '*'}
 def handle(route):
     u = urlparse(route.request.url)
     if u.hostname in DOWN: return route.abort()
+    if u.hostname in DRAND_HOSTS:
+        if u.path.endswith('/public/latest'):
+            b = dict(fx['beacon'], round=fx['beacon']['round'] + 1) if FAKE_DRAND['on'] else fx['beacon']
+            return route.fulfill(json=b, headers=CORS)
+        return route.fulfill(status=404, body='')
     if u.hostname in HELPERS:
         calls.append(u.path + '?' + u.query)
         inflate = LIAR['mode'] == 'inflate' and u.hostname == LIAR['host']
@@ -51,7 +58,8 @@ with sync_playwright() as pw:
     page.goto(pathlib.Path(page_path).resolve().as_uri() + '#stamp')
     expect(page.locator('#stamp-top h1')).to_be_visible()
     expect(page.locator('#stamp-latest-h')).to_have_text('Block 92,524', timeout=15000)  # tip 92,530 minus 6
-    ok('#stamp opens the Check a stamp view and shows the latest block for new stamps')
+    expect(page.locator('#stamp-drand-h')).to_contain_text('Round 33,522,523, Oct 30, 2026, 2:35:33 PM UTC', timeout=15000)
+    ok('#stamp opens the Check a stamp view and shows the latest drand beacon (signature checked) and a settled block for new stamps')
 
     page.fill('#stamp-receipt', fx['receipt'])
     page.locator('#stamp-file').set_input_files({'name': 'lease-v3.txt', 'mimeType': 'text/plain', 'buffer': bytes.fromhex(fx['fileHex'])})
@@ -61,12 +69,14 @@ with sync_playwright() as pw:
     v = page.locator('#stamp-verdict')
     expect(v).to_have_class(re.compile('good'))
     expect(v).to_contain_text('Existed by')
-    expect(v).to_contain_text('The stamp was made after block 92,500')
+    expect(v).to_contain_text('The stamp was made after Oct 30, 2026, 2:35:33 PM UTC')
+    expect(page.locator('#stamp-facts')).to_contain_text('Stamp made after (drand)')
+    expect(page.locator('#stamp-facts')).to_contain_text('signature checked')
     facts = page.locator('#stamp-facts')
     expect(facts).to_contain_text('92,510')
     expect(v).to_contain_text('it may be older')
     expect(facts).to_contain_text('Matches the receipt exactly')
-    expect(facts).to_contain_text('Block 92,500')
+    expect(page.locator('#stamp-facts')).to_contain_text('Block 92,500')
     expect(page.locator('#stamp-updated pre')).to_contain_text('Block: 92510')
     expect(facts).to_contain_text('3 independent operators agree')
     page.screenshot(path=str(out / 'pulse-stamp-good.png'), full_page=True)
@@ -104,6 +114,11 @@ with sync_playwright() as pw:
     expect(page.locator('#stamp-older')).to_be_visible()
     ok('without an After line, a lock not in recent blocks is reported, with a way to search older blocks')
 
+    page.fill('#stamp-receipt', fx['badDrand'])
+    page.click('#stamp-go')
+    expect(page.locator('#stamp-msg')).to_contain_text('drand beacon is not genuine')
+    ok('a receipt with a forged drand beacon is refused')
+
     page.fill('#stamp-receipt', 'hello')
     page.click('#stamp-go')
     expect(page.locator('#stamp-msg')).to_contain_text('not a BRC stamp receipt')
@@ -111,12 +126,13 @@ with sync_playwright() as pw:
 
     page.locator('#stamp-file').set_input_files({'name': 'lease-v3.txt', 'mimeType': 'text/plain', 'buffer': bytes.fromhex(fx['fileHex'])})
     expect(page.locator('#stamp-file-name')).to_have_text('lease-v3.txt')
-    LIAR.update(host='api1.taitech.eu', mode='fork')
-    page.fill('#stamp-receipt', fixed)
-    page.click('#stamp-go')
-    expect(v).to_contain_text('Helper servers disagree', timeout=20000)
-    expect(facts).to_contain_text('report a different block')
-    ok('a helper server reporting a different block is caught')
+    for liar in sorted(HELPERS):  # whichever helper the page picks first, one run makes it the liar
+        LIAR.update(host=liar, mode='fork')
+        page.fill('#stamp-receipt', fixed)
+        page.click('#stamp-go')
+        expect(v).to_contain_text('Helper servers disagree', timeout=20000)
+    LIAR.update(host=None, mode=None)
+    ok('a helper server reporting a different block is caught, whether or not it is the one the page reads from')
 
     LIAR.update(host='api1.taitech.eu', mode='inflate')
     for rc in (fx['fakeReceipt'], fx['fakeReceiptNoBlock']):
@@ -141,6 +157,15 @@ with sync_playwright() as pw:
     expect(facts).to_contain_text("Owner line was wrong", timeout=20000)
     expect(page.locator('#stamp-updated pre')).to_contain_text('Owner: ' + fx['owner'])
     ok('a wrong Owner line is explained and a corrected receipt offered')
+
+    FAKE_DRAND['on'] = True
+    p3 = b.new_page(); p3.route('**/*', handle)
+    p3.goto(pathlib.Path(page_path).resolve().as_uri() + '#stamp')
+    expect(p3.locator('#stamp-latest-h')).to_be_visible(timeout=15000)
+    p3.wait_for_timeout(1500)
+    expect(p3.locator('#stamp-drand')).to_be_hidden()
+    p3.close(); FAKE_DRAND['on'] = False
+    ok('a drand relay serving a beacon that does not verify is never shown')
 
     page.goto(pathlib.Path(page_path).resolve().as_uri() + '#share')
     expect(page.locator('#stamp-top')).to_be_hidden()

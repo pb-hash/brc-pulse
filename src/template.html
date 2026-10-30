@@ -197,6 +197,7 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .stamp-row button.go:disabled { opacity: .5; cursor: progress; }
 .latest-box { max-width: 820px; font-size: .86rem; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .latest-box .mono { color: var(--ink-2); overflow-wrap: anywhere; }
+.latest-box[hidden], .stamp-updated[hidden], #stamp-result[hidden] { display: none !important; }
 .latest-older, .latest-box button { appearance: none; height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-2); font: 600 .76rem var(--sans); cursor: pointer; }
 .stamp-verdict { display: grid; gap: 6px; }
 .stamp-verdict .lead { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
@@ -474,7 +475,8 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       </div>
     </form>
     <p class="msg" id="stamp-msg" role="status" hidden></p>
-    <div class="latest-box" id="stamp-latest" hidden>Making a new stamp? A recent, settled block for BRC Seal's "after a recent block": <b id="stamp-latest-h"></b><span class="mono" id="stamp-latest-id"></span><span class="muted" id="stamp-latest-note"></span><button type="button" id="stamp-latest-copy">Copy both</button></div>
+    <div class="latest-box" id="stamp-drand" hidden>Making a new stamp? The latest drand beacon, for BRC Seal's "prove when it was made": <b id="stamp-drand-h"></b><span class="mono" id="stamp-drand-sig"></span><button type="button" id="stamp-drand-copy">Copy</button></div>
+    <div class="latest-box" id="stamp-latest" hidden>Or a recent, settled block: <b id="stamp-latest-h"></b><span class="mono" id="stamp-latest-id"></span><span class="muted" id="stamp-latest-note"></span><button type="button" id="stamp-latest-copy">Copy both</button></div>
   </div>
   <figure class="live-mark" aria-label="Time since the last block">
     <svg viewBox="307.6 90 1316 1316" aria-hidden="true">
@@ -714,6 +716,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <div class="toast" id="toast" role="status" aria-live="polite"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><div><b id="toast-t"></b><span id="toast-s"></span></div></div>
 
 <script>
+/*__DRAND__*/
 const SNAP = /*__SNAPSHOT__*/null;
 const REWARD = 50, TARGET = 150, HALVING = 210000, CAP = 21e6, HOUR = 3600, DAY = 86400, TRACE_WIN = 45 * 60;
 const SEEDS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'];
@@ -1396,17 +1399,23 @@ function parseStampReceipt(text) {
     if (!new RegExp(`^[0-9a-f]{${len}}$`).test(h)) throw new Error(`The receipt's "${n}:" should be ${len} characters, 0–9 and a–f.`);
     return h;
   };
-  const r = { fingerprint: hex('Fingerprint'), salt: hex('Salt', 32), owner: hex('Owner'), lockId: hex('Lock ID'), after: null, block: null, file: field('File') };
+  const r = { fingerprint: hex('Fingerprint'), salt: hex('Salt', 32), owner: hex('Owner'), lockId: hex('Lock ID'), after: null, drand: null, block: null, file: field('File') };
   const af = field('After');
   if (af) {
     const m = af.match(/^(\d[\d,]*)\s+(?:0x)?([0-9a-fA-F]{64})$/); if (!m) throw new Error('The receipt\'s "After:" line should be a block number and a block ID.');
     r.after = { height: Number(m[1].replace(/,/g, '')), hash: m[2].toLowerCase() };
   }
+  const dr = field('Drand');
+  if (dr) {
+    const m = dr.replace(/,/g, '').match(/^(\d+)\s+(?:0x)?([0-9a-fA-F]{96})$/); if (!m) throw new Error('The receipt\'s "Drand:" line should be a round number and a 96-character signature.');
+    r.drand = { round: Number(m[1]), signature: m[2].toLowerCase() };
+    if (!BRCDrand.verifyDrand(r.drand.round, r.drand.signature)) throw new Error('The receipt\'s drand beacon is not genuine: its signature doesn\'t check out.');
+  }
   const bl = field('Block');
   if (bl) { r.block = Number(bl.replace(/[,\s]/g, '')); if (!Number.isSafeInteger(r.block) || r.block < 1) throw new Error('The receipt\'s "Block:" line should be a block number.'); }
   return r;
 }
-const stampPhrase = (r) => `BRCSTAMP1_${r.fingerprint}_${r.salt}${r.after ? `_A${r.after.height}_${r.after.hash}` : ''}`;
+const stampPhrase = (r) => `BRCSTAMP1_${r.fingerprint}_${r.salt}${r.after ? `_A${r.after.height}_${r.after.hash}` : ''}${r.drand ? `_D${r.drand.round}_${r.drand.signature}` : ''}`;
 async function stampScriptHash(r, owner = r.owner) {
   const inner = await sha(await sha(enc8.encode(stampPhrase(r))));
   return hx(await sha(cat8(new Uint8Array([0xa8, 0x20]), inner, new Uint8Array([0x88, 0x20]), unhx(owner), new Uint8Array([0xac]))));
@@ -1470,7 +1479,29 @@ async function deadlineFor(host, blk) {
   return { at: Math.max(blk.ts, med), settled: ts.length >= 11 };
 }
 
+const utcS = (ts) => new Date(ts * 1000).toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'medium' }) + ' UTC';
+const DRAND_RELAYS = ['drand.cloudflare.com', 'api.drand.sh', 'api2.drand.sh', 'api3.drand.sh'];
+async function latestDrand() {
+  // Ask every relay and keep the newest beacon whose signature checks out.
+  const got = await Promise.all(DRAND_RELAYS.map(async (relay) => {
+    const c = new AbortController(), t = setTimeout(() => c.abort(), 6000);
+    try { const r = await fetch(`https://${relay}/${BRCDrand.QUICKNET.chainHash}/public/latest`, { signal: c.signal, cache: 'no-store' }).then((x) => x.json()); return BRCDrand.verifyDrand(r.round, r.signature) ? r : null; }
+    catch { return null; } finally { clearTimeout(t); }
+  }));
+  return got.filter(Boolean).sort((x, y) => y.round - x.round)[0] || null;
+}
+async function showLatestDrand() {
+  const r = await latestDrand();
+  if (!r) { $('stamp-drand').hidden = true; return null; }
+  const age = Math.round(Date.now() / 1000 - BRCDrand.drandRoundTime(r.round));
+  $('stamp-drand-h').textContent = `Round ${fmt(r.round)}, ${utcS(BRCDrand.drandRoundTime(r.round))}${age > 60 ? ` (${fmt(age)} seconds old: this computer's clock or the relays may be off)` : ''}`;
+  $('stamp-drand-sig').textContent = r.signature;
+  $('stamp-drand').dataset.copy = `${r.round} ${r.signature}`; $('stamp-drand').hidden = false;
+  return r;
+}
+$('stamp-drand-copy').addEventListener('click', async () => { try { await showLatestDrand(); await navigator.clipboard.writeText($('stamp-drand').dataset.copy || ''); $('stamp-drand-copy').textContent = 'Copied'; setTimeout(() => ($('stamp-drand-copy').textContent = 'Copy'), 1500); } catch {} });
 async function showLatestForStamp() {
+  showLatestDrand();
   try {
     const H = await stampHelpers(), h = Math.max(1, H.tip - 6); // 6 back, so it won't be orphaned
     const b = await blockAt(H.host, h), c = await confirmBlock(H, h, b.id);
@@ -1532,7 +1563,15 @@ async function checkStamp(continueOlder = false) {
     if (r.block) {
       stampMsg(`Reading block ${fmt(r.block)}…`);
       try { const b = await blockAt(H.host, r.block); const L = b.locks.find((x) => x.id === r.lockId); if (L) hit = { blk: b, lock: L }; } catch (e) { if (!e.missing) throw e; }
-      if (!hit) { stampMsg(''); showStamp('bad', `This lock isn't in block ${fmt(r.block)}.`, 'Check the "Block:" line on the receipt, or delete that line to search for the lock.', [fileFact(r)]); return; }
+      if (!hit) {
+        // Before saying it's missing, ask the other helpers: a dishonest helper could be hiding it.
+        let elsewhere = 0;
+        await Promise.all(H.all.filter((x) => x.host !== H.host).map(async (x) => { try { const b = await blockAt(x.host, r.block); if (b.locks.some((L) => L.id === r.lockId)) elsewhere++; } catch {} }));
+        stampMsg('');
+        if (elsewhere) showStamp('bad', 'Helper servers disagree about this block.', `${fmt(elsewhere)} other helper server${elsewhere > 1 ? 's have' : ' has'} this lock in block ${fmt(r.block)}, but ${H.host} doesn't. Don't rely on this stamp until they agree. Try again later.`, [fileFact(r)]);
+        else showStamp('bad', `This lock isn't in block ${fmt(r.block)}.`, 'Check the "Block:" line on the receipt, or delete that line to search for the lock.', [fileFact(r)]);
+        return;
+      }
     } else if (r.after) {
       hit = await searchRange(H.host, r, r.after.height, H.tip, false, H.tip - r.after.height > 8000);
     } else if (!continueOlder) {
@@ -1566,6 +1605,7 @@ async function checkStamp(continueOlder = false) {
       return;
     }
     const conf = H.tip - blk.height + 1, cc = await confirmBlock(H, blk.height, blk.id), dl = await deadlineFor(H.host, blk);
+    let afterBlockTs = null;
     let tone = 'good', lead = `Existed by ${utc(dl.at)}`;
     let sub = `Stamped in block ${fmt(blk.height)}. The file existed by then; it may be older. Miners set block times, so allow about half an hour either way.`;
     if (stampFileFp != null && stampFileFp !== r.fingerprint) { tone = 'bad'; lead = "This file doesn't match the stamp."; sub = `The stamp itself is on the chain (block ${fmt(blk.height)}), but it is for a different file, or this file changed after it was stamped.`; }
@@ -1579,19 +1619,37 @@ async function checkStamp(continueOlder = false) {
     if (ownerFixed) facts.push(fact('Coins go back to', `${nameLink(ownerFixed)} <span class="muted">(the receipt's Owner line was wrong; corrected below)</span>`));
     else if (r.owner !== lock.from) facts.push(fact('Coins go back to', nameLink(r.owner)));
     if (r.after) {
-      let line;
+      let line; afterBlockTs = null;
       try {
         const ab = await blockAt(H.host, r.after.height), ac = await confirmBlock(H, ab.height, ab.id);
         if (ab.id !== r.after.hash || ab.height >= blk.height) { line = '<span class="no">The "After" block on the receipt isn\'t on the chain</span>'; if (tone === 'good') tone = 'warn'; }
         else {
           line = `<span class="ok">Block ${fmt(ab.height)}, ${esc(utc(ab.ts))}</span>${ac.ops >= 2 && !ac.disagree ? '' : ' <span class="muted">(not cross-checked)</span>'}`;
+          afterBlockTs = ab.ts;
           if (tone !== 'bad') sub = `The stamp was made after block ${fmt(ab.height)} (${utc(Math.min(ab.ts, dl.at))}) and by ${utc(dl.at)}. The file existed by then; it may be older. Miners set block times, so allow about half an hour either way.`;
         }
       } catch (e) { line = `<span class="no">Couldn't check the "After" block: ${esc(e.missing ? 'it isn\'t on the chain' : 'the helper server didn\'t answer')}</span>`; if (tone === 'good') tone = 'warn'; }
-      facts.push(fact('Made after', line));
+      facts.push(fact('Stamp made after block', line));
+    }
+    if (r.drand) {
+      const dt = BRCDrand.drandRoundTime(r.drand.round);
+      // The beacon is genuine (its signature was checked), so "made after" holds whatever the block says.
+      facts.push(fact('Stamp made after (drand)', `<span class="ok">${esc(utcS(dt))}</span> <span class="muted">round ${fmt(r.drand.round)}, signature checked</span>`));
+      if (tone !== 'bad') {
+        const startText = afterBlockTs && afterBlockTs > dt ? `${utc(afterBlockTs)} (block)` : `${utcS(dt)} (drand, exact to 3 seconds)`;
+        if (dt > dl.at + 3600) {
+          tone = 'bad'; lead = "This stamp's block time is impossible.";
+          sub = `The drand beacon proves the stamp was made after ${utcS(dt)}, but the block holding it claims a time more than an hour earlier. So this stamp has no reliable "existed by" time.`;
+        } else if (dt >= dl.at) {
+          lead = `Stamped after ${utc(dt)}`;
+          sub = `The stamp was made after ${startText}. Its block's miner-set time is a little behind that, so the end of the window is uncertain; allow about half an hour. The file existed when the stamp was made; it may be older.`;
+        } else {
+          sub = `The stamp was made after ${startText} and by about ${utc(dl.at)}. The file existed when the stamp was made; it may be older. The end comes from block times, which miners set, so allow about half an hour.`;
+        }
+      }
     }
     if (cc.disagree) { tone = 'bad'; lead = 'Helper servers disagree about this block.'; sub = "Don't rely on this stamp until they agree. Try again later."; }
-    else if (tone === 'good' && (cc.ops < 2 || conf < 6 || !dl.settled)) { tone = 'warn'; if (cc.ops < 2) lead = `Found, not yet confirmed: ${lead.toLowerCase()}`; }
+    else if (tone === 'good' && (cc.ops < 2 || conf < 6 || !dl.settled)) { tone = 'warn'; if (cc.ops < 2) lead = `Found, not yet confirmed. ${lead}`; }
     facts.push(fact('Fingerprint', `<span class="mono">${esc(r.fingerprint)}</span>`));
     let updated = '';
     const final = conf >= 6 && cc.ops >= 2 && !cc.disagree;
