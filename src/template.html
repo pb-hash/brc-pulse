@@ -544,7 +544,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div class="sh">
         <svg class="ic" aria-hidden="true"><use href="#i-pool"/></svg>
         <h2 id="pools-h">Where to mine</h2>
-        <p>Pools pay a steady share instead of all-or-nothing blocks. Picking a smaller one keeps the network harder to attack.</p>
+        <p>Pools pay a steady share instead of all-or-nothing blocks. Largest first; picking a smaller one keeps the network harder to attack.</p>
       </div>
       <div class="tbl" style="margin-top:12px"><table class="pools"><thead><tr><th>Pool</th><th>Fee</th><th>Pays out</th><th>Share, 24 h</th></tr></thead><tbody id="pools"></tbody></table></div>
       <p class="fine">Fees and payout minimums as listed on each pool's site, October 2026. Share appears only where the pool's payout address is confirmed from its own public stats. Pools whose sites stopped working are taken off the list; know a pool that's missing? Say so in the BrowserCoin Discord.</p>
@@ -892,10 +892,11 @@ function renderCalc() {
   for (const b of $('presets').children) b.setAttribute('aria-pressed', String(Number(b.dataset.hs) === hs));
 }
 function renderPools(day) {
-  const counts = new Map(day.ranked);
-  $('pools').innerHTML = POOLS.map((p) => {
+  // Largest first by share of the last 24 hours; pools whose payout address isn't confirmed go last.
+  const counts = new Map(day.ranked), pctOf = (p) => (p.addr ? (100 * (counts.get(p.addr) || 0)) / day.total : -1);
+  $('pools').innerHTML = POOLS.slice().sort((x, y) => pctOf(y) - pctOf(x)).map((p) => {
     let share = '<span class="muted">Not confirmed</span>';
-    if (p.addr) { const pct = (100 * (counts.get(p.addr) || 0)) / day.total; share = `<span class="mini"><i><span style="width:${Math.min(100, pct * 2)}%"></span></i>${pct.toFixed(1)}%</span>`; }
+    if (p.addr) { const pct = pctOf(p); share = `<span class="mini"><i><span style="width:${Math.min(100, pct * 2)}%"></span></i>${pct.toFixed(1)}%</span>`; }
     return `<tr><td><a href="${p.url}" target="_blank" rel="noopener">${p.name}</a><small>${p.note}</small></td><td>${p.fee}</td><td>${p.payout}</td><td>${share}</td></tr>`;
   }).join('');
 }
