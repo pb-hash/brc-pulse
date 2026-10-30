@@ -10,6 +10,9 @@ Follows BrowserCoin's own state rules (src/chain/state.ts):
   block     miner += 50 BRC (halving every 210,000) + sum of the block's fees
 Amounts are integers in wei (1 BRC = 1e8 wei).
 
+Also keeps each address's flows hour by hour for its whole history (mined, received, sent including fees),
+so the page can show what changed over the last day, week, month or year and draw the balance over time.
+
 Writes one JSON file per address prefix (first 3 hex characters, 4,096 shards), so the page downloads
 only the shard for the address it is asked about. Every record carries its balance and nonce at the
 archived height; the page then applies newer blocks itself from the live helper servers.
@@ -63,7 +66,7 @@ def parse_txs(b, n, off):
 def new():
     return dict(bal=0, nonce=0, mined=0, minedWei=0, inWei=0, outWei=0, feeWei=0, nIn=0, nOut=0,
                 first=None, last=None, firstMined=None, lastMined=None, recent=collections.deque(maxlen=RECENT),
-                days=collections.Counter(), payers=collections.Counter())
+                days=collections.Counter(), payers=collections.Counter(), hours=collections.defaultdict(lambda: [0, 0, 0]))
 
 
 def main():
@@ -73,6 +76,7 @@ def main():
     locks = {}
     height = ts = 0
     supply = 0
+    base_hour = None
 
     def touch(addr, h):
         a = A[addr]
@@ -97,11 +101,13 @@ def main():
                         raise SystemExit(f'nonce mismatch at {h} for {x["frm"]}')
                     s['bal'] -= x['amount'] + x['fee']; s['nonce'] += 1
                     s['outWei'] += x['amount']; s['feeWei'] += x['fee']; s['nOut'] += 1
+                    s['hours'][t // 3600][2] += x['amount'] + x['fee']
                     if s['bal'] < 0:
                         raise SystemExit(f'negative balance at {h} for {x["frm"]}')
                     if kind == 't':
                         r = touch(x['to'], h)
                         r['bal'] += x['amount']; r['inWei'] += x['amount']; r['nIn'] += 1
+                        r['hours'][t // 3600][1] += x['amount']
                         r['payers'][x['frm']] += x['amount']
                         s['recent'].append([h, t, 'out', x['to'], x['amount'], x['fee']])
                         r['recent'].append([h, t, 'in', x['frm'], x['amount'], 0])
@@ -114,11 +120,14 @@ def main():
                     r = touch(x['to'], h)
                     if pay > 0:
                         r['bal'] += pay; r['inWei'] += pay; r['nIn'] += 1
+                        r['hours'][t // 3600][1] += pay
                     r['recent'].append([h, t, 'redeem', '', pay, 0])
             m = touch(miner, h)
             got = reward(h) + fees
             supply += reward(h)
             m['bal'] += got; m['mined'] += 1; m['minedWei'] += got
+            m['hours'][t // 3600][0] += got
+            if base_hour is None: base_hour = t // 3600
             if m['firstMined'] is None: m['firstMined'] = h
             m['lastMined'] = h
             m['days'][datetime.datetime.fromtimestamp(t, datetime.timezone.utc).strftime('%Y-%m-%d')] += 1
@@ -138,14 +147,16 @@ def main():
                    fw=str(a['feeWei']), ni=a['nIn'], no=a['nOut'], f=a['first'], l=a['last'], fm=a['firstMined'], lm=a['lastMined'],
                    rk=rank[k], d=[a['days'].get(d, 0) for d in span] if a['mined'] else None,
                    p=[[p, str(w)] for p, w in a['payers'].most_common(3)],
-                   r=[[h, t, kind, cp, str(w), str(fe)] for h, t, kind, cp, w, fe in reversed(a['recent'])])
+                   r=[[h, t, kind, cp, str(w), str(fe)] for h, t, kind, cp, w, fe in reversed(a['recent'])],
+                   # hourly flows: [hours since hb, mined, received, sent + fees], wei (all below 2^53)
+                   x=[[hr - base_hour, *v] for hr, v in sorted(a['hours'].items())])
         shards[k[:PREFIX]][k] = rec
     os.makedirs(out, exist_ok=True)
     for name in os.listdir(out):
         if name.endswith('.json'): os.remove(os.path.join(out, name))
     size = 0
     for p, recs in shards.items():
-        s = json.dumps(dict(h=height, t=ts, d0=span[0], hd=holders, a=recs), separators=(',', ':'))
+        s = json.dumps(dict(h=height, t=ts, d0=span[0], hd=holders, hb=base_hour, a=recs), separators=(',', ':'))
         open(os.path.join(out, p + '.json'), 'w').write(s); size += len(s)
     meta = dict(h=height, t=ts, days=span, holders=holders, addresses=len(A),
                 supply=str(supply), locked=str(sum(locks.values())), prefix=PREFIX)

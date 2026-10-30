@@ -107,7 +107,7 @@ def main():
         for a in picks:
             shard = json.load(open(os.path.join(accounts, a[:3] + '.json')))
             if sample is None:
-                sample = dict(h=shard['h'], t=shard['t'], d0=shard['d0'], hd=shard['hd'], a={})
+                sample = dict(h=shard['h'], t=shard['t'], d0=shard['d0'], hd=shard['hd'], hb=shard.get('hb'), a={})
             if a in shard['a']:
                 sample['a'][a] = shard['a'][a]
         html = tpl.replace('/*__SNAPSHOT__*/null', json.dumps(dict(snap, accounts=sample), separators=(',', ':')))

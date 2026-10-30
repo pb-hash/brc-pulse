@@ -233,6 +233,18 @@ td small { display: block; color: var(--muted); font-size: .74rem; }
 .who-link { color: inherit; }
 .who-link:hover { color: var(--brand-deep); }
 
+.periods { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 20px; }
+.periods button { appearance: none; text-align: left; display: grid; gap: 4px; padding: 14px 16px; border-radius: var(--r-md); border: 1px solid var(--hairline); background: var(--surface); color: var(--ink); font: inherit; cursor: pointer; transition: border-color .2s, box-shadow .2s, background .2s; min-width: 0; }
+.periods button:hover { border-color: var(--hairline-strong); }
+.periods button[aria-pressed="true"] { border-color: var(--brand); background: var(--brand-tint); box-shadow: 0 0 0 1px var(--brand) inset; }
+.periods .label { font-size: .76rem; }
+.periods b { font-size: 1.25rem; font-weight: 750; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.periods b small { font-size: .62em; font-weight: 700; color: var(--muted); letter-spacing: 0; }
+.periods .up { color: var(--good); } .periods .down { color: var(--danger); }
+.at-break { margin-top: 14px; font-size: .88rem; color: var(--muted); }
+.at-break strong { color: var(--ink); font-weight: 700; }
+@media (max-width: 640px) { .periods { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 /* miner share */
 .share-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; margin-top: 22px; }
 .big { font-size: clamp(2.8rem, 7.5vw, 4rem); font-weight: 750; letter-spacing: -0.035em; line-height: .95; font-variant-numeric: proportional-nums; }
@@ -458,6 +470,17 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div class="kpi"><span class="label">Sent</span><span class="v sm" id="a-out">–</span><span class="s" id="a-out-s"></span></div>
       <div class="kpi"><span class="label">First seen</span><span class="v sm" id="a-first">–</span><span class="s" id="a-first-s"></span></div>
     </div>
+  </section>
+
+  <section class="card pad" aria-labelledby="at-h">
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-hist"/></svg>
+      <h2 id="at-h">Balance over time</h2>
+      <p>What changed, counting blocks found, coins received and coins sent (fees included). Pick a period.</p>
+    </div>
+    <div class="periods" id="at-periods" role="group" aria-label="Period"></div>
+    <p class="at-break" id="at-break"></p>
+    <div class="chart" id="at-chart"></div>
   </section>
 
   <div class="row">
@@ -1067,7 +1090,7 @@ const ACCT_BASE = 'https://pb-hash.github.io/brc-pulse/a/';
 const SAMPLE = SNAP.accounts || null;
 const DEAD = '000000000000000000000000000000000000000000000000000000000000dead';
 const WEI = 100000000n;
-const M = { addr: null, acc: null, applied: 0, d0: null, hd: 0, busy: false, token: 0 };
+const M = { addr: null, acc: null, applied: 0, d0: null, hd: 0, busy: false, token: 0, flows: new Map(), per: 7 };
 const store = { get() { try { return localStorage.getItem('brc-pulse:addr'); } catch { return null; } }, set(v) { try { v ? localStorage.setItem('brc-pulse:addr', v) : localStorage.removeItem('brc-pulse:addr'); } catch {} } };
 const rewardWei = (h) => (5000000000n >> BigInt(Math.floor(h / HALVING)));
 function brc(w, unit = true) {
@@ -1099,6 +1122,7 @@ function toAcc(r) {
     d: r.d ? r.d.slice() : Array(30).fill(0), p: r.p.map(([a, w]) => [a, BigInt(w)]), r: r.r.map(([h, t, k, c, w, fe]) => [h, t, k, c, BigInt(w), BigInt(fe)]), fresh: 0 };
 }
 const emptyAcc = () => toAcc({ b: '0', m: 0, mw: '0', iw: '0', ow: '0', fw: '0', ni: 0, no: 0, f: null, l: null, fm: null, lm: null, rk: null, d: null, p: [], r: [] });
+function addFlow(ts, i, w) { const h = Math.floor(ts / HOUR); let e = M.flows.get(h); if (!e) M.flows.set(h, (e = [0, 0, 0])); e[i] += Number(w); }
 function applyRaw(x) {
   const h = parseInt(x.slice(0, 8), 16); if (h <= M.applied) return; M.applied = h;
   const A = M.addr, a = M.acc, ts = parseInt(x.slice(200, 216), 16), miner = x.slice(232, 296);
@@ -1106,17 +1130,17 @@ function applyRaw(x) {
   for (const t of parseTxs(x)) {
     fees += t.fee;
     if ((t.k === 't' || t.k === 'l') && t.from === A) {
-      a.bal -= t.amt + t.fee; a.ow += t.amt; a.fw += t.fee; a.no++; moved = true;
+      a.bal -= t.amt + t.fee; a.ow += t.amt; a.fw += t.fee; a.no++; moved = true; addFlow(ts, 2, t.amt + t.fee);
       a.r.unshift([h, ts, t.k === 't' ? 'out' : 'lock', t.to || '', t.amt, t.fee]);
     }
     if (t.k === 't' && t.to === A) {
-      a.bal += t.amt; a.iw += t.amt; a.ni++; moved = true; a.r.unshift([h, ts, 'in', t.from, t.amt, 0n]);
+      a.bal += t.amt; a.iw += t.amt; a.ni++; moved = true; addFlow(ts, 1, t.amt); a.r.unshift([h, ts, 'in', t.from, t.amt, 0n]);
       const p = a.p.find((e) => e[0] === t.from); if (p) p[1] += t.amt; else a.p.push([t.from, t.amt]);
     }
-    if (t.k === 'r' && t.to === A) { const pay = t.amt - t.fee; if (pay > 0n) { a.bal += pay; a.iw += pay; a.ni++; } moved = true; a.r.unshift([h, ts, 'redeem', '', pay, 0n]); }
+    if (t.k === 'r' && t.to === A) { const pay = t.amt - t.fee; if (pay > 0n) { a.bal += pay; a.iw += pay; a.ni++; addFlow(ts, 1, pay); } moved = true; a.r.unshift([h, ts, 'redeem', '', pay, 0n]); }
   }
   if (miner === A) {
-    const got = rewardWei(h) + fees; a.bal += got; a.m++; a.mw += got; a.lm = h; if (a.fm == null) a.fm = h; moved = true;
+    const got = rewardWei(h) + fees; a.bal += got; a.m++; a.mw += got; a.lm = h; if (a.fm == null) a.fm = h; moved = true; addFlow(ts, 0, got);
     let i = dayOf(ts) - dayOf(Date.parse(M.d0 + 'T00:00:00Z') / 1000);
     if (i > 29) { const shift = i - 29; a.d = a.d.slice(shift).concat(Array(Math.min(shift, 30)).fill(0)).slice(-30); M.d0 = new Date((Date.parse(M.d0 + 'T00:00:00Z') / 1000 + shift * DAY) * 1000).toISOString().slice(0, 10); i = 29; }
     if (i >= 0) a.d[i]++;
@@ -1155,6 +1179,7 @@ async function show(addr, mine = false) {
   if (token !== M.token) return;
   const rec = shard.a[addr];
   if (SAMPLE && !rec) { msg('This preview only includes the sample addresses below. On pb-hash.github.io/brc-pulse, any address works.'); return; }
+  M.flows = new Map(((rec && rec.x) || []).map(([d, m, i, o]) => [shard.hb + d, [m, i, o]]));
   Object.assign(M, { addr, acc: rec ? toAcc(rec) : emptyAcc(), applied: shard.h || 0, started: shard.h || 0, d0: shard.d0 || new Date().toISOString().slice(0, 10), hd: shard.hd || 0, idxH: shard.h, known: !!rec });
   if (!shard.h) { M.applied = Math.max(0, last().h - 1); M.started = M.applied; }
   if (mine && !SAMPLE) store.set(addr);
@@ -1195,6 +1220,7 @@ function renderAcct() {
   const payers = a.p.slice().sort((x, y) => (y[1] > x[1] ? 1 : y[1] < x[1] ? -1 : 0)).slice(0, 5);
   $('ap-list').innerHTML = payers.length ? payers.map(([p, w]) => `<li><span>${nameLink(p)}${LABELS[p] ? ' <span class="tag pool">Pool</span>' : ''}</span><span>${brc(w)}</span></li>`).join('')
     : '<li><span class="muted">No coins received yet.</span><span></span></li>';
+  renderBalance();
   // activity
   const what = { in: 'Received', out: 'Sent', lock: 'Locked in a script', redeem: 'Script payout' };
   const rows = a.r.slice(0, 40);
@@ -1204,6 +1230,50 @@ function renderAcct() {
   }).join('') : '<tr><td colspan="5" class="muted">No transfers yet.</td></tr>';
   $('aa-note').textContent = a.ni + a.no > rows.length ? `Showing the latest ${rows.length} of ${fmt(a.ni + a.no)} transfers. Block rewards are counted under Mining.` : 'Block rewards are counted under Mining.';
 }
+/* Balance over time: sums of the hourly flows over rolling periods, and the balance walked back from now. */
+const PERIODS = [[1, 'Last 24 hours'], [7, '7 days'], [30, '30 days'], [365, 'Year']];
+const signed = (w) => `${w > 0 ? '+' : w < 0 ? '−' : ''}${brc(BigInt(Math.round(Math.abs(w))))}`;
+function flowsSince(fromH) { let m = 0, i = 0, o = 0; for (const [h, e] of M.flows) if (h >= fromH) { m += e[0]; i += e[1]; o += e[2]; } return { m, i, o, net: m + i - o }; }
+function renderBalance() {
+  const nowH = Math.floor(now() / HOUR);
+  $('at-periods').innerHTML = PERIODS.map(([d, label]) => {
+    const f = flowsSince(nowH - d * 24 + 1);
+    return `<button type="button" data-p="${d}" aria-pressed="${M.per === d}"><span class="label">${label}</span><b class="${f.net > 0 ? 'up' : f.net < 0 ? 'down' : ''}">${signed(f.net)}</b></button>`;
+  }).join('');
+  const days = M.per, f = flowsSince(nowH - days * 24 + 1), bal = Number(M.acc.bal), start = bal - f.net;
+  const label = PERIODS.find(([d]) => d === days)[1].toLowerCase().replace('last ', '');
+  $('at-break').innerHTML = `Mined <strong>${signed(f.m)}</strong> · Received <strong>${signed(f.i)}</strong> · Sent <strong>${signed(-f.o)}</strong>`
+    + ` · Balance ${days === 365 ? 'a year ago' : `${label} ago`} <strong>${brc(BigInt(Math.round(Math.max(0, start))))}</strong>`;
+  drawBalance(days);
+}
+function drawBalance(days) {
+  const host = $('at-chart'); host.textContent = '';
+  const nowH = Math.floor(now() / HOUR), step = days <= 7 ? 1 : days <= 30 ? 4 : 24, n = Math.ceil((days * 24) / step);
+  const keys = [...M.flows.keys()].filter((h) => h > nowH - n * step).sort((a, b) => b - a);
+  let bal = Number(M.acc.bal), k = 0; const pts = [];
+  for (let i = 0; i < n; i++) {
+    pts.push([nowH - i * step, bal]);
+    const lo = nowH - (i + 1) * step;
+    while (k < keys.length && keys[k] > lo) { const e = M.flows.get(keys[k]); bal -= e[0] + e[1] - e[2]; k++; }
+  }
+  pts.push([nowH - n * step, bal]); pts.reverse();
+  while (pts.length > 2 && pts[0][1] <= 0 && pts[1][1] <= 0) pts.shift();   // start from the address's first coins
+  const Wd = Math.max(300, host.clientWidth), H = Wd < 640 ? 170 : 210, pad = { l: 8, r: 8, t: 14, b: 22 }, iw = Wd - pad.l - pad.r;
+  const vals = pts.map((p) => p[1]), lo = Math.min(...vals), hi = Math.max(...vals), span = hi - lo || Math.max(1, hi * 0.1) || 1;
+  const yMin = Math.max(0, lo - span * 0.12), yMax = hi + span * 0.12;
+  const x = (i) => pad.l + (iw * i) / Math.max(1, pts.length - 1), y = (v) => H - pad.b - ((H - pad.t - pad.b) * (v - yMin)) / (yMax - yMin || 1);
+  const line = pts.map((p, i) => `${x(i).toFixed(1)},${y(p[1]).toFixed(1)}`).join(' ');
+  const t0 = new Date(pts[0][0] * HOUR * 1000), fmtT = (d) => (days <= 1 ? d.toLocaleTimeString('en-US', { hour: 'numeric' }) : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  host.innerHTML = `<svg viewBox="0 0 ${Wd} ${H}" height="${H}" role="img" aria-label="Balance over the selected period">`
+    + `<defs><linearGradient id="bg-g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--brand)" stop-opacity=".2"/><stop offset="1" stop-color="var(--brand)" stop-opacity="0"/></linearGradient></defs>`
+    + `<line x1="${pad.l}" x2="${Wd - pad.r}" y1="${H - pad.b}" y2="${H - pad.b}" stroke="var(--hairline-strong)"/>`
+    + `<polygon points="${x(0)},${H - pad.b} ${line} ${x(pts.length - 1)},${H - pad.b}" fill="url(#bg-g)"/>`
+    + `<polyline points="${line}" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linejoin="round"/>`
+    + `<circle cx="${x(pts.length - 1)}" cy="${y(pts[pts.length - 1][1])}" r="4.5" fill="var(--brand)" stroke="var(--surface)" stroke-width="2"/>`
+    + `<text x="${pad.l}" y="${H - 5}">${fmtT(t0)}</text><text x="${Wd - pad.r}" y="${H - 5}" text-anchor="end">Now</text></svg>`;
+}
+$('at-periods').addEventListener('click', (e) => { const b = e.target.closest('button[data-p]'); if (b) { M.per = Number(b.dataset.p); renderBalance(); } });
+
 function renderTry() {
   const picks = SAMPLE ? Object.keys(SAMPLE.a) : [...new Set([...Object.keys(LABELS), ...windowOf(DAY).ranked.slice(0, 2).map(([x]) => x)])];
   $('try').innerHTML = '<span>Or look at</span>' + picks.slice(0, 5).map((x) => `<button type="button" data-a="${x}">${name(x)}</button>`).join('');
@@ -1285,6 +1355,6 @@ function startReplay() {
 
 render(); drawHistory(); ringFrame(); setInterval(ringFrame, 100); route();
 setInterval(() => { if (S.mode === 'live') tick(); }, 1000);
-let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawTrace(); }, 120); }).observe(document.body);
+let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawTrace(); if (M.addr && M.acc) drawBalance(M.per); }, 120); }).observe(document.body);
 goLive().then((ok) => { if (!ok) startReplay(); });
 </script>
