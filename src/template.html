@@ -1399,7 +1399,7 @@ function parseStampReceipt(text) {
     if (!new RegExp(`^[0-9a-f]{${len}}$`).test(h)) throw new Error(`The receipt's "${n}:" should be ${len} characters, 0–9 and a–f.`);
     return h;
   };
-  const r = { fingerprint: hex('Fingerprint'), salt: hex('Salt', 32), owner: hex('Owner'), lockId: hex('Lock ID'), after: null, drand: null, block: null, file: field('File') };
+  const r = { fingerprint: hex('Fingerprint'), salt: hex('Salt', 32), owner: hex('Owner'), lockId: field('Lock ID') ? hex('Lock ID') : null, after: null, drand: null, block: null, file: field('File') };
   const af = field('After');
   if (af) {
     const m = af.match(/^(\d[\d,]*)\s+(?:0x)?([0-9a-fA-F]{64})$/); if (!m) throw new Error('The receipt\'s "After:" line should be a block number and a block ID.');
@@ -1419,6 +1419,15 @@ const stampPhrase = (r) => `BRCSTAMP1_${r.fingerprint}_${r.salt}${r.after ? `_A$
 async function stampScriptHash(r, owner = r.owner) {
   const inner = await sha(await sha(enc8.encode(stampPhrase(r))));
   return hx(await sha(cat8(new Uint8Array([0xa8, 0x20]), inner, new Uint8Array([0x88, 0x20]), unhx(owner), new Uint8Array([0xac]))));
+}
+/* Which lock in a block is this receipt's? By its Lock ID when the receipt has one; otherwise by the
+   script it must hold (for the receipt's Owner, or for the wallet that signed the lock, which is where
+   the app sends the coins back when its recipient was left as the wallet itself). */
+async function matchLock(r, locks) {
+  if (r.lockId) return locks.find((x) => x.id === r.lockId) || null;
+  if (!r._want) r._want = await stampScriptHash(r);
+  for (const L of locks) if (L.scriptHash === r._want || L.scriptHash === await stampScriptHash(r, L.from)) return L;
+  return null;
 }
 async function merkle(leaves) {
   if (!leaves.length) return new Uint8Array(32);
@@ -1546,7 +1555,7 @@ async function searchRange(host, r, from, to, newestFirst, paced) {
   for (const f of pages) {
     stampMsg(`Looking for the lock… blocks ${fmt(f)} to ${fmt(Math.min(to, f + 199))}`);
     const page = (await get(host, `/blocks?fromHeight=${f}&max=${Math.min(200, to - f + 1)}`, 15000)).blocks || [];
-    for (const hb of page) if (hb.includes('4c4f434bc01dfeed')) { const b = await readChainBlock(hb); const L = b.locks.find((x) => x.id === r.lockId); if (L) return { blk: b, lock: L }; }
+    for (const hb of page) if (hb.includes('4c4f434bc01dfeed')) { const b = await readChainBlock(hb); const L = await matchLock(r, b.locks); if (L) return { blk: b, lock: L }; }
     if (paced) await pause(1100); // stay under the helpers' request limit
   }
   return null;
@@ -1562,11 +1571,11 @@ async function checkStamp(continueOlder = false) {
     let hit = null;
     if (r.block) {
       stampMsg(`Reading block ${fmt(r.block)}…`);
-      try { const b = await blockAt(H.host, r.block); const L = b.locks.find((x) => x.id === r.lockId); if (L) hit = { blk: b, lock: L }; } catch (e) { if (!e.missing) throw e; }
+      try { const b = await blockAt(H.host, r.block); const L = await matchLock(r, b.locks); if (L) hit = { blk: b, lock: L }; } catch (e) { if (!e.missing) throw e; }
       if (!hit) {
         // Before saying it's missing, ask the other helpers: a dishonest helper could be hiding it.
         let elsewhere = 0;
-        await Promise.all(H.all.filter((x) => x.host !== H.host).map(async (x) => { try { const b = await blockAt(x.host, r.block); if (b.locks.some((L) => L.id === r.lockId)) elsewhere++; } catch {} }));
+        await Promise.all(H.all.filter((x) => x.host !== H.host).map(async (x) => { try { const b = await blockAt(x.host, r.block); if (await matchLock(r, b.locks)) elsewhere++; } catch {} }));
         stampMsg('');
         if (elsewhere) showStamp('bad', 'Helper servers disagree about this block.', `${fmt(elsewhere)} other helper server${elsewhere > 1 ? 's have' : ' has'} this lock in block ${fmt(r.block)}, but ${H.host} doesn't. Don't rely on this stamp until they agree. Try again later.`, [fileFact(r)]);
         else showStamp('bad', `This lock isn't in block ${fmt(r.block)}.`, 'Check the "Block:" line on the receipt, or delete that line to search for the lock.', [fileFact(r)]);
@@ -1586,7 +1595,7 @@ async function checkStamp(continueOlder = false) {
       const recent = !r.after && stampSearch && !continueOlder;
       showStamp('bad', recent ? 'This lock isn\'t in the last 8,000 blocks.' : 'This lock isn\'t on the chain.',
         recent ? 'If the stamp was made in the last few minutes, wait for the next block and check again. If it is older, search further back.'
-          : 'Check the Lock ID on the receipt. If the stamp was made in the last few minutes, wait for the next block and check again.',
+          : `${r.lockId ? 'Check the Lock ID on the receipt. ' : 'Check that Lock coins was pressed in the BrowserCoin app. '}If the stamp was made in the last few minutes, wait for the next block and check again.`,
         [fileFact(r)]);
       if (recent) $('stamp-facts').insertAdjacentHTML('beforeend', '<div><dt></dt><dd><button type="button" class="latest-older" id="stamp-older">Search older blocks (a few minutes)</button></dd></div>');
       return;
@@ -1653,9 +1662,10 @@ async function checkStamp(continueOlder = false) {
     facts.push(fact('Fingerprint', `<span class="mono">${esc(r.fingerprint)}</span>`));
     let updated = '';
     const final = conf >= 6 && cc.ops >= 2 && !cc.disagree;
-    if (final && (ownerFixed || !r.block)) {
+    if (final && (ownerFixed || !r.block || !r.lockId)) {
       let text = $('stamp-receipt').value.trim();
       if (ownerFixed) text = text.replace(/^(\s*>?\s*Owner:\s*).*$/mi, `$1${ownerFixed}`);
+      if (!r.lockId) text = text.replace(/(-----END BRC STAMP RECEIPT-----)/, `Lock ID: ${lock.id}\n$1`);
       if (!r.block) text = text.replace(/(-----END BRC STAMP RECEIPT-----)/, `Block: ${blk.height}\n$1`);
       updated = { note: ownerFixed ? 'Use this corrected receipt from now on:' : 'Add the block number to your receipt so future checks are instant:', text };
     }
