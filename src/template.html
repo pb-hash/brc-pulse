@@ -180,6 +180,35 @@ main.wrap { display: grid; gap: 20px; padding-bottom: 20px; }
 /* views: Network and My BRC share one page */
 body[data-view="my"] .net-only { display: none !important; }
 body:not([data-view="my"]) .my-only { display: none !important; }
+body[data-view="stamp"] .net-only { display: none !important; }
+body:not([data-view="stamp"]) .stamp-only { display: none !important; }
+body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
+.stamp-intro { gap: 14px; }
+.stamp-intro > p { font-size: 1.05rem; color: var(--muted); max-width: 42rem; }
+.stamp-intro > p strong { color: var(--ink); font-weight: 600; }
+.stamp-form { display: grid; gap: 10px; max-width: 820px; }
+.stamp-form textarea { width: 100%; min-height: 150px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--hairline-strong); background: var(--surface); color: var(--ink); font: 500 .78rem/1.55 var(--mono); box-shadow: var(--shadow); resize: vertical; }
+.stamp-form textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-tint); }
+.stamp-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+.stamp-row .file { position: relative; display: inline-flex; align-items: center; height: 46px; padding: 0 16px; border-radius: 12px; border: 1px dashed var(--hairline-strong); background: var(--surface); color: var(--ink-2); font: 600 .86rem var(--sans); cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stamp-row .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.stamp-row button.go { height: 46px; padding: 0 22px; border: 0; border-radius: 12px; background: var(--brand); color: #fff; font: 700 .92rem var(--sans); cursor: pointer; }
+.stamp-row button.go:hover { background: var(--brand-deep); }
+.stamp-row button.go:disabled { opacity: .5; cursor: progress; }
+.latest-box { max-width: 820px; font-size: .86rem; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.latest-box .mono { color: var(--ink-2); overflow-wrap: anywhere; }
+.latest-older, .latest-box button { appearance: none; height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-2); font: 600 .76rem var(--sans); cursor: pointer; }
+.stamp-verdict { display: grid; gap: 6px; }
+.stamp-verdict .lead { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
+.stamp-verdict.good .lead { color: var(--good); } .stamp-verdict.bad .lead { color: var(--danger); } .stamp-verdict.warn .lead { color: var(--caution); }
+.stamp-facts { margin-top: 14px; display: grid; gap: 0; border-top: 1px solid var(--hairline); }
+.stamp-facts > div { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--hairline); font-size: .92rem; }
+.stamp-facts dt { color: var(--muted); }
+.stamp-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.stamp-facts .ok { color: var(--good); font-weight: 600; } .stamp-facts .no { color: var(--danger); font-weight: 600; }
+.stamp-updated { margin-top: 14px; }
+.stamp-updated pre { margin: 8px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--sunken); border: 1px solid var(--hairline); font: .74rem/1.55 var(--mono); white-space: pre-wrap; word-break: break-all; }
+@media (max-width: 560px) { .stamp-facts > div { grid-template-columns: 1fr; gap: 2px; } }
 .nav a.my-link { white-space: nowrap; color: var(--brand-deep); background: var(--brand-tint); padding: 6px 12px; border-radius: 999px; }
 .nav a.my-link .wordmark { font-size: .92rem; }
 .nav a.my-link:hover { color: var(--brand-deep); }
@@ -410,7 +439,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <header class="topbar" id="topbar">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="BRC Pulse"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark" aria-hidden="true"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></a>
-    <nav class="nav" aria-label="Sections"><a href="#my" class="my-link" aria-label="My BRC"><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span></a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a></nav>
+    <nav class="nav" aria-label="Sections"><a href="#my" class="my-link" aria-label="My BRC"><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span></a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a><a href="#stamp">Stamps</a></nav>
     <span class="spacer"></span>
     <nav class="family" aria-label="BRC Works">
       <span class="cur" aria-current="page"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></span>
@@ -433,6 +462,19 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <div class="try" id="try"></div>
     <p class="msg" id="lookup-msg" role="status" hidden></p>
     <p class="privacy">Your address never leaves your browser in full: the page downloads a small file of addresses that start with the same three characters and finds yours on your device. <span id="remembered" hidden>It's remembered on this device. <button type="button" id="forget">Forget it</button></span></p>
+  </div>
+  <div class="intro-text stamp-intro stamp-only" id="stamp-top">
+    <h1>Check a stamp.</h1>
+    <p>A stamp proves a file existed by a certain date, using the BrowserCoin chain. Paste the <strong>stamp receipt</strong> made in BRC Seal. Add the file too, to check it is the same one. <strong>The file is read here and never uploaded.</strong></p>
+    <form class="stamp-form" id="stamp-form" autocomplete="off">
+      <textarea id="stamp-receipt" spellcheck="false" autocapitalize="off" aria-label="Stamp receipt" placeholder="-----BEGIN BRC STAMP RECEIPT-----&#10;Fingerprint: …&#10;Salt: …&#10;Owner: …&#10;Lock ID: …&#10;-----END BRC STAMP RECEIPT-----"></textarea>
+      <div class="stamp-row">
+        <label class="file"><input type="file" id="stamp-file"><span id="stamp-file-name">Add the file (optional)</span></label>
+        <button type="submit" class="go" id="stamp-go">Check stamp</button>
+      </div>
+    </form>
+    <p class="msg" id="stamp-msg" role="status" hidden></p>
+    <div class="latest-box" id="stamp-latest" hidden>Making a new stamp? A recent, settled block for BRC Seal's "after a recent block": <b id="stamp-latest-h"></b><span class="mono" id="stamp-latest-id"></span><span class="muted" id="stamp-latest-note"></span><button type="button" id="stamp-latest-copy">Copy both</button></div>
   </div>
   <figure class="live-mark" aria-label="Time since the last block">
     <svg viewBox="307.6 90 1316 1316" aria-hidden="true">
@@ -510,6 +552,14 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     </div>
     <div class="tbl" style="margin-top:12px"><table><thead><tr><th>When</th><th>Block</th><th>What</th><th>With</th><th class="r">Amount</th></tr></thead><tbody id="aa-rows"></tbody></table></div>
     <p class="fine" id="aa-note"></p>
+  </section>
+</main>
+
+<main class="wrap stamp-only" id="stamp-result" hidden>
+  <section class="card pad" aria-live="polite">
+    <div class="stamp-verdict" id="stamp-verdict"></div>
+    <dl class="stamp-facts" id="stamp-facts"></dl>
+    <div class="stamp-updated" id="stamp-updated" hidden></div>
   </section>
 </main>
 
@@ -1285,6 +1335,7 @@ function renderTry() {
   $('try').innerHTML = '<span>Or look at</span>' + picks.slice(0, 5).map((x) => `<button type="button" data-a="${x}">${name(x)}</button>`).join('');
 }
 function route() {
+  if (location.hash === '#stamp') { setView('stamp'); M.addr = null; M.token++; scrollTo(0, 0); showLatestForStamp(); return; }
   const m = location.hash.match(/^#my(?:=([0-9a-fA-F]{64}))?$/);
   if (!m) {
     setView('net'); M.addr = null; M.token++;
@@ -1307,6 +1358,256 @@ $('try').addEventListener('click', (e) => { const b = e.target.closest('button[d
 $('forget').addEventListener('click', () => { store.set(null); $('remembered').hidden = true; });
 $('a-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(M.addr); $('a-copy').textContent = 'Copied'; setTimeout(() => ($('a-copy').textContent = 'Copy address'), 1500); } catch {} });
 addEventListener('hashchange', route);
+
+/* ---------- stamps (made in BRC Seal) ----------
+   A stamp is an ordinary BrowserCoin hash-locked payment whose secret phrase is
+   BRCSTAMP1_<file SHA-256>_<salt>[_A<height>_<block id>]. The official app builds
+     OP_SHA256 <SHA256(SHA256(phrase))> OP_EQUALVERIFY <owner> OP_CHECKSIG
+   and locks coins under SHA256(script). Checking: rebuild that script hash from the
+   receipt and find the lock (ID = SHA256 of the encoded lock) in its block.
+   Trust: the block's transactions must rebuild its txRoot, so a lock can't be slipped
+   into a real block. A dishonest helper could still invent a whole block (this page
+   can't check Sandglass proof-of-work), so a stamp only shows as confirmed when helper
+   servers run by at least two different operators return the same block. */
+const enc8 = new TextEncoder();
+const sha = async (b) => new Uint8Array(await crypto.subtle.digest('SHA-256', b));
+const hx = (b) => Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('');
+const unhx = (h) => Uint8Array.from(h.match(/../g) || [], (x) => parseInt(x, 16));
+const esc = (t) => String(t).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+const cat8 = (...p) => { const o = new Uint8Array(p.reduce((n, x) => n + x.length, 0)); let i = 0; for (const x of p) { o.set(x, i); i += x.length; } return o; };
+const u32at = (b, p) => ((b[p] << 24) | (b[p + 1] << 16) | (b[p + 2] << 8) | b[p + 3]) >>> 0;
+const utc = (ts) => new Date(ts * 1000).toLocaleString('en-US', { timeZone: 'UTC', dateStyle: 'medium', timeStyle: 'short' }) + ' UTC';
+const pause = (ms) => new Promise((r) => setTimeout(r, ms));
+const SCRIPTS_FROM = 23400;          // scripts, and so stamps, went live on 5 Jul 2026 near block 23,458
+const SCRIPTS_TIME = 1783267200;     // 2026-07-05 16:00 UTC (FORK1_ACTIVATION_TIME)
+const QUICK_PAGES = 40;              // first search: the last 8,000 blocks (about two weeks)
+const operator = (host) => host.split('.').slice(-2).join('.'); // api1/api2.browsercoin.org are one operator
+
+function parseStampReceipt(text) {
+  const t = String(text || '').replace(/\r\n?/g, '\n').replace(/[​-‍⁠﻿]/g, '');
+  const a = t.indexOf('-----BEGIN BRC STAMP RECEIPT-----'), b = t.indexOf('-----END BRC STAMP RECEIPT-----');
+  if (a < 0) throw new Error('This is not a BRC stamp receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.');
+  if (b < a) throw new Error('The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.');
+  const body = t.slice(a, b);
+  const field = (n) => { const m = body.match(new RegExp(`^\\s*>?\\s*${n}:\\s*(.+)$`, 'mi')); return m ? m[1].trim() : null; };
+  const hex = (n, len = 64) => {
+    const v = field(n); if (!v) throw new Error(`The receipt's "${n}:" line is missing.`);
+    const h = v.replace(/\s+/g, '').toLowerCase().replace(/^0x/, '');
+    if (!new RegExp(`^[0-9a-f]{${len}}$`).test(h)) throw new Error(`The receipt's "${n}:" should be ${len} characters, 0–9 and a–f.`);
+    return h;
+  };
+  const r = { fingerprint: hex('Fingerprint'), salt: hex('Salt', 32), owner: hex('Owner'), lockId: hex('Lock ID'), after: null, block: null, file: field('File') };
+  const af = field('After');
+  if (af) {
+    const m = af.match(/^(\d[\d,]*)\s+(?:0x)?([0-9a-fA-F]{64})$/); if (!m) throw new Error('The receipt\'s "After:" line should be a block number and a block ID.');
+    r.after = { height: Number(m[1].replace(/,/g, '')), hash: m[2].toLowerCase() };
+  }
+  const bl = field('Block');
+  if (bl) { r.block = Number(bl.replace(/[,\s]/g, '')); if (!Number.isSafeInteger(r.block) || r.block < 1) throw new Error('The receipt\'s "Block:" line should be a block number.'); }
+  return r;
+}
+const stampPhrase = (r) => `BRCSTAMP1_${r.fingerprint}_${r.salt}${r.after ? `_A${r.after.height}_${r.after.hash}` : ''}`;
+async function stampScriptHash(r, owner = r.owner) {
+  const inner = await sha(await sha(enc8.encode(stampPhrase(r))));
+  return hx(await sha(cat8(new Uint8Array([0xa8, 0x20]), inner, new Uint8Array([0x88, 0x20]), unhx(owner), new Uint8Array([0xac]))));
+}
+async function merkle(leaves) {
+  if (!leaves.length) return new Uint8Array(32);
+  if (leaves.length === 1) return sha(leaves[0]);
+  let layer = await Promise.all(leaves.map(sha));
+  while (layer.length > 1) { const n = []; for (let i = 0; i < layer.length; i += 2) n.push(await sha(cat8(layer[i], layer[i + 1] || layer[i]))); layer = n; }
+  return layer[0];
+}
+/* Decode a block far enough to list its locks, and refuse it unless its transactions rebuild its txRoot. */
+async function readChainBlock(hexBlock) {
+  const b = unhx(hexBlock);
+  const n = u32at(b, 148); let p = 152; const raws = [], locks = [];
+  for (let i = 0; i < n; i++) {
+    const tag = u32at(b, p); let len;
+    if (tag === 0xc01dfeed) len = 152;
+    else if (tag === 0x4c4f434b) len = 156;
+    else if (tag === 0x52444d31) { let q = p + 84; const sl = (b[q] << 8) | b[q + 1]; q += 2 + sl; const wc = b[q]; q += 1; for (let w = 0; w < wc; w++) q += 2 + ((b[q] << 8) | b[q + 1]); len = q - p; }
+    else throw new Error('This block contains a transaction type this page does not know.');
+    const raw = b.slice(p, p + len); p += len; raws.push(raw);
+    if (tag === 0x4c4f434b) locks.push({ id: hx(await sha(raw)), from: hx(raw.slice(8, 40)), amount: (BigInt(u32at(raw, 40)) << 32n) | BigInt(u32at(raw, 44)), scriptHash: hx(raw.slice(60, 92)) });
+  }
+  if (p !== b.length || hx(await merkle(raws)) !== hx(b.slice(36, 68))) throw new Error("A block from the helper server doesn't match its own header, so it can't be trusted.");
+  return { height: u32at(b, 0), ts: Number((BigInt(u32at(b, 100)) << 32n) | BigInt(u32at(b, 104))), id: hx(await sha(b.slice(0, 148))), locks };
+}
+
+/* Helpers: search with one that agrees with the majority on height, never just the highest claim. */
+async function stampHelpers() {
+  const up = (await probe()).filter((x) => x.ok);
+  if (!up.length) throw new Error("Couldn't reach any BrowserCoin helper server. Check your connection and try again.");
+  const hs = up.map((x) => x.height).sort((a, b) => a - b), med = hs[Math.floor((hs.length - 1) / 2)];
+  const sane = up.filter((x) => x.height <= med + 2).sort((a, b) => (a.host === S.source ? -1 : 0) - (b.host === S.source ? -1 : 0) || a.ms - b.ms);
+  return { host: sane[0].host, tip: sane[0].height, all: up };
+}
+/* Fetch the window of blocks around a height (so the helper doesn't learn exactly which block is being checked). */
+async function blocksNear(host, h, span = 25) {
+  const from = Math.max(0, h - (h % span));
+  const r = await get(host, `/blocks?fromHeight=${from}&max=${span}`, 15000);
+  return r.blocks || [];
+}
+async function blockAt(host, h) {
+  const hb = (await blocksNear(host, h)).find((x) => parseInt(x.slice(0, 8), 16) === h);
+  if (!hb) { const e = new Error(`Block ${fmt(h)} isn't on the chain at this helper.`); e.missing = true; throw e; }
+  return readChainBlock(hb);
+}
+/* Ask every reachable helper for the same block. agreeOps counts different operators, including the first. */
+async function confirmBlock(H, height, id) {
+  const agree = new Set([operator(H.host)]); let disagree = 0, missing = 0;
+  await Promise.all(H.all.filter((x) => x.host !== H.host).map(async (x) => {
+    try { const b = await blockAt(x.host, height); if (b.id === id) agree.add(operator(x.host)); else disagree++; } catch { missing++; }
+  }));
+  return { ops: agree.size, disagree, missing };
+}
+/* Miners set block times. The median time of the next 11 blocks bounds a back-dated block from above. */
+async function deadlineFor(host, blk) {
+  const later = (await get(host, `/blocks?fromHeight=${blk.height + 1}&max=11`, 15000)).blocks || [];
+  const ts = later.map((x) => parseInt(x.slice(200, 216), 16)).sort((a, b) => a - b);
+  const med = ts.length ? ts[Math.floor(ts.length / 2)] : blk.ts;
+  return { at: Math.max(blk.ts, med), settled: ts.length >= 11 };
+}
+
+async function showLatestForStamp() {
+  try {
+    const H = await stampHelpers(), h = Math.max(1, H.tip - 6); // 6 back, so it won't be orphaned
+    const b = await blockAt(H.host, h), c = await confirmBlock(H, h, b.id);
+    $('stamp-latest-h').textContent = `Block ${fmt(h)}`; $('stamp-latest-id').textContent = b.id;
+    $('stamp-latest-note').textContent = c.ops >= 2 && !c.disagree ? '' : ' (not cross-checked)';
+    $('stamp-latest').hidden = false; $('stamp-latest').dataset.copy = `${h} ${b.id}`;
+  } catch { $('stamp-latest').hidden = true; }
+}
+$('stamp-latest-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText($('stamp-latest').dataset.copy || ''); $('stamp-latest-copy').textContent = 'Copied'; setTimeout(() => ($('stamp-latest-copy').textContent = 'Copy both'), 1500); } catch {} });
+
+let stampFileFp = null, stampFileTok = 0;
+$('stamp-file').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0], tok = ++stampFileTok; stampFileFp = null;
+  if (!f) { $('stamp-file-name').textContent = 'Add the file (optional)'; return; }
+  if (f.size > 1024 ** 3) { $('stamp-file-name').textContent = `${f.name}: over 1 GB, too large to check here`; return; }
+  $('stamp-file-name').textContent = `${f.name}: reading…`;
+  try { const fp = hx(await sha(await f.arrayBuffer())); if (tok === stampFileTok) { stampFileFp = fp; $('stamp-file-name').textContent = f.name; } }
+  catch { if (tok === stampFileTok) $('stamp-file-name').textContent = "This file couldn't be read"; }
+});
+
+function stampMsg(text, cls = '') { const m = $('stamp-msg'); m.hidden = !text; m.className = `msg ${cls}`; m.textContent = text || ''; }
+const fact = (k, v) => `<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`;
+let stampSearch = null; // a search that can be continued into older blocks
+
+function showStamp(tone, lead, sub, facts, updated = '') {
+  $('stamp-verdict').className = `stamp-verdict ${tone}`;
+  $('stamp-verdict').innerHTML = `<div class="lead">${esc(lead)}</div><p class="muted">${esc(sub)}</p>`;
+  $('stamp-facts').innerHTML = facts.join('');
+  $('stamp-updated').hidden = !updated;
+  if (updated) { $('stamp-updated').innerHTML = `<p class="muted">${esc(updated.note)}</p><pre></pre>`; $('stamp-updated').querySelector('pre').textContent = updated.text; }
+  $('stamp-result').hidden = false;
+}
+const fileFact = (r) => fact('File', stampFileFp == null ? '<span class="muted">Not added. Add the file to check it matches.</span>'
+  : stampFileFp === r.fingerprint ? `<span class="ok">Matches the receipt exactly</span>${r.file ? ` <span class="muted">(${esc(r.file)})</span>` : ''}`
+  : '<span class="no">Doesn\'t match. This is a different file, or it changed after it was stamped.</span>');
+
+/* Search a range of heights, newest first or oldest first, for the lock. Only blocks that contain a lock are decoded. */
+async function searchRange(host, r, from, to, newestFirst, paced) {
+  const pages = [];
+  for (let f = from; f <= to; f += 200) pages.push(f);
+  if (newestFirst) pages.reverse();
+  for (const f of pages) {
+    stampMsg(`Looking for the lock… blocks ${fmt(f)} to ${fmt(Math.min(to, f + 199))}`);
+    const page = (await get(host, `/blocks?fromHeight=${f}&max=${Math.min(200, to - f + 1)}`, 15000)).blocks || [];
+    for (const hb of page) if (hb.includes('4c4f434bc01dfeed')) { const b = await readChainBlock(hb); const L = b.locks.find((x) => x.id === r.lockId); if (L) return { blk: b, lock: L }; }
+    if (paced) await pause(1100); // stay under the helpers' request limit
+  }
+  return null;
+}
+
+async function checkStamp(continueOlder = false) {
+  stampMsg(''); $('stamp-result').hidden = true;
+  let r;
+  try { r = continueOlder && stampSearch ? stampSearch.r : parseStampReceipt($('stamp-receipt').value); } catch (err) { stampMsg(err.message, 'danger'); return; }
+  const go = $('stamp-go'); go.disabled = true;
+  try {
+    const H = continueOlder && stampSearch ? stampSearch.H : await stampHelpers();
+    let hit = null;
+    if (r.block) {
+      stampMsg(`Reading block ${fmt(r.block)}…`);
+      try { const b = await blockAt(H.host, r.block); const L = b.locks.find((x) => x.id === r.lockId); if (L) hit = { blk: b, lock: L }; } catch (e) { if (!e.missing) throw e; }
+      if (!hit) { stampMsg(''); showStamp('bad', `This lock isn't in block ${fmt(r.block)}.`, 'Check the "Block:" line on the receipt, or delete that line to search for the lock.', [fileFact(r)]); return; }
+    } else if (r.after) {
+      hit = await searchRange(H.host, r, r.after.height, H.tip, false, H.tip - r.after.height > 8000);
+    } else if (!continueOlder) {
+      hit = await searchRange(H.host, r, Math.max(SCRIPTS_FROM, H.tip - QUICK_PAGES * 200 + 1), H.tip, true, false);
+      stampSearch = { r, H, olderTo: Math.max(SCRIPTS_FROM, H.tip - QUICK_PAGES * 200 + 1) - 1 };
+    } else {
+      hit = await searchRange(H.host, r, SCRIPTS_FROM, stampSearch.olderTo, true, true);
+      stampSearch = null;
+    }
+    stampMsg('');
+    if (!hit) {
+      const recent = !r.after && stampSearch && !continueOlder;
+      showStamp('bad', recent ? 'This lock isn\'t in the last 8,000 blocks.' : 'This lock isn\'t on the chain.',
+        recent ? 'If the stamp was made in the last few minutes, wait for the next block and check again. If it is older, search further back.'
+          : 'Check the Lock ID on the receipt. If the stamp was made in the last few minutes, wait for the next block and check again.',
+        [fileFact(r)]);
+      if (recent) $('stamp-facts').insertAdjacentHTML('beforeend', '<div><dt></dt><dd><button type="button" class="latest-older" id="stamp-older">Search older blocks (a few minutes)</button></dd></div>');
+      return;
+    }
+    const { blk, lock } = hit;
+    const facts = [];
+    let want = await stampScriptHash(r), ownerFixed = null;
+    if (lock.scriptHash !== want && lock.scriptHash === await stampScriptHash(r, lock.from)) ownerFixed = lock.from; // the app's recipient was its own wallet
+    if (lock.scriptHash !== want && !ownerFixed) {
+      showStamp('bad', 'This lock exists, but it holds a different stamp.', 'The fingerprint, salt or "After" line on this receipt is not what was stamped. The receipt may have been edited.', [fact('Block', fmt(blk.height)), fileFact(r)]);
+      return;
+    }
+    const now = Date.now() / 1000;
+    if (blk.ts > now + 600 || blk.ts < SCRIPTS_TIME) {
+      showStamp('bad', "This block's time is impossible.", "Its timestamp is outside what BrowserCoin allows, so the helper server's data can't be trusted.", [fact('Block', fmt(blk.height))]);
+      return;
+    }
+    const conf = H.tip - blk.height + 1, cc = await confirmBlock(H, blk.height, blk.id), dl = await deadlineFor(H.host, blk);
+    let tone = 'good', lead = `Existed by ${utc(dl.at)}`;
+    let sub = `Stamped in block ${fmt(blk.height)}. The file existed by then; it may be older. Miners set block times, so allow about half an hour either way.`;
+    if (stampFileFp != null && stampFileFp !== r.fingerprint) { tone = 'bad'; lead = "This file doesn't match the stamp."; sub = `The stamp itself is on the chain (block ${fmt(blk.height)}), but it is for a different file, or this file changed after it was stamped.`; }
+    facts.push(fileFact(r));
+    facts.push(fact('Block', `${fmt(blk.height)} <span class="mono">${esc(blk.id.slice(0, 16))}…</span>, block time ${esc(utc(blk.ts))}`));
+    facts.push(fact('Confirmations', conf >= 6 ? `<span class="ok">${fmt(conf)}</span>` : `${fmt(conf)} <span class="muted">(final after 6)</span>`));
+    facts.push(fact('Helper servers', cc.disagree ? `<span class="no">${fmt(cc.disagree)} report a different block ${fmt(blk.height)}</span>`
+      : cc.ops >= 2 ? `<span class="ok">${fmt(cc.ops)} independent operators agree on this block</span>`
+      : '<span class="no">Only one operator\'s helper servers could be checked, so this can\'t be confirmed yet</span>'));
+    facts.push(fact('Stamped by', `${nameLink(lock.from)} <span class="muted">signed the lock</span>`));
+    if (ownerFixed) facts.push(fact('Coins go back to', `${nameLink(ownerFixed)} <span class="muted">(the receipt's Owner line was wrong; corrected below)</span>`));
+    else if (r.owner !== lock.from) facts.push(fact('Coins go back to', nameLink(r.owner)));
+    if (r.after) {
+      let line;
+      try {
+        const ab = await blockAt(H.host, r.after.height), ac = await confirmBlock(H, ab.height, ab.id);
+        if (ab.id !== r.after.hash || ab.height >= blk.height) { line = '<span class="no">The "After" block on the receipt isn\'t on the chain</span>'; if (tone === 'good') tone = 'warn'; }
+        else {
+          line = `<span class="ok">Block ${fmt(ab.height)}, ${esc(utc(ab.ts))}</span>${ac.ops >= 2 && !ac.disagree ? '' : ' <span class="muted">(not cross-checked)</span>'}`;
+          if (tone !== 'bad') sub = `The stamp was made after block ${fmt(ab.height)} (${utc(Math.min(ab.ts, dl.at))}) and by ${utc(dl.at)}. The file existed by then; it may be older. Miners set block times, so allow about half an hour either way.`;
+        }
+      } catch (e) { line = `<span class="no">Couldn't check the "After" block: ${esc(e.missing ? 'it isn\'t on the chain' : 'the helper server didn\'t answer')}</span>`; if (tone === 'good') tone = 'warn'; }
+      facts.push(fact('Made after', line));
+    }
+    if (cc.disagree) { tone = 'bad'; lead = 'Helper servers disagree about this block.'; sub = "Don't rely on this stamp until they agree. Try again later."; }
+    else if (tone === 'good' && (cc.ops < 2 || conf < 6 || !dl.settled)) { tone = 'warn'; if (cc.ops < 2) lead = `Found, not yet confirmed: ${lead.toLowerCase()}`; }
+    facts.push(fact('Fingerprint', `<span class="mono">${esc(r.fingerprint)}</span>`));
+    let updated = '';
+    const final = conf >= 6 && cc.ops >= 2 && !cc.disagree;
+    if (final && (ownerFixed || !r.block)) {
+      let text = $('stamp-receipt').value.trim();
+      if (ownerFixed) text = text.replace(/^(\s*>?\s*Owner:\s*).*$/mi, `$1${ownerFixed}`);
+      if (!r.block) text = text.replace(/(-----END BRC STAMP RECEIPT-----)/, `Block: ${blk.height}\n$1`);
+      updated = { note: ownerFixed ? 'Use this corrected receipt from now on:' : 'Add the block number to your receipt so future checks are instant:', text };
+    }
+    showStamp(tone, lead, sub, facts, updated);
+  } catch (err) {
+    stampMsg(err.message || 'Something went wrong reading the chain. Try again.', 'danger');
+  } finally { go.disabled = false; }
+}
+$('stamp-form').addEventListener('submit', (e) => { e.preventDefault(); stampSearch = null; checkStamp(false); });
+$('stamp-facts').addEventListener('click', (e) => { if (e.target.id === 'stamp-older') checkStamp(true); });
 
 /* ---------- live mode ---------- */
 async function get(host, path, ms = 6000) {
