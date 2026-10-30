@@ -995,6 +995,12 @@ function tick() {
   $('since-note').hidden = S.mode !== 'replay';
   if (S.mode !== 'snapshot') { document.title = `${mmss(s)} · #${fmt(last().h)} · BRC Pulse`; setFav(100 * ((s % TARGET) / TARGET)); }
   for (const el of document.querySelectorAll('[data-ago]')) el.textContent = ago(now() - Number(el.dataset.ago));
+  if (M.addr && M.acc) {
+    // Pick up any block My BRC hasn't applied yet (e.g. one that arrived mid-fetch), and keep the rolling
+    // 24 h / 7 d / 30 d / year totals current as time passes, not only when this balance changes.
+    if (S.mode === 'live' && !M.busy && M.applied < last().h && Date.now() > (M.retryAt || 0)) catchUp();
+    const minute = Math.floor(now() / 60); if (minute !== M.balMin) { M.balMin = minute; renderBalance(); }
+  }
   drawTrace();
 }
 
@@ -1161,7 +1167,7 @@ async function catchUp() {
   if (M.busy || !M.addr) return; const tipH = last().h; if (M.applied >= tipH) return;
   if (tipH - M.applied > 4000) return;
   M.busy = true; const token = M.token;
-  try { const xs = await rawRange(S.source, M.applied + 1, tipH); if (token === M.token) { xs.forEach(applyRaw); renderAcct(); } } catch {} finally { M.busy = false; }
+  try { const xs = await rawRange(S.source, M.applied + 1, tipH); if (token === M.token) { xs.forEach(applyRaw); renderAcct(); } } catch { M.retryAt = Date.now() + 15000; } finally { M.busy = false; }
 }
 function msg(text, cls = '') { const m = $('lookup-msg'); m.hidden = !text; m.className = `msg ${cls}`; m.textContent = text || ''; }
 function setView(v) { document.body.dataset.view = v; }
