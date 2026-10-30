@@ -547,7 +547,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
         <p>Pools pay a steady share instead of all-or-nothing blocks. Picking a smaller one keeps the network harder to attack.</p>
       </div>
       <div class="tbl" style="margin-top:12px"><table class="pools"><thead><tr><th>Pool</th><th>Fee</th><th>Pays out</th><th>Share, 24 h</th></tr></thead><tbody id="pools"></tbody></table></div>
-      <p class="fine">Fees and payout minimums as listed on each pool's site, October 2026. Share appears only where the pool's payout address is confirmed from its own public stats.</p>
+      <p class="fine">Fees and payout minimums as listed on each pool's site, October 2026. Share appears only where the pool's payout address is confirmed from its own public stats. Pools whose sites stopped working are taken off the list; know a pool that's missing? Say so in the BrowserCoin Discord.</p>
     </section>
   </div>
 
@@ -632,10 +632,7 @@ const LABELS = {
 const POOLS = [
   { name: 'brcove', url: 'https://www.brcove.com/', fee: '0%', payout: 'Direct to you', note: 'Terminal miner' },
   { name: 'Tabpool', url: 'https://tabpool.xhash.xyz/', fee: '1%', payout: '1 BRC', note: 'Browser or Windows app', addr: '89d081ad360f4ee55e704b449b6f4491619fa8bddf0c35eedaafa0b6a306b768' },
-  { name: 'NurseryPool', url: 'https://brc.nurserypool.com/', fee: '1%', payout: '1 BRC', note: 'Linux installer' },
-  { name: 'TRACE', url: 'https://browsercoin.tracethesignal.com/', fee: '1% + 2%', payout: 'Hourly', note: 'Stratum, CPU or GPU' },
   { name: 'Cryptec Pool', url: 'https://brcpool.cryptec.tech/', fee: '2%', payout: '1 BRC', note: 'Browser tab', addr: 'ff811ae0d83c0bde47bc10db95d1e869641d897975c1fe7fc61884efa6d5c698' },
-  { name: 'FulgurPool', url: 'https://fulgurpool.xyz/', fee: '2%', payout: '0.0152 BRC', note: 'Browser or FulgurMiner' },
 ];
 const PRESETS = [
   { label: 'Desktop browser tab', hs: 2232, src: 'developer benchmark, i7-13700KF' },
