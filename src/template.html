@@ -291,11 +291,15 @@ tr.fresh td { animation: fresh 2.4s var(--ease); }
 .pl-rank { color: var(--faint); font-size: .78rem; margin-right: 8px; }
 .pl-name { color: var(--ink); font-weight: 700; font-size: 1rem; }
 .pl-meta { display: block; font-size: .8rem; color: var(--muted); margin-top: 3px; }
-.pl-share { display: grid; justify-items: end; gap: 6px; }
-.pl-share b { font-size: 1.4rem; font-weight: 750; letter-spacing: -0.02em; line-height: 1; }
-.pl-share .mini i { width: 76px; }
-.pl-stats { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .82rem; color: var(--muted); }
+.pl-share { display: grid; justify-items: end; text-align: right; }
+.pl-share b { font-size: 1.45rem; font-weight: 750; letter-spacing: -0.02em; line-height: 1.05; }
+.pl-share span { font-size: .74rem; color: var(--muted); white-space: nowrap; }
+.pl-bar { grid-column: 1 / -1; position: relative; height: 6px; border-radius: 99px; background: var(--sunken); margin-top: 4px; }
+.pl-bar i { position: absolute; inset: 0 auto 0 0; border-radius: 99px; background: var(--brand); }
+.pl-bar::after { content: ""; position: absolute; left: 50%; top: -3px; bottom: -3px; border-left: 1.5px dashed var(--danger); opacity: .55; }
+.pl-stats { grid-column: 1 / -1; font-size: .85rem; color: var(--muted); }
 .pl-stats strong { color: var(--ink); font-weight: 700; }
+.pl-stats a { white-space: nowrap; }
 .mini { display: inline-flex; align-items: center; gap: 8px; }
 .mini i { display: block; width: 44px; height: 5px; border-radius: 99px; background: var(--sunken); overflow: hidden; }
 .mini i span { display: block; height: 100%; background: var(--brand); border-radius: 99px; }
@@ -552,7 +556,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div class="sh">
         <svg class="ic" aria-hidden="true"><use href="#i-pool"/></svg>
         <h2 id="pools-h">Where to mine</h2>
-        <p>Pools pay a steady share instead of all-or-nothing blocks. Largest first; picking a smaller one keeps the network harder to attack.</p>
+        <p>Pools pay a steady share instead of all-or-nothing blocks. Ranked by their share of the blocks found in the last 24 hours. The dashed line is half the network: picking a smaller pool keeps everyone safely below it.</p>
       </div>
       <ul class="pools-list" id="pools"></ul>
       <p class="fine">Fees and payout minimums as listed on each pool's site, October 2026. Share appears only where the pool's payout address is confirmed from its own public stats. Pools whose sites stopped working are taken off the list; know a pool that's missing? Say so in the BrowserCoin Discord.</p>
@@ -904,16 +908,17 @@ function renderPools(day) {
   const counts = new Map(day.ranked), pctOf = (p) => (p.addr ? (100 * (counts.get(p.addr) || 0)) / day.total : -1);
   $('pools').innerHTML = POOLS.slice().sort((x, y) => pctOf(y) - pctOf(x)).map((p, i) => {
     const meta = `${p.note} · ${p.fee} fee · ${p.payout === 'Direct to you' ? 'pays you directly' : `pays out at ${p.payout}`}`;
-    let share = '<b class="muted">–</b>', stats = '<span>Share not shown: payout address not confirmed</span>';
+    let share = '<b class="muted">–</b><span>not counted</span>', bar = '',
+      stats = 'Rewards go straight to each miner\'s own address, so there is no single pool address to count.';
     if (p.addr) {
       const pct = pctOf(p), n = counts.get(p.addr) || 0, lastB = S.blocks.filter((b) => b.miner === p.addr).pop();
-      share = `<b>${pct.toFixed(1)}%</b><span class="mini"><i><span style="width:${Math.min(100, pct * 2)}%"></span></i></span>`;
-      stats = `<span>Last block ${lastB ? `<strong data-ago="${seenAt(lastB)}">${ago(now() - seenAt(lastB))}</strong>` : '<strong>over a day ago</strong>'}</span>`
-        + `<span><strong>${n}</strong> block${n === 1 ? '' : 's'} in 24 h</span>`
-        + `<span>≈ <strong>${rate((pct / 100) * S.netHr, true)}</strong></span>`
-        + `<a href="#my=${p.addr}">Payout address in MYBRC</a>`;
+      share = `<b>${pct.toFixed(1)}%</b><span>of blocks, 24 h</span>`;
+      bar = `<div class="pl-bar" aria-hidden="true"><i style="width:${Math.min(100, pct)}%"></i></div>`;
+      stats = `Found <strong>${n}</strong> of the last ${day.total} blocks`
+        + (lastB ? `, the latest <strong data-ago="${seenAt(lastB)}">${ago(now() - seenAt(lastB))}</strong>.` : ', none in the last few hours.')
+        + ` About <strong>${rate((pct / 100) * S.netHr, true)}</strong> of mining power. <a href="#my=${p.addr}">Payout address →</a>`;
     }
-    return `<li><div><span class="pl-rank">${i + 1}</span><a class="pl-name" href="${p.url}" target="_blank" rel="noopener">${p.name}</a><span class="pl-meta">${meta}</span></div><div class="pl-share">${share}</div><div class="pl-stats">${stats}</div></li>`;
+    return `<li><div><span class="pl-rank">${i + 1}</span><a class="pl-name" href="${p.url}" target="_blank" rel="noopener">${p.name}</a><span class="pl-meta">${meta}</span></div><div class="pl-share">${share}</div>${bar}<p class="pl-stats">${stats}</p></li>`;
   }).join('');
 }
 
