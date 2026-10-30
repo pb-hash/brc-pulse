@@ -6,9 +6,9 @@
 <link rel="icon" id="fav" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%22307.6 90 1316 1316%22%3E%3Cdefs%3E%3Cmask id=%22id%22 maskUnits=%22userSpaceOnUse%22 x=%220%22 y=%220%22 width=%222000%22 height=%222000%22%3E%3Crect width=%222000%22 height=%222000%22 fill=%22%23fff%22/%3E%3Ccircle cx=%221272.4%22 cy=%22800%22 r=%22148%22 fill=%22%23000%22/%3E%3C/mask%3E%3Cmask id=%22if%22 maskUnits=%22userSpaceOnUse%22 x=%220%22 y=%220%22 width=%222000%22 height=%222000%22%3E%3Crect width=%222000%22 height=%222000%22 fill=%22%23fff%22/%3E%3Cpath d=%22M830.0 470.0 L980.0 1135.0 L1100.0 800.0%22 fill=%22none%22 stroke=%22%23000%22 stroke-width=%22192%22 stroke-miterlimit=%226%22/%3E%3C/mask%3E%3C/defs%3E%3Crect x=%22307.6%22 y=%2290%22 width=%221316%22 height=%221316%22 rx=%22252.6%22 fill=%22%23ffffff%22/%3E%3Cg mask=%22url%28%23if%29%22%3E%3Cpath d=%22M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z%22 fill=%22none%22 stroke=%22%235956FD%22 stroke-width=%22107.8%22/%3E%3C/g%3E%3Cg mask=%22url%28%23id%29%22 fill=%22none%22 stroke-miterlimit=%226%22%3E%3Cpath d=%22M544.8 800.0 L720.0 800.0 L830.0 470.0 L980.0 1135.0 L1100.0 800.0 L1215.0 800.0%22 stroke=%22%23111114%22 stroke-width=%22124%22/%3E%3Cpath d=%22M544.8 769.0 L697.7 769.0 L835.8 354.7 L986.8 1024.2 L1078.2 769.0 L1215.0 769.0%22 stroke=%22%233a3a3a%22 stroke-width=%2262.0%22/%3E%3C/g%3E%3Ccircle cx=%221272.4%22 cy=%22800%22 r=%22114%22 fill=%22%235956FD%22/%3E%3C/svg%3E">
 <!--__FONTS__-->
 <style>
-/* Layout: the BRC family system, shared with BRC Vault. Light canvas, white cards with soft depth,
+/* Layout: the BRC Works system, shared with BRC Vault. Light canvas, white cards with soft depth,
    charcoal glyphs drawn in the mark's frame-and-dot language, one indigo signal. Product headline,
-   then the live card, then the instrument panels, then the family. Manrope for the dashboard; Geist only in the wordmark.
+   then the live card, then the instrument panels, then the BRC Works footer. Manrope for the dashboard; Geist only in the wordmark.
    The mark is the hero: its frame is the live block timer and its pulse redraws on every block. */
 :root {
   --canvas: #f5f6f8;
@@ -341,7 +341,7 @@ tr.fresh td { animation: fresh 2.4s var(--ease); }
 .fact h3 { font-size: 1rem; font-weight: 700; letter-spacing: -0.01em; }
 .fact p { color: var(--muted); font-size: .92rem; }
 
-/* family */
+/* BRC Works switcher */
 .vault { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 22px; align-items: center; padding: 26px 28px; }
 .vault > svg { width: 64px; height: 64px; color: var(--mark); }
 .vault h3 { font-size: 1.35rem; font-weight: 750; letter-spacing: -0.025em; }
@@ -353,6 +353,10 @@ tr.fresh td { animation: fresh 2.4s var(--ease); }
 footer.wrap { display: flex; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; padding-block: 30px 44px; margin-top: 24px; border-top: 1px solid var(--hairline); font-size: .82rem; color: var(--muted); }
 footer .fl { display: flex; align-items: center; gap: 10px; color: var(--ink-2); font-weight: 500; }
 footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
+.works { display: grid; gap: 3px; text-align: right; }
+.works b { color: var(--ink-2); font-weight: 600; }
+.works [aria-current] { color: var(--ink-2); font-weight: 500; }
+@media (max-width: 640px) { .works { text-align: left; } }
 .fine-print { width: 100%; display: grid; gap: 6px; font-size: .78rem; color: var(--faint); margin-top: 6px; }
 .fine-print p { max-width: 90ch; }
 
@@ -396,7 +400,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <a class="brand" href="#top" aria-label="BRC Pulse"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark" aria-hidden="true"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></a>
     <nav class="nav" aria-label="Sections"><a href="#my" class="my-link" aria-label="My BRC"><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span></a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a></nav>
     <span class="spacer"></span>
-    <nav class="family" aria-label="BRC tools">
+    <nav class="family" aria-label="BRC Works">
       <span class="cur" aria-current="page"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></span>
       <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener" aria-label="Open BRC Vault"><svg aria-hidden="true"><use href="#vault-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">VAULT</span></span></a>
     </nav>
@@ -623,11 +627,14 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 
 <footer class="wrap">
   <span class="fl"><svg aria-hidden="true"><use href="#pulse-mark"/></svg>BRC Pulse, version 1</span>
-  <span>Part of the BRC family, with <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener">BRC Vault</a> · <a href="https://github.com/pb-hash/brc-pulse" target="_blank" rel="noopener">Source</a></span>
+  <div class="works">
+    <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener">Vault</a> · <span aria-current="page">Pulse</span></p>
+    <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener">pb-hash</a>. Not part of the official BrowserCoin project. · <a href="https://github.com/pb-hash/brc-pulse" target="_blank" rel="noopener">Source</a></p>
+  </div>
   <div class="fine-print">
     <p id="foot-mode"></p>
     <p>Hashrate is the expected work behind each block's difficulty divided by elapsed time. Pool names come from each pool's own public stats. An unlabeled address that wins many blocks but sends no payouts is most likely one private operation. Pools can add their payout address through the BrowserCoin Discord.</p>
-    <p>Community project, free and open source, not made by the BrowserCoin developers. Data from the <a href="https://browsercoin.org/" target="_blank" rel="noopener">browsercoin.org</a> helper API and the <a href="https://github.com/swompythesecond/browsercoin-archive" target="_blank" rel="noopener">browsercoin-archive</a>.</p>
+    <p>Free and open source under the MIT License. Data from the <a href="https://browsercoin.org/" target="_blank" rel="noopener">browsercoin.org</a> helper API and the <a href="https://github.com/swompythesecond/browsercoin-archive" target="_blank" rel="noopener">browsercoin-archive</a>.</p>
   </div>
 </footer>
 

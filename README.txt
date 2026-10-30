@@ -11,7 +11,8 @@ Use it online:  https://pb-hash.github.io/brc-pulse/
 Or download it: dist/brc-pulse.html, save it, and open the saved file. It
                 connects and runs live from your desktop too.
 
-Part of the BRC family, with BRC Vault (https://pb-hash.github.io/brc-vault/).
+BRC Works: Vault (https://pb-hash.github.io/brc-vault/) · Pulse.
+Independent tools by pb-hash. Not part of the official BrowserCoin project.
 
 What it shows
 -------------
