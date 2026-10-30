@@ -1387,12 +1387,14 @@ const QUICK_PAGES = 40;              // first search: the last 8,000 blocks (abo
 const operator = (host) => host.split('.').slice(-2).join('.'); // api1/api2.browsercoin.org are one operator
 
 function parseStampReceipt(text) {
+  if (String(text || '').length > 20000) throw new Error('This is far too long to be a stamp receipt.');
   const t = String(text || '').replace(/\r\n?/g, '\n').replace(/[​-‍⁠﻿]/g, '');
   const a = t.indexOf('-----BEGIN BRC STAMP RECEIPT-----'), b = t.indexOf('-----END BRC STAMP RECEIPT-----');
   if (a < 0) throw new Error('This is not a BRC stamp receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.');
   if (b < a) throw new Error('The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.');
   const body = t.slice(a, b);
-  const field = (n) => { const m = body.match(new RegExp(`^\\s*>?\\s*${n}:\\s*(.+)$`, 'mi')); return m ? m[1].trim() : null; };
+  // Line by line, so a paste full of blank lines can't make the search slow (same reader as BRC Seal).
+  const field = (n) => { const want = n.toLowerCase() + ':'; for (const raw of body.split('\n')) { const line = raw.replace(/^[ \t]*>?[ \t]*/, ''); if (line.slice(0, want.length).toLowerCase() === want) { const v = line.slice(want.length).trim(); return v || null; } } return null; };
   const hex = (n, len = 64) => {
     const v = field(n); if (!v) throw new Error(`The receipt's "${n}:" line is missing.`);
     const h = v.replace(/\s+/g, '').toLowerCase().replace(/^0x/, '');
