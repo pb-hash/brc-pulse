@@ -286,8 +286,16 @@ tr.fresh td { animation: fresh 2.4s var(--ease); }
 .calc-out > div:nth-child(n+3) { border-top: 1px solid var(--hairline); }
 .calc-out b { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: proportional-nums; }
 .fine { font-size: .8rem; color: var(--muted); margin-top: 12px; }
-.pools td:first-child a { color: var(--ink); font-weight: 600; }
-.pools td small { display: block; font-size: .76rem; color: var(--muted); margin-top: 1px; }
+.pools-list { list-style: none; margin: 16px 0 0; padding: 0; }
+.pools-list li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: start; padding: 15px 0; border-top: 1px solid var(--hairline); }
+.pl-rank { color: var(--faint); font-size: .78rem; margin-right: 8px; }
+.pl-name { color: var(--ink); font-weight: 700; font-size: 1rem; }
+.pl-meta { display: block; font-size: .8rem; color: var(--muted); margin-top: 3px; }
+.pl-share { display: grid; justify-items: end; gap: 6px; }
+.pl-share b { font-size: 1.4rem; font-weight: 750; letter-spacing: -0.02em; line-height: 1; }
+.pl-share .mini i { width: 76px; }
+.pl-stats { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: .82rem; color: var(--muted); }
+.pl-stats strong { color: var(--ink); font-weight: 700; }
 .mini { display: inline-flex; align-items: center; gap: 8px; }
 .mini i { display: block; width: 44px; height: 5px; border-radius: 99px; background: var(--sunken); overflow: hidden; }
 .mini i span { display: block; height: 100%; background: var(--brand); border-radius: 99px; }
@@ -546,7 +554,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
         <h2 id="pools-h">Where to mine</h2>
         <p>Pools pay a steady share instead of all-or-nothing blocks. Largest first; picking a smaller one keeps the network harder to attack.</p>
       </div>
-      <div class="tbl" style="margin-top:12px"><table class="pools"><thead><tr><th>Pool</th><th>Fee</th><th>Pays out</th><th>Share, 24 h</th></tr></thead><tbody id="pools"></tbody></table></div>
+      <ul class="pools-list" id="pools"></ul>
       <p class="fine">Fees and payout minimums as listed on each pool's site, October 2026. Share appears only where the pool's payout address is confirmed from its own public stats. Pools whose sites stopped working are taken off the list; know a pool that's missing? Say so in the BrowserCoin Discord.</p>
     </section>
   </div>
@@ -894,10 +902,18 @@ function renderCalc() {
 function renderPools(day) {
   // Largest first by share of the last 24 hours; pools whose payout address isn't confirmed go last.
   const counts = new Map(day.ranked), pctOf = (p) => (p.addr ? (100 * (counts.get(p.addr) || 0)) / day.total : -1);
-  $('pools').innerHTML = POOLS.slice().sort((x, y) => pctOf(y) - pctOf(x)).map((p) => {
-    let share = '<span class="muted">Not confirmed</span>';
-    if (p.addr) { const pct = pctOf(p); share = `<span class="mini"><i><span style="width:${Math.min(100, pct * 2)}%"></span></i>${pct.toFixed(1)}%</span>`; }
-    return `<tr><td><a href="${p.url}" target="_blank" rel="noopener">${p.name}</a><small>${p.note}</small></td><td>${p.fee}</td><td>${p.payout}</td><td>${share}</td></tr>`;
+  $('pools').innerHTML = POOLS.slice().sort((x, y) => pctOf(y) - pctOf(x)).map((p, i) => {
+    const meta = `${p.note} · ${p.fee} fee · ${p.payout === 'Direct to you' ? 'pays you directly' : `pays out at ${p.payout}`}`;
+    let share = '<b class="muted">–</b>', stats = '<span>Share not shown: payout address not confirmed</span>';
+    if (p.addr) {
+      const pct = pctOf(p), n = counts.get(p.addr) || 0, lastB = S.blocks.filter((b) => b.miner === p.addr).pop();
+      share = `<b>${pct.toFixed(1)}%</b><span class="mini"><i><span style="width:${Math.min(100, pct * 2)}%"></span></i></span>`;
+      stats = `<span>Last block ${lastB ? `<strong data-ago="${seenAt(lastB)}">${ago(now() - seenAt(lastB))}</strong>` : '<strong>over a day ago</strong>'}</span>`
+        + `<span><strong>${n}</strong> block${n === 1 ? '' : 's'} in 24 h</span>`
+        + `<span>≈ <strong>${rate((pct / 100) * S.netHr, true)}</strong></span>`
+        + `<a href="#my=${p.addr}">Payout address in MYBRC</a>`;
+    }
+    return `<li><div><span class="pl-rank">${i + 1}</span><a class="pl-name" href="${p.url}" target="_blank" rel="noopener">${p.name}</a><span class="pl-meta">${meta}</span></div><div class="pl-share">${share}</div><div class="pl-stats">${stats}</div></li>`;
   }).join('');
 }
 
