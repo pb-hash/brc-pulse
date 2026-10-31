@@ -144,12 +144,12 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
     expect(page.locator('#gv-proof')).to_contain_text(fx['expected']['seed'])
     expect(page.locator('#gv-proof')).to_contain_text('signature checked here')
     expect(page.locator('#gv-proof')).to_contain_text(f"seed mod {fx['entries']['count']} = {fx['expected']['index']}")
-    expect(page.locator('#gv-proof')).to_contain_text('in block 92,605')
+    expect(page.locator('#gv-proof')).to_contain_text('in block 92,618')
     expect(page.locator('#gv-proof')).to_contain_text('before the draw')
     page.screenshot(path=str(out / 'giveaway-drawn.png'), full_page=True)
     ok('after the draw time, the page checks the list was fixed on the chain before the draw, fetches and checks the drand beacon, and shows the same winner the core code picks')
     for pg_path, chain_name, want in [(nocommit_page, 'good', "hasn't been fixed on the chain"), (late_page, 'late', 'too close to the draw'),
-                                      (drawn_page, 'double', 'Only one, the list, is allowed'), (moved_page, 'good', 'not the ones fixed on the chain')]:
+                                      (drawn_page, 'double', 'Only two are allowed'), (moved_page, 'good', 'not the ones fixed on the chain')]:
         CHAIN['name'] = chain_name
         px = ctx.new_page(); px.on('pageerror', lambda e: errors.append(str(e))); px.route('**/*', handle)
         px.goto(pathlib.Path(pg_path).resolve().as_uri() + '#giveaway')

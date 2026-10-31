@@ -2077,7 +2077,7 @@ function gvRules() {
     '<b>Adding to the prize pool</b> doesn\'t enter you or change anyone\'s chances.',
     '<b>Privacy:</b> your address is sealed in your browser. The mailbox and everyone else see only a sealed letter. After entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached.',
     `<b>The draw:</b> drand beacon round ${fmt(gvRound())}, published at ${esc(utc(tsOf(GIVE.drawAt)))}. The winner is SHA-256("BRC Works giveaway draw v1", the entry list's fingerprint, the round and its signature) modulo the number of entries, counting from the first address in sorted order. Anyone can rerun it here.`,
-    `<b>Fixed on the chain:</b> these rules and the draw round were signed by the BRC Works release address${GV.launch ? ` in block ${fmt(GV.launch.height)} <span class="ok">checked here</span>` : ''}. The entry list is signed the same way at least 6 hours before the draw, and the release address signs nothing else until the draw, so the list can't be swapped afterwards.`,
+    `<b>Fixed on the chain:</b> these rules and the draw round were signed by the BRC Works release address${GV.launch ? ` in block ${fmt(GV.launch.height)} <span class="ok">checked here</span>` : ''}. The entry list is signed the same way at least 6 hours before the draw, and the release address signs nothing else until the draw, so the list can't be swapped afterwards. Its whole history is public${releaseAddr() ? `: ${nameLink(releaseAddr())}` : ''}. Apart from release postmarks, it should only ever hold this giveaway's launch and list; if it shows anything else, such as an earlier launch that was dropped, ask the organizer why.`,
     'Run by pb-hash as part of BRC Works. Independent tools; not part of the official BrowserCoin project.',
   ];
   $('gv-rules').innerHTML = rules.map((r) => `<li>${r}</li>`).join('');
@@ -2272,7 +2272,7 @@ function gvCheckLaunch() {
     if (L.mailbox !== GIVE.mailbox || L.pool !== GIVE.pool || L.eligible !== GIVE.eligible.fingerprint || L.closesAt !== GIVE.closesAt || L.round !== gvRound())
       gvFail("This page's giveaway settings are not the ones fixed on the chain, so they can't be trusted.");
     if (s.at >= tsOf(GIVE.closesAt)) gvFail('The rules were fixed on the chain after entries closed.');
-    return { height: s.blk.height, at: s.at, round: L.round };
+    return { height: s.blk.height, at: s.at, round: L.round, lockId: s.lock.id };
   })();
   gvLaunchP.catch(() => { setTimeout(() => { gvLaunchP = null; }, 30000); });
   return gvLaunchP;
@@ -2286,19 +2286,37 @@ async function gvCheckCommit() {
   if (c.fingerprint !== GIVE.entries.fingerprint || c.count !== GV.entries.addresses.length) gvFail('The list fixed on the chain is not the list published here, so no winner is shown.');
   if (c.round !== launch.round) gvFail(`The draw round in the list commitment (${fmt(c.round)}) is not the one fixed at launch (${fmt(launch.round)}), so no winner is shown.`);
   const roundTs = BRCDrand.drandRoundTime(c.round);
+  if (s.blk.height <= launch.height) gvFail('The list was fixed on the chain before the giveaway was launched, so no winner is shown.');
+  if (s.at < tsOf(GIVE.closesAt)) gvFail('The list was fixed on the chain before entries closed, so no winner is shown.');
   if (s.at > roundTs - COMMIT_MARGIN) gvFail(`The list was fixed on the chain by ${utc(s.at)}, too close to the draw at ${utcS(roundTs)}. It must be at least 6 hours earlier, so no winner is shown.`);
-  // Exactly one lock by the release address from the launch to the first block after the draw round.
+  // From the launch block to the first block after the draw round, the release address makes exactly
+  // two locks: the launch and this list. Read at two independent operators, every block in order, so
+  // no helper can hide a second list by leaving a block out.
   const rel = releaseAddr(), needle = `4c4f434bc01dfeed${rel}`;
-  let found = 0, ended = false;
-  for (let f = launch.height + 1; f <= s.H.tip && !ended; f += 200) {
-    const page = (await get(s.H.host, `/blocks?fromHeight=${f}&max=${Math.min(200, s.H.tip - f + 1)}`, 15000)).blocks || [];
-    for (const hb of page) {
-      if (parseInt(hb.slice(200, 216), 16) > roundTs) { ended = true; break; }
-      if (hb.includes(needle)) { const b = await readChainBlock(hb); found += b.locks.filter((x) => x.from === rel).length; }
+  const scan = async (host, tip) => {
+    const ids = [];
+    for (let f = launch.height; f <= tip; f += 200) {
+      const want = Math.min(200, tip - f + 1);
+      const page = (await get(host, `/blocks?fromHeight=${f}&max=${want}`, 15000)).blocks || [];
+      for (let i = 0; i < page.length; i++) {
+        const hb = page[i];
+        if (parseInt(hb.slice(0, 8), 16) !== f + i) throw new Error('gap');
+        if (parseInt(hb.slice(200, 216), 16) > roundTs) return ids;
+        if (hb.includes(needle)) { const b = await readChainBlock(hb); ids.push(...b.locks.filter((x) => x.from === rel).map((x) => x.id)); }
+      }
+      if (page.length !== want) throw new Error('gap');
+      await pause(300);
     }
-  }
-  if (!ended) gvFail('Waiting for the first block after the draw round, to check the release address fixed only one list. Try again in a few minutes.');
-  if (found !== 1) gvFail(`The release address made ${fmt(found)} locks between the launch and the draw. Only one, the list, is allowed, so nobody could fix several lists and pick one later. No winner is shown.`);
+    return null; // no block after the draw round yet
+  };
+  const ops = new Map();
+  for (const x of [{ host: s.H.host, height: s.H.tip }, ...s.H.all.filter((y) => y.host !== s.H.host)]) if (!ops.has(operator(x.host))) ops.set(operator(x.host), x);
+  const views = [];
+  for (const x of ops.values()) { if (views.length >= 2) break; try { views.push(await scan(x.host, Math.min(x.height, s.H.tip))); } catch {} }
+  if (views.length < 2) gvFail('Could not read every block since the launch at two independent helper operators. Try again later.');
+  if (views.some((v) => v === null)) gvFail('Waiting for the first block after the draw round, to check the release address fixed only one list. Try again in a few minutes.');
+  const all = new Set(views.flat());
+  if (all.size !== 2 || !all.has(launch.lockId) || !all.has(s.lock.id)) gvFail(`From the launch to the draw, the release address made ${fmt(all.size)} locks. Only two are allowed: the launch and this list, so nobody could fix several lists and pick one later. No winner is shown.`);
   return { height: s.blk.height, at: s.at, lockId: s.lock.id };
 }
 
