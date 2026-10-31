@@ -315,6 +315,10 @@ body[data-view="stamp"] .intro { grid-template-columns: minmax(0, 1fr); }
 .gv-winner b { display: block; font-size: 1.15rem; }
 .gv-winner .mono { font-size: .74rem; overflow-wrap: anywhere; color: var(--ink-2); }
 .gv-rules { margin: 12px 0 0; padding-left: 1.2rem; display: grid; gap: 6px; font-size: .9rem; color: var(--ink-2); max-width: 50rem; }
+.gv-rules > li { min-width: 0; overflow-wrap: anywhere; }
+.gv-fair { margin-top: 14px; border-top: 1px solid var(--hairline); padding-top: 10px; }
+.gv-fair > summary { cursor: pointer; color: var(--muted); font-size: .9rem; font-weight: 600; }
+.msg.ok { background: var(--good-tint, rgba(13, 122, 95, .1)); color: var(--good); font-weight: 600; }
 #give-main [hidden] { display: none !important; }
 @keyframes gvIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes gvDrop { 0% { opacity: 0; transform: translateY(-40%) scale(.6); } 60% { opacity: 1; transform: translateY(2%) scale(1.08); } 100% { transform: none; } }
@@ -613,7 +617,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   <div class="intro-text give-intro giveaway-only" id="give-top">
     <p class="eyebrow">BRC Works · Block 100,000</p>
     <h1>The block 100,000 giveaway.</h1>
-    <p>One winner takes the whole prize pool. <strong>Entering is free and needs only your address.</strong> Your entry goes in as a sealed letter: nobody can see which address you entered except the organizer's mailbox.</p>
+    <p id="gv-hero-p">One winner takes the whole prize pool. <strong>Entering is free and needs only your address.</strong> Your entry goes in as a sealed letter: nobody can see which address you entered except the organizer's mailbox.</p>
     <div class="gv-pool-hero"><span class="gv-pool-v" id="gv-pool-v">–</span><span class="gv-pool-l">in the prize pool<span id="gv-pool-asof"></span></span></div>
     <ol class="gv-steps" id="gv-steps"></ol>
   </div>
@@ -706,7 +710,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <p id="gv-enter-p">Paste your BrowserCoin <strong>address</strong>. It's sealed in your browser so only the giveaway mailbox can read it, then dropped in. <strong>No private key, no wallet file, nothing to sign.</strong></p>
     </div>
     <form class="lookup" id="gv-form" autocomplete="off">
-      <input id="gv-addr" type="text" spellcheck="false" autocapitalize="off" placeholder="Your BrowserCoin address (64 characters)" aria-label="Your BrowserCoin address">
+      <input id="gv-addr" type="text" spellcheck="false" autocapitalize="off" placeholder="Paste your address" aria-label="Your BrowserCoin address">
       <button type="submit" id="gv-go">Seal and drop my entry</button>
     </form>
     <div class="gv-check" id="gv-check" aria-live="polite"></div>
@@ -767,6 +771,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <h2 id="gv-rules-h">The rules</h2>
     </div>
     <ul class="gv-rules" id="gv-rules"></ul>
+    <details class="gv-fair" id="gv-fair"><summary>How it's fair (details)</summary><ul class="gv-rules" id="gv-rules-more"></ul></details>
   </section>
 </main>
 
@@ -2291,20 +2296,27 @@ function gvSteps() {
 
 function gvRules() {
   const e = GIVE.eligible;
+  $('gv-hero-p').innerHTML = `One winner takes the whole prize pool. <strong>Open to the ${fmt(e.count)} addresses that held 50 BRC or more at block ${fmt(e.cutoff)}, or were paid by a mining pool.</strong> Entering is free and needs only your address: paste it below to see if it can enter.`;
   const rules = [
-    `<b>Who can enter:</b> any address that held at least 50 BRC at block ${fmt(e.cutoff)}, or was paid by a mining pool (Cryptec Pool or Tabpool) in the 30 days up to that block. That block had already passed when the giveaway was announced, so nobody could split coins into extra addresses for it. That's ${fmt(e.count)} addresses. List fingerprint <span class="mono">${esc(e.fingerprint)}</span>; anyone can rebuild the list from the public chain archive with <span class="mono">tools/giveaway_eligible.py</span>.`,
+    `<b>Who can enter:</b> any address that held at least 50 BRC at block ${fmt(e.cutoff)}, or was paid by a mining pool (Cryptec Pool or Tabpool) in the 30 days up to that block. That block had passed before the giveaway was announced, so nobody could split coins into extra addresses for it. That's ${fmt(e.count)} addresses.`,
     '<b>One entry per address.</b> Entering again doesn\'t add a chance.',
-    "<b>The giveaway's own addresses can't enter:</b> the mailbox, the prize pool and the BRC Works addresses are set aside.",
     '<b>Entering is free.</b> No purchase, no fee, no wallet: you only paste an address.',
-    '<b>The prize only ever goes to the winning address itself.</b> You can enter an address that isn\'t yours, but that only gives its owner a chance.',
     `<b>The prize:</b> everything in the prize pool when the winner is drawn, sent straight to the winning address. Nothing to claim.`,
+    '<b>The prize only ever goes to the winning address itself.</b> You can enter an address that isn\'t yours, but that only gives its owner a chance.',
+    `<b>The winner is picked by a public random number</b> on ${esc(localWhen(tsOf(GIVE.drawAt)))}. Nobody, including the organizer, can know it or change it in advance, and anyone can check the result on this page.`,
+    '<b>Private:</b> your address is sealed in your browser. Everyone else sees only a sealed letter.',
+  ];
+  const more = [
+    `<b>The eligible list:</b> fingerprint <span class="mono">${esc(e.fingerprint)}</span>. Anyone can rebuild it from the public chain archive with <span class="mono">tools/giveaway_eligible.py</span>.`,
+    "<b>The giveaway's own addresses can't enter:</b> the mailbox, the prize pool and the BRC Works addresses are set aside.",
     '<b>Adding to the prize pool</b> doesn\'t enter you or change anyone\'s chances.',
-    '<b>Privacy:</b> your address is sealed in your browser. The mailbox and everyone else see only a sealed letter. After entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached.',
+    '<b>Opening the letters:</b> after entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached. Repeats and addresses that can\'t enter are set aside then.',
     `<b>The draw:</b> drand beacon round ${fmt(gvRound())}, published at ${esc(utc(tsOf(GIVE.drawAt)))}. The winner is SHA-256("BRC Works giveaway draw v1", the entry list's fingerprint, the round and its signature) modulo the number of entries, counting from the first address in sorted order. Anyone can rerun it here.`,
     `<b>Fixed on the chain:</b> these rules and the draw round were signed by the BRC Works release address${GV.launch ? ` in block ${fmt(GV.launch.height)} <span class="ok">checked here</span>` : ''}. The entry list is signed the same way at least 6 hours before the draw, and the release address signs nothing else until the draw, so the list can't be swapped afterwards. Its whole history is public${releaseAddr() ? `: ${nameLink(releaseAddr())}` : ''}. Apart from release postmarks, it should only ever hold this giveaway's launch and list; if it shows anything else, such as an earlier launch that was dropped, ask the organizer why.`,
     'Run by pb-hash as part of BRC Works. Independent tools; not part of the official BrowserCoin project.',
   ];
   $('gv-rules').innerHTML = rules.map((r) => `<li>${r}</li>`).join('');
+  $('gv-rules-more').innerHTML = more.map((r) => `<li>${r}</li>`).join('');
 }
 
 async function gvLoadLists() {
@@ -2350,7 +2362,7 @@ function gvEnterState() {
   const ph = gvPhase(), form = $('gv-form'), p = $('gv-enter-p');
   if (ph === 'open' && !GV.launch && !GV.launchErr && !GV.launchBusy) {
     GV.launchBusy = true;
-    gvCheckLaunch().then((l) => { GV.launch = l; GV.launchErr = null; }, (e) => { GV.launchErr = e.commit ? e.message : "Couldn't check the giveaway's rules on the chain yet. It will retry."; setTimeout(() => { GV.launchErr = null; }, 30000); })
+    gvCheckLaunch().then((l) => { GV.launch = l; GV.launchErr = null; GV.launchWait = false; }, (e) => { GV.launchWait = !e.commit || !!e.wait; GV.launchErr = e.commit ? e.message : "Couldn't check the giveaway's rules on the chain yet. It will retry."; setTimeout(() => { GV.launchErr = null; }, 30000); })
       .finally(() => { GV.launchBusy = false; gvEnterState(); gvRules(); });
   }
   const open = ph === 'open' && !GV.eligibleErr && !!GV.launch;
@@ -2359,8 +2371,10 @@ function gvEnterState() {
   if (ph === 'soon') p.innerHTML = `Entries open <b>${esc(localWhen(tsOf(GIVE.opensAt)))}</b>. Entering will need only your BrowserCoin <strong>address</strong>: no private key, no wallet file, nothing to sign.`;
   else if (ph !== 'open') p.innerHTML = `Entries closed <b>${esc(localWhen(tsOf(GIVE.closesAt)))}</b>.${GIVE.entries ? ' The entry list is published below.' : ' The organizer is opening the letters; the entry list will appear here before the draw.'}`;
   if (GV.eligibleErr) gvMsg(GV.eligibleErr, 'danger');
+  else if (ph === 'open' && GV.launchErr && GV.launchWait) gvMsg("Confirming the giveaway's rules on the chain… This can take a few minutes after a new block; entering opens by itself.");
   else if (ph === 'open' && GV.launchErr) gvMsg(GV.launchErr, 'danger');
   else if (ph === 'open' && !GV.launch) gvMsg("Checking the giveaway's rules on the chain…");
+  else if (ph === 'open' && $('gv-done').hidden) gvMsg('\u2713 The rules are confirmed on the chain.', 'ok');
   if (ph === 'open') gvShowCheck($('gv-check'), gvCheckText($('gv-addr').value));
 }
 function gvMsg(text, cls = '') { const m = $('gv-msg'); m.hidden = !text; m.className = `msg ${cls}`; m.textContent = text || ''; }
@@ -2471,7 +2485,7 @@ async function settledBy(H, blk) {
   const byOp = new Map();
   for (const x of [{ host: H.host }, ...H.all.filter((y) => y.host !== H.host)]) if (!byOp.has(operator(x.host))) byOp.set(operator(x.host), x.host);
   const got = (await Promise.all([...byOp.values()].map(async (host) => { try { return await deadlineFor(host, blk); } catch { return null; } }))).filter((d) => d && d.settled);
-  if (got.length < 2) gvFail('The block is not settled at two independent helper operators yet. Try again in a few minutes.');
+  if (got.length < 2) { const e = new Error('The block is not settled at two independent helper operators yet.'); e.commit = true; e.wait = true; throw e; }
   return Math.max(...got.map((d) => d.at));
 }
 /* Read a chain-signed giveaway message from the release address, in its own Block:, confirmed. */
@@ -2483,7 +2497,7 @@ async function gvSigned(text, what) {
   const H = await stampHelpers(), b = await blockAt(H.host, r.block), L = await matchLock(r, b.locks);
   if (!L || L.from !== rel || L.scriptHash !== await stampScriptHash(r)) gvFail(`The release address's lock for the ${what} isn't in block ${fmt(r.block)}.`);
   const cc = await confirmBlock(H, b.height, b.id);
-  if (cc.disagree || cc.ops < 2) gvFail(`The block holding the ${what} cannot be confirmed by two independent helper operators yet.`);
+  if (cc.disagree || cc.ops < 2) { const e = new Error(`The block holding the ${what} cannot be confirmed by two independent helper operators yet.`); e.commit = true; e.wait = !cc.disagree; throw e; }
   return { r, H, blk: b, lock: L, at: await settledBy(H, b) };
 }
 let gvLaunchP = null;
