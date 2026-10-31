@@ -6,6 +6,10 @@ model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
 1.1.0 (in testing)
+  - test.4: the three buttons under the headline are now matching tiles (same
+    size, icon, title, one line of text, arrow), side by side on wide screens
+    and full-width rows on phones; the giveaway has its own gift icon. The big
+    block timer now uses the Pulse mark with the BRC PULSE wordmark under it.
   - test.3: BRC Seal's shared code (vendor/brc-kit.js) updated so its messages
     point to "Check it" too.
   - test.2: "Check it" is now part of the dashboard, not a separate page

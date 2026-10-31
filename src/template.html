@@ -104,7 +104,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .intro p { font-size: 1.12rem; color: var(--muted); max-width: 34rem; }
 .intro p strong { color: var(--ink); font-weight: 600; }
 .live-mark { margin: 0; display: grid; justify-items: center; gap: 14px; }
-.live-mark svg { width: 292px; height: 292px; display: block; overflow: visible; color: var(--mark); }
+.live-mark svg { width: 300px; height: auto; aspect-ratio: 1476 / 1721.9; display: block; overflow: visible; color: var(--mark); }
 .live-mark figcaption { display: grid; justify-items: center; gap: 2px; text-align: center; }
 .live-mark b { font-size: 2.3rem; font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
 .live-mark .cap { font-size: .85rem; color: var(--muted); font-weight: 500; }
@@ -201,17 +201,6 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .latest-box { max-width: 820px; font-size: .86rem; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .latest-box .mono { color: var(--ink-2); overflow-wrap: anywhere; }
 .latest-box[hidden], .stamp-updated[hidden], #stamp-result[hidden] { display: none !important; }
-.ctas { display: flex; flex-wrap: wrap; gap: 10px; }
-.cta-t { font-weight: 700; letter-spacing: -.01em; }
-.nav a { white-space: nowrap; }
-@media (max-width: 600px) {
-  .ctas { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
-  .ctas .cta { display: grid; grid-template-columns: 26px minmax(0, 1fr); column-gap: 12px; row-gap: 1px; height: auto; min-height: 50px; padding: 9px 14px 9px 12px; align-items: center; justify-self: stretch; }
-  .ctas .cta svg { grid-row: span 2; }
-  .ctas .cta .cta-sub { grid-column: 2; font-size: .86rem; }
-  .ctas .cta-t, .ctas .cta .wordmark { white-space: nowrap; }
-}
-.cta-check svg, .cta-give svg { color: var(--mark); }
 .works-band { padding: 24px 26px; }
 .works-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-top: 16px; }
 .works-tiles a { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 2px 12px; align-items: start; padding: 14px 16px; border: 1px solid var(--hairline); border-radius: 14px; color: var(--ink); text-decoration: none; transition: border-color .15s, background .15s; }
@@ -310,11 +299,27 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .nav a.my-link .wordmark { font-size: .92rem; }
 .nav a.my-link:hover { color: var(--brand-deep); }
 body[data-view="my"] .nav a.my-link { background: var(--brand); color: #fff; }
-.cta { display: inline-flex; align-items: center; gap: 10px; justify-self: start; height: 46px; padding: 0 18px 0 12px; border-radius: 14px; background: var(--surface); border: 1px solid var(--hairline); box-shadow: var(--shadow); color: var(--ink); font-weight: 700; font-size: .95rem; }
-.cta:hover { text-decoration: none; border-color: var(--brand); }
-.cta svg { width: 26px; height: 26px; color: var(--mark); }
-.cta .cta-sub { color: var(--muted); font-weight: 500; }
-.cta .wordmark { font-size: 1.08rem; color: var(--mark); }
+/* Entry tiles under the headline: one size, one shape, whatever their text. */
+.ctas { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 12px; max-width: 46rem; margin-top: 6px; }
+.cta { position: relative; display: grid; grid-template-rows: auto auto 1fr; align-content: start; gap: 4px; min-height: 112px; padding: 16px 18px; border-radius: 16px; background: var(--surface); border: 1px solid var(--hairline); box-shadow: var(--shadow); color: var(--ink); transition: border-color .15s, transform .15s, box-shadow .15s; }
+.cta[hidden] { display: none; }
+.nav a { white-space: nowrap; }
+.cta:hover { text-decoration: none; border-color: var(--brand); transform: translateY(-1px); }
+.cta:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.cta-ic { width: 32px; height: 32px; color: var(--mark); margin-bottom: 8px; }
+.cta-t { font-weight: 700; font-size: 1rem; letter-spacing: -.01em; line-height: 1.25; }
+.cta-t .wordmark { font-size: 1.06rem; color: var(--mark); }
+.cta-sub { color: var(--muted); font-weight: 500; font-size: .86rem; line-height: 1.35; }
+.cta-go { position: absolute; top: 18px; right: 16px; width: 16px; height: 16px; color: var(--muted); transition: color .15s, transform .15s; }
+.cta:hover .cta-go { color: var(--brand); transform: translateX(2px); }
+@media (max-width: 760px) {
+  .ctas { grid-auto-flow: row; grid-auto-columns: auto; gap: 10px; }
+  .cta { grid-template-columns: 32px minmax(0, 1fr); grid-template-rows: auto auto; column-gap: 14px; row-gap: 2px; align-content: center; min-height: 66px; padding: 12px 40px 12px 14px; }
+  .cta-ic { grid-row: 1 / 3; align-self: center; margin: 0; }
+  .cta-t { align-self: end; }
+  .cta-sub { grid-column: 2; align-self: start; }
+  .cta-go { top: 50%; margin-top: -8px; }
+}
 .my-intro { gap: 16px; }
 .intro h1.wm-title { max-width: none; font-weight: 400; font-family: var(--logo); font-size: clamp(3rem, 8vw, 5rem); line-height: .9; letter-spacing: -0.066em; text-transform: uppercase; color: var(--mark); white-space: nowrap; }
 .my-intro > p { font-size: 1.05rem; color: var(--muted); max-width: 40rem; }
@@ -505,14 +510,14 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   .nav::-webkit-scrollbar { display: none; }
   .nav a { flex: none; }
 }
-@media (max-width: 920px) { .row { grid-template-columns: minmax(0, 1fr); } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi:nth-child(3) { border-left: 0; } .kpi:nth-child(n+3) { border-top: 1px solid var(--hairline); } .live-mark svg { width: 220px; height: 220px; } .intro { gap: 24px 36px; } }
+@media (max-width: 920px) { .row { grid-template-columns: minmax(0, 1fr); } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi:nth-child(3) { border-left: 0; } .kpi:nth-child(n+3) { border-top: 1px solid var(--hairline); } .live-mark svg { width: 230px; } .intro { gap: 24px 36px; } }
 @media (max-width: 640px) {
   .lookup { flex-direction: column; } .lookup input { flex: none; } .lookup button { height: 48px; }
   .acct-top { grid-template-columns: minmax(0, 1fr); padding: 20px 18px; }
   .topbar .wrap { gap: 10px; } .family .wordmark, .pill .pt { display: none; } .pill { padding: 0 10px; }
   .intro { padding-block: 24px 22px; grid-template-columns: minmax(0, 1fr); }
   .live-mark { order: -1; grid-template-columns: auto minmax(0, 1fr); justify-items: start; align-items: center; gap: 20px; }
-  .live-mark svg { width: 136px; height: 136px; }
+  .live-mark svg { width: 128px; }
   .live-mark figcaption { justify-items: start; text-align: left; }
   .brand svg { width: 36px; height: 36px; } .wordmark { font-size: 1.3rem; }
   .pad { padding: 20px 18px 22px; } .live-top { padding: 20px 18px 0; } .status { padding: 12px 18px; } .kpi { padding: 14px 16px 12px; } .trace-cap { left: 18px; }
@@ -539,6 +544,8 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   <symbol id="i-stamp" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><circle cx="15" cy="18" r="7" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M24.5 13.5c1.6-1 3.4-1 5 0M24.5 18c1.6-1 3.4-1 5 0M24.5 22.5c1.6-1 3.4-1 5 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="15" cy="18" r="2.9" fill="var(--brand)"/></symbol>
 <symbol id="i-genuine" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M12 9.5h8l5 5v12h-13z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M15 20l2.5 2.5 4.5-5" fill="none" stroke="var(--brand)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-works" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M10 13h16M10 18.5h16M10 24h10" stroke="currentColor" stroke-width="2.6"/><circle cx="25" cy="24" r="2.9" fill="var(--brand)"/></symbol>
+<symbol id="i-gift" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M10.5 17.5v8h15v-8M9 13.5h18v4H9zM18 13.5v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="18" cy="10" r="2.6" fill="var(--brand)"/></symbol>
+<symbol id="i-go" viewBox="0 0 16 16"><path d="M6 3.5l4.5 4.5L6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-coin" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M10 24.5h16M10 19h12M10 13.5h7" stroke="currentColor" stroke-width="2.6"/><circle cx="24" cy="13.5" r="2.9" fill="var(--brand)"/></symbol>
   <symbol id="i-halving" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M11.5 10h13M11.5 26h13M13 10c0 5 10 5 10 8s-10 3-10 8M23 10c0 5-10 5-10 8s10 3 10 8" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="18" cy="23.5" r="2.6" fill="var(--brand)"/></symbol>
 </svg>
@@ -561,9 +568,9 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <h1>BrowserCoin, beat by beat.</h1>
     <p>Every block, every miner and every helper server, read straight from the network. <strong>Nothing to install, no account, nothing tracked.</strong></p>
     <div class="ctas">
-      <a class="cta" href="#my"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span><span class="cta-sub">Look up your balance and mining</span></a>
-      <a class="cta cta-check" href="#stamp"><svg aria-hidden="true"><use href="#i-stamp"/></svg><span class="cta-t">Check it</span><span class="cta-sub">Postmarks, signatures, genuine files</span></a>
-      <a class="cta cta-give" href="#giveaway" id="give-cta" hidden><svg aria-hidden="true"><use href="#i-coin"/></svg><span class="cta-t">Block 100,000 giveaway</span><span class="cta-sub">Enter with just your address</span></a>
+      <a class="cta" href="#my"><svg class="cta-ic" aria-hidden="true"><use href="#pulse-mark"/></svg><span class="cta-t"><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span></span><span class="cta-sub">Your balance and mining</span><svg class="cta-go" aria-hidden="true"><use href="#i-go"/></svg></a>
+      <a class="cta" href="#stamp"><svg class="cta-ic" aria-hidden="true"><use href="#i-stamp"/></svg><span class="cta-t">Check it</span><span class="cta-sub">Postmarks, signatures, genuine files</span><svg class="cta-go" aria-hidden="true"><use href="#i-go"/></svg></a>
+      <a class="cta" href="#giveaway" id="give-cta" hidden><svg class="cta-ic" aria-hidden="true"><use href="#i-gift"/></svg><span class="cta-t">Block 100,000 giveaway</span><span class="cta-sub">Enter with just your address</span><svg class="cta-go" aria-hidden="true"><use href="#i-go"/></svg></a>
     </div>
   </div>
   <div class="intro-text my-intro my-only" id="my-top">
@@ -587,7 +594,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <ol class="gv-steps" id="gv-steps"></ol>
   </div>
   <figure class="live-mark" aria-label="Time since the last block">
-    <svg viewBox="307.6 90 1316 1316" aria-hidden="true">
+    <svg viewBox="227.6 10 1476 1721.9" aria-hidden="true">
       <defs><mask id="hm-d" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><circle cx="1272.4" cy="800" r="148" fill="#000"/></mask><mask id="hm-f" maskUnits="userSpaceOnUse" x="0" y="0" width="2000" height="2000"><rect width="2000" height="2000" fill="#fff"/><path d="M830.0 470.0 L980.0 1135.0 L1100.0 800.0" fill="none" stroke="#000" stroke-width="192" stroke-miterlimit="6"/></mask></defs>
       <g mask="url(#hm-f)">
         <path id="ring-track" d="M965.6 143.9H1371A198.7 198.7 0 0 1 1569.7 342.6V1153.4A198.7 198.7 0 0 1 1371 1352.1H560.2A198.7 198.7 0 0 1 361.5 1153.4V342.6A198.7 198.7 0 0 1 560.2 143.9Z" fill="none" stroke="currentColor" stroke-width="107.8"/>
@@ -600,6 +607,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       </g>
       <circle class="ripple" id="ripple" cx="1272.4" cy="800" r="114" fill="var(--brand)"/>
       <circle class="beat-dot" cx="1272.4" cy="800" r="114" fill="var(--brand)"/>
+      <path class="lm-word" fill="currentColor" d="M322.4370951497835 1651.9139072847681V1458.0H389.31377537516255Q423.7703408678835 1458.0 441.0270123019456 1470.5656199918267Q458.28368373600773 1483.1312399836531 458.28368373600773 1510.1786747126423Q458.28368373600773 1522.7290084880142 452.83660636697607 1532.2706748009527Q447.38952899794435 1541.8123411138915 437.30162632645704 1547.1337781193251Q427.2137236549697 1552.4552151247588 413.29779898322624 1552.4814200672527L413.02904829436756 1550.8776509149318Q437.8740676274995 1550.9169583286725 452.17564837086843 1564.1413525713988Q466.4772291142374 1577.3657468141253 466.4772291142374 1598.65149483586Q466.4772291142374 1625.157060696716 449.2227414253831 1638.535483990742Q431.96825373652877 1651.9139072847681 400.19482764197903 1651.9139072847681ZM346.4056825130957 1628.6837258582927H400.13805026657565Q419.9446526411319 1628.6837258582927 430.6891458183112 1620.5447741102587Q441.43363899549047 1612.4058223622246 441.43363899549047 1597.1898191503442Q441.43363899549047 1581.9738159384638 430.691329563519 1573.4295544119336Q419.9490201315475 1564.8852928854037 400.13805026657565 1564.8852928854037H346.4056825130957ZM346.4056825130957 1541.7511962480726H389.27883545183744Q410.4248237802714 1541.7511962480726 421.8324586987661 1533.7509873348833Q433.2400936172608 1525.7507784216941 433.2400936172608 1511.3584972380525Q433.2400936172608 1496.1512290070032 422.23776847726197 1488.6907052167392Q411.23544333726306 1481.2301814264752 389.27883545183744 1481.2301814264752H346.4056825130957Z M490.33057523559637 1651.9139072847681V1458.0H564.1050897894837Q584.610790687136 1458.0 599.3831935652354 1465.1010726611323Q614.1555964433348 1472.2021453222646 622.2256852031742 1485.441825781446Q630.2957739630136 1498.681506240627 630.2957739630136 1516.6985710919007Q630.2957739630136 1529.8169786778994 624.1659011457962 1540.0632778911022Q618.0360283285787 1550.309577104305 608.4725245635618 1556.331279519587Q598.9090207985449 1562.352981934869 588.4737526107174 1562.9297907263272L586.852513496734 1560.4673596224425Q604.6488700537213 1560.4673596224425 614.8886180313006 1568.6674562362955Q625.1283660088798 1576.8675528501487 626.7583401036944 1594.8715152301756L632.2032337275183 1651.9139072847681H607.9484257136849L603.0672384100722 1597.4387661040357Q601.9835006738061 1585.4434036680436 594.5098744122952 1579.7188406293221Q587.0362481507843 1573.9942775906004 570.1640659015954 1573.9942775906004H514.2991625989087V1651.9139072847681ZM514.2991625989087 1550.7335237312157H566.9041177119661Q584.5869195181467 1550.7335237312157 594.9108167003754 1541.7752174453585Q605.2347138826042 1532.8169111595014 605.2347138826042 1516.2615219937431Q605.2347138826042 1499.4330146487107 594.6420660115168 1490.3468842540478Q584.0494181404295 1481.2607538593847 563.9478601345206 1481.2607538593847H514.2991625989087Z M730.5412616801966 1656.2837981531572Q704.5775646874735 1656.2837981531572 684.8890345824364 1644.1322229206578Q665.2005044773991 1631.9806476881583 654.2561235995558 1609.3140225535976Q643.3117427217127 1586.6473974190367 643.3117427217127 1555.2300718216584Q643.3117427217127 1523.8345836763583 654.2452048735167 1501.0292157069525Q665.1786670253209 1478.2238477375467 684.8693808755659 1465.9269784345788Q704.5600947258109 1453.6301091316109 730.5587316418591 1453.6301091316109Q765.8652241053126 1453.6301091316109 785.3024734831536 1471.4089957269357Q804.7397228609946 1489.1878823222603 810.7526902954453 1519.8819381709598L785.4097770549303 1521.5250147370211Q781.3348418178937 1500.8335454684075 768.0175633896865 1488.8622042297015Q754.7002849614794 1476.8908629909956 730.5587316418591 1476.8908629909956Q712.0696777691024 1476.8908629909956 698.0870738543721 1486.2828677430502Q684.1044699396417 1495.6748724951049 676.2408201160897 1513.2211152116483Q668.3771702925378 1530.7673579281918 668.3771702925378 1555.2300718216584Q668.3771702925378 1579.7015206959563 676.2451876065054 1597.1112043228627Q684.113204920473 1614.5208879497688 698.0958088352033 1623.7719661217707Q712.0784127499337 1633.0230442937725 730.5499966610279 1633.0230442937725Q755.7971251689922 1633.0230442937725 769.6431699940854 1619.833589974371Q783.4892148191786 1606.64413565497 787.0222811880823 1584.0539416026827L812.369561919013 1585.6970181687443Q808.8102906076156 1606.7969978195174 798.4099623431132 1622.6618734147141Q788.0096340786107 1638.5267490099106 770.9091754410562 1647.405273581534Q753.8087168035016 1656.2837981531572 730.5412616801966 1656.2837981531572Z M826.0520230509876 1651.9139072847681V1458.0H902.70956470371Q937.3572829162637 1458.0 956.8857411636054 1474.7126188207212Q976.4141994109472 1491.4252376414424 976.4141994109472 1520.7274976512765Q976.4141994109472 1540.158195793494 967.5766575690448 1554.393097293876Q958.7391157271422 1568.627998794258 942.228059923065 1576.2299575938027Q925.7170041189877 1583.8319163933472 902.70956470371 1583.8319163933472H865.2823222472477V1651.9139072847681ZM865.2823222472477 1550.4429355902787H900.5629098248007Q917.5466131078853 1550.4429355902787 926.8190203027375 1542.9457965607096Q936.0914274975896 1535.4486575311405 936.0914274975896 1520.7274976512765Q936.0914274975896 1506.2663534794399 926.8905754653678 1498.827667141254Q917.6897234331459 1491.3889808030685 900.5629098248007 1491.3889808030685H865.2823222472477Z M1065.6345076775974 1656.2837981531572Q1041.5045736266543 1656.2837981531572 1023.7013905768729 1647.2577957658577Q1005.8982075270916 1638.2317933785582 996.2347599117427 1621.5555084940856Q986.5713122963938 1604.8792236096133 986.5713122963938 1582.1770542710876V1458.0H1025.801611492654V1582.1770542710876Q1025.801611492654 1601.6310966310548 1036.1271839908627 1612.2629569905716Q1046.4527564890716 1622.8948173500887 1065.6345076775974 1622.8948173500887Q1084.8293613373705 1622.8948173500887 1095.1549338355794 1612.2629569905716Q1105.480506333788 1601.6310966310548 1105.480506333788 1582.1770542710876V1458.0H1144.7108055300482V1582.1770542710876Q1144.7108055300482 1604.8792236096133 1135.0473579146992 1621.5555084940856Q1125.3839102993504 1638.2317933785582 1107.6365629859583 1647.2577957658577Q1089.8892156725665 1656.2837981531572 1065.6345076775974 1656.2837981531572Z M1164.2970468360822 1651.9139072847681V1458.0H1203.5273460323424V1640.8460697885346L1181.9086518805636 1618.5249264816996H1293.901224712738V1651.9139072847681Z M1382.1611018332158 1656.2837981531572Q1357.4756459285513 1656.2837981531572 1339.6705543907328 1647.8171345956534Q1321.865462852914 1639.3504710381494 1311.811991675524 1624.1077544545474Q1301.7585204981342 1608.8650378709451 1300.262921747749 1588.3418670116303L1339.8701420348034 1586.2738269602025Q1341.4957486392022 1598.1731046070504 1346.7625920144405 1606.4895981744426Q1352.0294353896786 1614.8060917418345 1360.9440667713793 1619.0651200338525Q1369.8586981530798 1623.3241483258707 1382.7073381917644 1623.3241483258707Q1393.501040650268 1623.3241483258707 1401.0566323712205 1620.7038291094987Q1408.612224092173 1618.0835098931263 1412.591582969293 1612.8297689891351Q1416.5709418464135 1607.5760280851441 1416.5709418464135 1599.8904285101778Q1416.5709418464135 1592.881073147774 1413.1962720192253 1587.4907731541457Q1409.821602192037 1582.1004731605171 1400.230726597774 1577.6595355587256Q1390.639851003511 1573.218597956934 1371.861225848273 1568.9142194447793Q1347.3188802688694 1563.3218480052792 1332.4268798335675 1556.2792280355302Q1317.5348793982657 1549.2366080657812 1310.804176592304 1538.545691660342Q1304.0734737863424 1527.8547752549027 1304.0734737863424 1511.6621878502363Q1304.0734737863424 1494.4164351422132 1312.644448684594 1481.345561521559Q1321.2154235828457 1468.2746879009044 1337.2649006622514 1460.9523985162577Q1353.3143777416574 1453.6301091316109 1375.6848803581136 1453.6301091316109Q1399.4209738709412 1453.6301091316109 1415.8604745123882 1462.044871233355Q1432.2999751538352 1470.459633335099 1441.6706508830393 1485.1042121043924Q1451.0413266122434 1499.748790873686 1453.0831617211775 1518.7894654538622L1413.7621620846444 1520.7143951800294Q1412.6958943100408 1510.40141672384 1407.8971808950976 1502.7546161333867Q1403.0984674801543 1495.1078155429336 1394.925084238023 1490.8487872509154Q1386.7517009958915 1486.5897589588974 1375.138643999565 1486.5897589588974Q1360.5474919737146 1486.5897589588974 1352.185648186186 1493.1178818897595Q1343.8238043986576 1499.6460048206216 1343.8238043986576 1510.2834944826177Q1343.8238043986576 1517.7221808208035 1347.484694876367 1522.6640045610075Q1351.1455853540765 1527.6058283012112 1360.138323134031 1531.1820611450435Q1369.1310609139853 1534.7582939888757 1385.4647249270015 1538.3733258172208Q1412.062008086586 1543.8094844602135 1427.6171502632033 1552.2111440907106Q1443.1722924398202 1560.6128037212077 1449.7467824492744 1571.9668618679625Q1456.3212724587286 1583.320920014717 1456.3212724587286 1597.9654987840106Q1456.3212724587286 1615.900598175843 1447.2237149087987 1629.0430269591277Q1438.1261573588688 1642.1854557424124 1421.4719912295309 1649.2346269477848Q1404.817825100193 1656.2837981531572 1382.1611018332158 1656.2837981531572Z M1473.3184254388245 1651.9139072847681V1458.0H1606.5779594160217V1491.3889808030685H1512.5487246350847V1538.1909080782195H1603.3005412647299V1571.176762848H1512.5487246350847V1618.5249264816996H1608.7629048502163V1651.9139072847681Z"/>
     </svg>
     <figcaption><b id="since">–</b><span class="cap" id="since-cap">since the last block</span><span class="replay-note" id="since-note" hidden>Replaying real blocks at 20× speed</span></figcaption>
   </figure>
@@ -922,7 +930,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <div class="works-tiles">
       <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#vault-mark"/></svg><b>Keep it · BRC Vault</b><span>Your wallet lives in one browser. Back up the coins you mine: a password-protected file or a paper copy, offline.</span></a>
       <a href="#stamp"><svg aria-hidden="true"><use href="#i-stamp"/></svg><b>Check it · here on Pulse</b><span>Postmarks, signatures, mailbox links and genuine BRC Works files.</span></a>
-      <a href="#giveaway" class="give-tile" hidden><svg aria-hidden="true"><use href="#i-coin"/></svg><b>The block 100,000 giveaway</b><span>Enter with just your address. No key, nothing to sign.</span></a>
+      <a href="#giveaway" class="give-tile" hidden><svg aria-hidden="true"><use href="#i-gift"/></svg><b>The block 100,000 giveaway</b><span>Enter with just your address. No key, nothing to sign.</span></a>
     </div>
   </section>
 </main>
