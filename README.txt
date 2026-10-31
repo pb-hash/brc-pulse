@@ -36,7 +36,7 @@ Check it
 --------
 https://pb-hash.github.io/brc-pulse/#stamp checks proof straight from the
 chain, in your browser: postmark receipts of files, messages signed on the
-chain and mailbox links made in BRC Seal, and whether a BRC Works file you were
+chain and mailbox links made in BRC Post, and whether a BRC Works file you were
 given is a genuine release. Nothing you check is uploaded.
 
 My BRC

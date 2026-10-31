@@ -618,7 +618,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   <section class="card" aria-labelledby="a-bal">
     <div class="acct-top">
       <div>
-        <div class="who"><span class="gv-idc" id="a-idc" aria-hidden="true" title="The same picture appears for this address in BRC Vault and BRC Seal"></span><b id="a-name">Address</b><span class="tag pool" id="a-tag" hidden>Pool</span></div>
+        <div class="who"><span class="gv-idc" id="a-idc" aria-hidden="true" title="The same picture appears for this address in BRC Vault and BRC Post"></span><b id="a-name">Address</b><span class="tag pool" id="a-tag" hidden>Pool</span></div>
         <div class="addr" id="a-addr"></div>
         <p class="lookalike-warn" id="a-lookalike" hidden></p>
         <div class="bal" id="a-bal">–</div>
@@ -752,7 +752,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <div class="sh">
       <svg class="ic" aria-hidden="true"><use href="#i-stamp"/></svg>
       <h2 id="check-proof-h">Check a postmark or a signature</h2>
-      <p>Paste a <strong>postmark receipt</strong>, a <strong>message signed on the chain</strong> or a <strong>mailbox link</strong> from BRC Seal: the whole block. For a postmark, add the file too, to check it is the same one.</p>
+      <p>Paste a <strong>postmark receipt</strong>, a <strong>message signed on the chain</strong> or a <strong>mailbox link</strong> from BRC Post: the whole block. For a postmark, add the file too, to check it is the same one.</p>
     </div>
     <form class="stamp-form" id="stamp-form" autocomplete="off">
       <textarea id="stamp-receipt" spellcheck="false" autocapitalize="off" aria-label="Stamp receipt or chain-signed message" placeholder="-----BEGIN BRC STAMP RECEIPT-----&#10;Fingerprint: …&#10;Salt: …&#10;Owner: …&#10;Lock ID: …&#10;-----END BRC STAMP RECEIPT-----"></textarea>
@@ -763,8 +763,8 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     </form>
     <p class="msg" id="stamp-msg" role="status" hidden></p>
     <details class="check-more">
-      <summary>Making a postmark in BRC Seal? Get a drand beacon or a recent block</summary>
-      <div class="latest-box" id="stamp-drand" hidden>Making a new stamp? The latest drand beacon, for BRC Seal's "prove when it was made": <b id="stamp-drand-h"></b><span class="mono" id="stamp-drand-sig"></span><button type="button" id="stamp-drand-copy">Copy</button></div>
+      <summary>Making a postmark in BRC Post? Get a drand beacon or a recent block</summary>
+      <div class="latest-box" id="stamp-drand" hidden>Making a new stamp? The latest drand beacon, for BRC Post's "prove when it was made": <b id="stamp-drand-h"></b><span class="mono" id="stamp-drand-sig"></span><button type="button" id="stamp-drand-copy">Copy</button></div>
       <div class="latest-box" id="stamp-latest" hidden>Or a recent, settled block: <b id="stamp-latest-h"></b><span class="mono" id="stamp-latest-id"></span><span class="muted" id="stamp-latest-note"></span><button type="button" id="stamp-latest-copy">Copy both</button></div>
     </details>
   </section>
@@ -778,7 +778,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div class="sh">
         <svg class="ic" aria-hidden="true"><use href="#i-genuine"/></svg>
         <h2 id="genuine-h">Is this BRC Works file genuine?</h2>
-        <p>Every BRC Works release is signed on the chain by the BRC Works release address. Choose a copy of BRC Vault, BRC Seal or another BRC Works file you were given. It is fingerprinted here, never uploaded.</p>
+        <p>Every BRC Works release is signed on the chain by the BRC Works release address. Choose a copy of BRC Vault, BRC Post or another BRC Works file you were given. It is fingerprinted here, never uploaded.</p>
       </div>
       <label class="file"><input type="file" id="genuine-file"><span id="genuine-file-name">Choose the file</span></label>
       <p class="msg" id="genuine-msg" role="status" hidden></p>
@@ -955,7 +955,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <script>
 /*__DRAND__*/
 const GIVE = /*__GIVEAWAY__*/null;
-// BRC Works addresses (BRC Seal src/official.js, through the kit) and the release postmarks in releases/.
+// BRC Works addresses (BRC Post src/official.js, through the kit) and the release postmarks in releases/.
 const OFFICIAL = /*__OFFICIAL__*/null || BRCKit.known.OFFICIAL;
 const RELEASES = /*__RELEASES__*/[];
 // With nothing postmarked yet, the genuine-file check could only call every file unreleased, so it stays hidden.
@@ -1615,7 +1615,7 @@ $('forget').addEventListener('click', () => { store.set(null); $('remembered').h
 $('a-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(M.addr); $('a-copy').textContent = 'Copied'; setTimeout(() => ($('a-copy').textContent = 'Copy address'), 1500); } catch {} });
 addEventListener('hashchange', route);
 
-/* ---------- stamps (made in BRC Seal) ----------
+/* ---------- stamps (made in BRC Post) ----------
    A stamp is an ordinary BrowserCoin hash-locked payment whose secret phrase is
    BRCSTAMP1_<file SHA-256>_<salt>[_A<height>_<block id>]. The official app builds
      OP_SHA256 <SHA256(SHA256(phrase))> OP_EQUALVERIFY <owner> OP_CHECKSIG
@@ -1646,7 +1646,7 @@ function parseStampReceipt(text) {
   if (a < 0) throw new Error('This is not a BRC stamp receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.');
   if (b < a) throw new Error('The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.');
   const body = t.slice(a, b);
-  // Line by line, so a paste full of blank lines can't make the search slow (same reader as BRC Seal).
+  // Line by line, so a paste full of blank lines can't make the search slow (same reader as BRC Post).
   const field = (n) => { const want = n.toLowerCase() + ':'; for (const raw of body.split('\n')) { const line = raw.replace(/^[ \t]*>?[ \t]*/, ''); if (line.slice(0, want.length).toLowerCase() === want) { const v = line.slice(want.length).trim(); return v || null; } } return null; };
   const hex = (n, len = 64) => {
     const v = field(n); if (!v) throw new Error(`The receipt's "${n}:" line is missing.`);
@@ -1821,7 +1821,7 @@ async function searchRange(host, r, from, to, newestFirst, paced) {
   return null;
 }
 
-/* A message signed on the chain in BRC Seal (or a mailbox link) is a stamp of the message
+/* A message signed on the chain in BRC Post (or a mailbox link) is a stamp of the message
    and its address, so it is found exactly like one; then its lock must be the signer's own. */
 function parseChainSignedAsReceipt(text) {
   const cs = BRCChain.parseChainSigned(text);
@@ -2104,10 +2104,10 @@ async function goLive() {
 }
 
 /* ---------- Block 100,000 giveaway (BRC Works) ----------
-   Entering: the address is sealed here, in the browser, to the giveaway mailbox (BRC Seal's sealing code,
+   Entering: the address is sealed here, in the browser, to the giveaway mailbox (BRC Post's sealing code,
    in brc-kit.js) and dropped into the BRC Mailbox. No key is involved: the prize can only ever go to the
    address in an entry, so entering someone else's address only gives its owner a chance. After entries
-   close, the organizer opens the letters offline in BRC Seal and publishes the entry list and its
+   close, the organizer opens the letters offline in BRC Post and publishes the entry list and its
    fingerprint here. The winner comes from a drand beacon whose round is fixed in advance:
      SHA-256("BRC Works giveaway draw v1\n" + list fingerprint + "\n" + round + "\n" + signature) mod entries. */
 const GIVE_BASE = 'https://pb-hash.github.io/brc-pulse/giveaway/';
@@ -2130,7 +2130,7 @@ function inWords(sec) {
   const d = Math.floor(sec / DAY), h = Math.floor((sec % DAY) / HOUR), m = Math.floor((sec % HOUR) / 60), s = sec % 60;
   return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : m ? `${m}m ${s}s` : `${s}s`;
 }
-/* The 3x3 address picture, the same in BRC Vault and BRC Seal: from SHA-256 of the address, so a look-alike gets an unrelated picture. */
+/* The 3x3 address picture, the same in BRC Vault and BRC Post: from SHA-256 of the address, so a look-alike gets an unrelated picture. */
 function identicon(el, a) {
   el.replaceChildren();
   for (const colour of BRCKit.known.addressPicture(a).colors) { const i = document.createElement('i'); i.style.background = colour; el.append(i); }
@@ -2448,7 +2448,7 @@ $('gv-mine-form').addEventListener('submit', (e) => {
   gvShowCheck(out, i >= 0 ? { kind: 'ok', addr: v, text: `On the list: entry ${fmt(i + 1)} of ${fmt(GV.entries.addresses.length)} in sorted order.${GV.drawn && GV.drawn.winner === v ? ' This address won!' : ''}` }
     : { kind: 'no', addr: v, text: 'Not on the entry list.' });
 });
-/* Anyone can download every sealed letter: for the organizer to open in BRC Seal, and for anyone to count. */
+/* Anyone can download every sealed letter: for the organizer to open in BRC Post, and for anyone to count. */
 $('gv-dl').addEventListener('click', async () => {
   const btn = $('gv-dl'); btn.disabled = true; btn.textContent = 'Downloading…';
   try {

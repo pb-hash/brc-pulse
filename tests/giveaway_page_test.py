@@ -125,7 +125,7 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
     got_export = json.load(open(dl.value.path()))
     assert got_export['mailbox'] == fx['mailbox'] and [l['letter'] for l in got_export['letters']] == letters, got_export
     assert dl.value.suggested_filename == f"brc-mailbox-{fx['mailbox'][:8]}-letters.json"
-    ok('anyone can download every sealed letter, in the file BRC Seal opens')
+    ok('anyone can download every sealed letter, in the file BRC Post opens')
     ok('entering the same address again is flagged as adding no chance')
 
     STATE['mailbox_down'] = True

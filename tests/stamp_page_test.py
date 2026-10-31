@@ -1,5 +1,5 @@
 """Headless check of BRC Pulse's "Check a stamp" view against a simulated chain.
-Usage: python3 tests/stamp_page_test.py dist/brc-pulse.html <pulse-fixture.json from brc-seal test/pulse-fixture.mjs> <out-dir>"""
+Usage: python3 tests/stamp_page_test.py dist/brc-pulse.html <pulse-fixture.json from brc-post test/pulse-fixture.mjs> <out-dir>"""
 import json, pathlib, sys, re
 from urllib.parse import urlparse, parse_qs
 from playwright.sync_api import sync_playwright, expect
@@ -204,7 +204,7 @@ with sync_playwright() as pw:
     assert ph.evaluate('document.documentElement.scrollWidth') <= 390
     ph.screenshot(path=str(out / 'pulse-stamp-phone.png'), full_page=True)
     ok('fits a phone screen')
-    # --- Messages signed on the chain, and mailbox links (BRC Seal 0.5) ---
+    # --- Messages signed on the chain, and mailbox links (BRC Post 0.5) ---
     page.goto(pathlib.Path(page_path).resolve().as_uri() + '#stamp')
     expect(page.locator('#stamp-top h1')).to_be_visible()
     def check(text):

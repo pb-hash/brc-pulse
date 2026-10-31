@@ -17,7 +17,7 @@ every balance plus every coin still locked must add up to the coins mined so far
 
 The output lists the addresses sorted, with a fingerprint anyone can recompute:
     SHA-256("BRC Works giveaway eligible v1\\n" + addresses sorted, one per line)
-the same fingerprint BRC Seal and BRC Pulse compute (giveaway-core.js eligibleFingerprint).
+the same fingerprint BRC Post and BRC Pulse compute (giveaway-core.js eligibleFingerprint).
 """
 import hashlib, json, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))

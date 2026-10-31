@@ -99,7 +99,7 @@ def main():
     hist = json.load(open(args[0] if args else 'history.json'))
     snap, probes = snapshot(hist)
     tpl = open(os.path.join(HERE, 'src', 'template.html')).read()
-    # drand checking and the giveaway code, built from BRC Seal's src/drand-core.js and src/giveaway-core.js
+    # drand checking and the giveaway code, built from BRC Post's src/drand-core.js and src/giveaway-core.js
     # (see vendor/README.txt).
     kit = open(os.path.join(HERE, 'vendor', 'brc-kit.js')).read().strip()
     tpl = tpl.replace('/*__DRAND__*/', kit + '\nvar BRCDrand = BRCKit.drand, BRCGiveaway = BRCKit.giveaway, BRCChain = BRCKit.chain;')
