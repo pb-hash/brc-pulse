@@ -255,6 +255,9 @@ with sync_playwright() as pw:
     assert 'look-alike' not in page.evaluate(f"nameHtml({json.dumps(fx['relAddress'])})")
     assert 'BRC Works release address' in page.evaluate(f"nameHtml({json.dumps(fx['relAddress'])})")
     assert page.evaluate("document.body.innerText").count('The BRC Works rule') == 1
+    v = '9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60'
+    got = page.evaluate(f"(() => {{ const e = document.createElement('span'); identicon(e, '{v}'); return [...e.children].map((i) => i.style.background); }})()")
+    assert got == ['transparent', 'rgb(194, 65, 122)', 'transparent', 'rgb(124, 92, 255)', 'transparent', 'rgb(124, 92, 255)', 'transparent', 'transparent', 'transparent'], got
     ok('an address imitating a named one is marked as a look-alike wherever it is named')
 
     assert not errors, errors
