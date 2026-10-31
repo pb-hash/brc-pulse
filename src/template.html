@@ -2070,6 +2070,7 @@ function gvRules() {
   const rules = [
     `<b>Who can enter:</b> any address that received BRC (mined a block, was paid, or redeemed a hash-locked payment) in the 30 days up to block ${fmt(e.cutoff)}. That's ${fmt(e.count)} addresses. List fingerprint <span class="mono">${esc(e.fingerprint)}</span>; anyone can rebuild the list from the public chain archive with <span class="mono">tools/giveaway_eligible.py</span>.`,
     '<b>One entry per address.</b> Entering again doesn\'t add a chance.',
+    "<b>The giveaway's own addresses can't enter:</b> the mailbox, the prize pool and the BRC Works addresses are set aside.",
     '<b>Entering is free.</b> No purchase, no fee, no wallet: you only paste an address.',
     '<b>The prize only ever goes to the winning address itself.</b> You can enter an address that isn\'t yours, but that only gives its owner a chance.',
     `<b>The prize:</b> everything in the prize pool when the winner is drawn, sent straight to the winning address. Nothing to claim.`,
