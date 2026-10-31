@@ -2113,7 +2113,7 @@ function gvCheckText(raw) {
   if (!/^[0-9a-f]{64}$/.test(v)) return { kind: 'no', text: 'A BrowserCoin address is 64 characters, using only 0–9 and a–f. Check the whole address was pasted.' };
   try { BRCGiveaway.entryText(v); } catch (e) { return { kind: 'no', text: e.message }; }
   if (v === GIVE.mailbox || v === GIVE.pool) return { kind: 'no', text: 'That\'s one of the giveaway\'s own addresses. Paste your own address.' };
-  if (GV.eligible && !GV.eligible.has(v)) return { kind: 'no', addr: v, text: `This address hasn't received BRC in the 30 days up to block ${fmt(GIVE.eligible.cutoff)}, so it can't enter. Check you pasted your mining or payout address.` };
+  if (GV.eligible && !GV.eligible.has(v)) return { kind: 'no', addr: v, text: `This address didn't hold 50 BRC at block ${fmt(GIVE.eligible.cutoff)}, and wasn't paid by a mining pool in the 30 days before it, so it can't enter. Check you pasted your mining or payout address.` };
   const before = gvStore.get(v);
   return { kind: 'ok', addr: v, text: GV.eligible ? `Eligible.${before ? ` You entered this address on ${before}; entering again doesn't add a chance.` : ''}` : 'Checking the eligible list…' };
 }
