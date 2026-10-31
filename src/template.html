@@ -668,7 +668,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <div class="sh">
       <svg class="ic" aria-hidden="true"><use href="#i-hist"/></svg>
       <h2 id="aa-h">Activity</h2>
-      <p id="aa-p">Coins in and out, newest first.</p>
+      <p id="aa-p">Coins in and out, and blocks found, newest first.</p>
     </div>
     <div class="tbl" style="margin-top:12px"><table><thead><tr><th>When</th><th>Block</th><th>What</th><th>With</th><th class="r">Amount</th></tr></thead><tbody id="aa-rows"></tbody></table></div>
     <p class="fine" id="aa-note"></p>
@@ -1451,6 +1451,7 @@ function applyRaw(x) {
     let i = dayOf(ts) - dayOf(Date.parse(M.d0 + 'T00:00:00Z') / 1000);
     if (i > 29) { const shift = i - 29; a.d = a.d.slice(shift).concat(Array(Math.min(shift, 30)).fill(0)).slice(-30); M.d0 = new Date((Date.parse(M.d0 + 'T00:00:00Z') / 1000 + shift * DAY) * 1000).toISOString().slice(0, 10); i = 29; }
     if (i >= 0) a.d[i]++;
+    a.r.unshift([h, ts, 'mined', '', got, 0n]);
     if (M.applied > M.started) toastMine(h, got);
   }
   if (moved) { if (a.f == null) a.f = h; a.l = h; if (M.applied > M.started) a.fresh = performance.now(); }
@@ -1533,13 +1534,14 @@ function renderAcct() {
     : '<li><span class="muted">No coins received yet.</span><span></span></li>';
   renderBalance();
   // activity
-  const what = { in: 'Received', out: 'Sent', lock: 'Locked in a script', redeem: 'Script payout' };
+  const what = { in: 'Received', out: 'Sent', lock: 'Locked in a script', redeem: 'Script payout', mined: 'Found a block' };
   const rows = a.r.slice(0, 40);
   $('aa-rows').innerHTML = rows.length ? rows.map(([h, t, k, c, w, fe]) => {
-    const sign = k === 'in' || k === 'redeem' ? '+' : '−', cls = sign === '+' ? 'amt-in' : 'amt-out';
+    const sign = k === 'in' || k === 'redeem' || k === 'mined' ? '+' : '−', cls = sign === '+' ? 'amt-in' : 'amt-out';
     return `<tr class="${a.fresh && h > M.started && performance.now() - a.fresh < 3000 ? 'fresh' : ''}"><td class="muted">${when(t)}</td><td>${fmt(h)}</td><td>${what[k]}</td><td>${c ? nameLink(c) : '–'}</td><td class="r"><span class="${cls}">${sign}${brc(w, false)}</span>${fe > 0n ? `<small>fee ${brc(fe, false)}</small>` : ''}</td></tr>`;
-  }).join('') : '<tr><td colspan="5" class="muted">No transfers yet.</td></tr>';
-  $('aa-note').textContent = a.ni + a.no > rows.length ? `Showing the latest ${rows.length} of ${fmt(a.ni + a.no)} transfers. Block rewards are counted under Mining.` : 'Block rewards are counted under Mining.';
+  }).join('') : '<tr><td colspan="5" class="muted">Nothing yet.</td></tr>';
+  const total = a.ni + a.no + a.m;
+  $('aa-note').textContent = total > rows.length ? `Showing the latest ${rows.length} of ${fmt(total)}.` : '';
 }
 /* Balance over time: sums of the hourly flows over rolling periods, and the balance walked back from now. */
 const PERIODS = [[1, 'Last 24 hours'], [7, '7 days'], [30, '30 days'], [365, 'Year']];

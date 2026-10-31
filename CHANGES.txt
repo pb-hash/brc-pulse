@@ -5,6 +5,11 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+1.1.3 (Oct 31, 2026)
+  - MY BRC: blocks you find now show in Activity ("Found a block", +reward),
+    newest first with your payments. Before, they were only counted under
+    Mining, so a block found an hour ago seemed missing (Patrick, Oct 31).
+
 1.1.2 (Oct 31, 2026)
   - The BRC Works addresses' balances are read again on every new block while
     Check it is open. Before, they were read once when the page opened, so a
