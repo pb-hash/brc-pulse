@@ -209,6 +209,12 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .works-tiles svg { width: 34px; height: 34px; grid-row: span 2; color: var(--mark); }
 .works-tiles b { font-size: .98rem; }
 .works-tiles span { color: var(--muted); font-size: .86rem; }
+.promises { list-style: none; margin: 16px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 18px; max-width: 64rem; }
+.promises li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; align-items: start; font-size: .92rem; line-height: 1.5; color: var(--ink-2); }
+.promises li svg { width: 22px; height: 22px; margin-top: 1px; color: var(--good); }
+.promises li b { color: var(--ink); }
+.promises li.key { grid-column: 1 / -1; padding: 12px 14px; border-radius: 12px; background: var(--brand-tint); }
+.promises li.key strong { color: var(--ink); }
 .check-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 #check-proof .stamp-form, .genuine .file, .official-box ul { margin-top: 16px; }
 .genuine .msg { margin-top: 10px; }
@@ -546,6 +552,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <symbol id="i-genuine" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M12 9.5h8l5 5v12h-13z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M15 20l2.5 2.5 4.5-5" fill="none" stroke="var(--brand)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-works" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M10 13h16M10 18.5h16M10 24h10" stroke="currentColor" stroke-width="2.6"/><circle cx="25" cy="24" r="2.9" fill="var(--brand)"/></symbol>
 <symbol id="i-gift" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M10.5 17.5v8h15v-8M9 13.5h18v4H9zM18 13.5v12" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><circle cx="18" cy="10" r="2.6" fill="var(--brand)"/></symbol>
+<symbol id="i-ok" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="currentColor" opacity=".14"/><path d="M6.5 11.3l3 3 6-6.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-go" viewBox="0 0 16 16"><path d="M6 3.5l4.5 4.5L6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-coin" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M10 24.5h16M10 19h12M10 13.5h7" stroke="currentColor" stroke-width="2.6"/><circle cx="24" cy="13.5" r="2.9" fill="var(--brand)"/></symbol>
   <symbol id="i-halving" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M11.5 10h13M11.5 26h13M13 10c0 5 10 5 10 8s-10 3-10 8M23 10c0 5-10 5-10 8s10 3 10 8" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="18" cy="23.5" r="2.6" fill="var(--brand)"/></symbol>
@@ -926,8 +933,14 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <div class="sh">
       <svg class="ic" aria-hidden="true"><use href="#i-works"/></svg>
       <h2 id="works-h">BRC Works</h2>
-      <p>Small, independent tools around Pulse: one keeps your wallet safe, one proves things on the chain. No BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up.</p>
+      <p>Small, independent tools for BrowserCoin, safe by design. Each one is a single web page that does all its work inside your browser.</p>
     </div>
+    <ul class="promises">
+      <li><svg aria-hidden="true"><use href="#i-ok"/></svg><span><b>Your secrets never leave your device.</b> Nothing you paste, type or open is uploaded. There's no account, no tracking, and no server that ever sees your keys, backups, files or letters.</span></li>
+      <li class="key"><svg aria-hidden="true"><use href="#i-ok"/></svg><span><b>Only BRC Vault ever asks for a key that holds coins,</b> and only to lock it into a password-protected backup, right there on your device. <strong>If any other page, person or message asks for your key, it isn't us. Never paste it.</strong></span></li>
+      <li><svg aria-hidden="true"><use href="#i-ok"/></svg><span><b>Everything else needs only public things:</b> addresses, signed messages and receipts, which are safe to share.</span></li>
+      <li><svg aria-hidden="true"><use href="#i-ok"/></svg><span><b>You don't have to take our word for it.</b> Every page is open source. BRC Vault is locked so it can't connect to anything at all, and it works with Wi&#8209;Fi off.</span></li>
+    </ul>
     <div class="works-tiles">
       <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener"><svg aria-hidden="true"><use href="#vault-mark"/></svg><b>Keep it · BRC Vault</b><span>Your wallet lives in one browser. Back up the coins you mine: a password-protected file or a paper copy, offline.</span></a>
       <a href="#stamp"><svg aria-hidden="true"><use href="#i-stamp"/></svg><b>Check it · here on Pulse</b><span>Postmarks, signatures, mailbox links and genuine BRC Works files.</span></a>
@@ -940,7 +953,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   <span class="fl"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span>BRC Pulse <span id="app-version"><!--__VERSION__--></span>, build <span class="mono"><!--__BUILD__--></span></span></span>
   <div class="works">
     <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener">Vault keeps it</a> · <span aria-current="page">Pulse checks it</span></p>
-    <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
+    <p><b>The BRC Works rule:</b> only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.</p>
     <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener">pb-hash</a>. Not part of the official BrowserCoin project. · <a href="https://github.com/pb-hash/brc-pulse" target="_blank" rel="noopener">Source</a></p>
   </div>
   <div class="fine-print">

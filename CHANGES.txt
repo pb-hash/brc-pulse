@@ -5,6 +5,13 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+1.1.4 (Oct 31, 2026)
+  - The BRC Works section explains the safety model plainly: your secrets
+    never leave your device; only BRC Vault ever asks for a key that holds
+    coins, and only to back it up on your device ("if anything else asks,
+    it isn't us"); everything else needs only public things; and how to
+    check that yourself. The footer rule says the same in the same words.
+
 1.1.3 (Oct 31, 2026)
   - MY BRC: blocks you find now show in Activity ("Found a block", +reward),
     newest first with your payments. Before, they were only counted under
