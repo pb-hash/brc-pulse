@@ -1,0 +1,17 @@
+BRC Pulse changes
+=================
+Version numbers: last number for fixes and wording, middle number for new
+features, first number for changes to the page's data sources or security
+model. Test builds carry "-test.N" and are never published. The build code
+comes from the page's code alone, so the hourly data never changes it.
+
+1.1.0 (in testing)
+  - Check a stamp: verify BRC Seal postmark receipts against the chain, with
+    an optional Lock ID and a drand "made after" beacon checked in the page.
+  - The block 100,000 giveaway: address-only entries sealed in the page and
+    dropped in the BRC Mailbox, the prize pool, the published lists and their
+    fingerprints, and the drand draw, all checked in the page.
+  - The version and build code are shown in the footer.
+
+1.0.0
+  - Live network stats, history since launch, My BRC address pages.

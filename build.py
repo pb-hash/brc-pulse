@@ -102,6 +102,12 @@ def main():
     # (see vendor/README.txt).
     kit = open(os.path.join(HERE, 'vendor', 'brc-kit.js')).read().strip()
     tpl = tpl.replace('/*__DRAND__*/', kit + '\nvar BRCDrand = BRCKit.drand, BRCGiveaway = BRCKit.giveaway;')
+    # Version (VERSION file) and a build code from the page's code alone, so it changes
+    # whenever the code does and never because of the hourly data.
+    version = open(os.path.join(HERE, 'VERSION')).read().strip()
+    assert re.fullmatch(r'\d+\.\d+\.\d+(-test\.\d+)?', version), f'VERSION {version!r} is not like 1.2.3 or 1.2.3-test.4'
+    build_id = hashlib.sha256(tpl.encode()).hexdigest()[:8]
+    tpl = tpl.replace('<!--__VERSION__-->', version).replace('<!--__BUILD__-->', build_id)
     # The giveaway's settings (giveaway/config.json): addresses, times, published list fingerprints.
     tpl = tpl.replace('/*__GIVEAWAY__*/null', json.dumps(give, separators=(',', ':')))
     html = tpl.replace('/*__SNAPSHOT__*/null', json.dumps(snap, separators=(',', ':')))
