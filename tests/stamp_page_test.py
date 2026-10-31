@@ -242,6 +242,7 @@ with sync_playwright() as pw:
     assert 'look-alike' in page.evaluate(f"nameHtml({json.dumps(fx['lookalike'])})")
     assert 'look-alike' not in page.evaluate(f"nameHtml({json.dumps(fx['relAddress'])})")
     assert 'BRC Works release address' in page.evaluate(f"nameHtml({json.dumps(fx['relAddress'])})")
+    assert page.evaluate("document.body.innerText").count('The BRC Works rule') == 1
     ok('an address imitating a named one is marked as a look-alike wherever it is named')
 
     assert not errors, errors

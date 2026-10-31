@@ -532,7 +532,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   </div>
   <div class="intro-text my-intro my-only" id="my-top">
     <h1 class="wm-title" aria-label="My BRC"><span class="wm-b">MY</span><span class="wm-l">BRC</span></h1>
-    <p>Your balance, your mining and your payouts, worked out from the whole chain and kept up to date block by block. Paste a wallet <strong>address</strong>: 64 letters and numbers, shown in your BrowserCoin wallet. <strong>Never paste your private key, here or anywhere.</strong></p>
+    <p>Your balance, your mining and your payouts, worked out from the whole chain and kept up to date block by block. Paste a wallet <strong>address</strong>: 64 letters and numbers, shown in your BrowserCoin wallet. <strong>Never paste your private key.</strong> No BRC Works page asks for it, except BRC Vault, to back it up.</p>
     <form class="lookup" id="lookup" autocomplete="off"><input id="addr-in" type="text" inputmode="text" spellcheck="false" autocapitalize="off" placeholder="Paste a BrowserCoin address" aria-label="BrowserCoin address"><button type="submit">Look up</button></form>
     <div class="try" id="try"></div>
     <p class="msg" id="lookup-msg" role="status" hidden></p>
@@ -593,7 +593,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   <section class="card" aria-labelledby="a-bal">
     <div class="acct-top">
       <div>
-        <div class="who"><b id="a-name">Address</b><span class="tag pool" id="a-tag" hidden>Pool</span></div>
+        <div class="who"><span class="gv-idc" id="a-idc" aria-hidden="true" title="The same picture appears for this address in BRC Vault and BRC Seal"></span><b id="a-name">Address</b><span class="tag pool" id="a-tag" hidden>Pool</span></div>
         <div class="addr" id="a-addr"></div>
         <p class="lookalike-warn" id="a-lookalike" hidden></p>
         <div class="bal" id="a-bal">–</div>
@@ -868,7 +868,8 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <footer class="wrap">
   <span class="fl"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span>BRC Pulse <span id="app-version"><!--__VERSION__--></span>, build <span class="mono"><!--__BUILD__--></span></span></span>
   <div class="works">
-    <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener">Vault</a> · <span aria-current="page">Pulse</span></p>
+    <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener">Vault keeps it</a> · <span aria-current="page">Pulse checks it</span></p>
+    <p><b>The BRC Works rule:</b> no BRC Works page ever asks for a key that holds coins, except BRC Vault, to back it up. If any other page asks, it isn't us.</p>
     <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener">pb-hash</a>. Not part of the official BrowserCoin project. · <a href="https://github.com/pb-hash/brc-pulse" target="_blank" rel="noopener">Source</a></p>
   </div>
   <div class="fine-print">
@@ -1423,6 +1424,7 @@ function renderAcct() {
   const L = LABELS[A];
   $('a-name').textContent = L ? L.name : A === DEAD ? 'Burn address' : A === store.get() ? 'Your address' : 'Address';
   $('a-tag').hidden = !L; $('a-tag').textContent = L && L.official ? 'BRC Works' : 'Pool'; $('a-addr').textContent = A;
+  identicon($('a-idc'), A);
   const fake = lookalikeOf(A);
   $('a-lookalike').hidden = !fake;
   if (fake) $('a-lookalike').textContent = `Careful: this address looks like ${fake.name} (${fake.address.slice(0, 6)}…${fake.address.slice(-6)}), but it isn't. Someone may be imitating it. Don't send coins here unless you are sure.`;
