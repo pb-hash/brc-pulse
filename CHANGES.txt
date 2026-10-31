@@ -6,6 +6,11 @@ model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
 1.1.0 (in testing)
+  - Fixes from the Fable 5.1 security review (Oct 31): helper data must be
+    hex or it is dropped; no giveaway winner unless the list and draw round
+    were fixed on the chain by the release address 30+ minutes before the
+    draw; release postmarks carry their block; only a signer's own lock
+    counts; address picture from SHA-256.
   - Check a stamp: verify BRC Seal postmark receipts against the chain, with
     an optional Lock ID and a drand "made after" beacon checked in the page.
   - The block 100,000 giveaway: address-only entries sealed in the page and
