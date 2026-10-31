@@ -6,6 +6,8 @@ model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
 1.1.0 (in testing)
+  - test.3: BRC Seal's shared code (vendor/brc-kit.js) updated so its messages
+    point to "Check it" too.
   - test.2: "Check it" is now part of the dashboard, not a separate page
     tacked on. The view is built from the same cards as the rest of Pulse
     (check a postmark or signature, is this file genuine, BRC Works
