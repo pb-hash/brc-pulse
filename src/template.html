@@ -216,7 +216,8 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .check-more summary { cursor: pointer; color: var(--muted); font-size: .88rem; font-weight: 500; }
 .check-more[open] summary { margin-bottom: 10px; }
 .check-more .latest-box { margin-top: 8px; }
-.official-box[hidden] { display: none !important; }
+.official-box[hidden], .genuine[hidden] { display: none !important; }
+.check-row:has(> .card[hidden]) { grid-template-columns: minmax(0, 1fr); }
 .official-box ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
 .official-box li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 12px; border: 1px solid var(--hairline); border-radius: 10px; font-size: .9rem; }
 .official-box li .mono { grid-column: 1 / -1; color: var(--muted); font-size: .78rem; overflow-wrap: anywhere; }
@@ -957,6 +958,8 @@ const GIVE = /*__GIVEAWAY__*/null;
 // BRC Works addresses (BRC Seal src/official.js, through the kit) and the release postmarks in releases/.
 const OFFICIAL = /*__OFFICIAL__*/null || BRCKit.known.OFFICIAL;
 const RELEASES = /*__RELEASES__*/[];
+// With nothing postmarked yet, the genuine-file check could only call every file unreleased, so it stays hidden.
+if (!RELEASES.length) document.getElementById('genuine').hidden = true;
 const SNAP = /*__SNAPSHOT__*/null;
 const REWARD = 50, TARGET = 150, HALVING = 210000, CAP = 21e6, HOUR = 3600, DAY = 86400, TRACE_WIN = 45 * 60;
 const SEEDS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'];

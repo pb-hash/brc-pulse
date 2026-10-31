@@ -191,6 +191,10 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
     page.goto(pathlib.Path(open_page).resolve().as_uri())
     expect(page.locator('#give-main')).to_be_hidden()
     ok('the rest of Pulse is unaffected')
+    page.goto(pathlib.Path(open_page).resolve().as_uri() + '#stamp')
+    expect(page.locator('#genuine')).to_be_hidden()
+    expect(page.locator('#check-proof')).to_be_visible()
+    ok('with no releases postmarked yet, the genuine-file check is hidden rather than calling every file fake')
     assert all(o is None or o.startswith('null') or o == 'null' for o in posted_origins) or True
     assert not errors, errors
     ok('no page errors')

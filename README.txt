@@ -32,6 +32,13 @@ What it shows
   and miners per day.
 - Supply, burned coins, script locks and the countdown to the first halving.
 
+Check it
+--------
+https://pb-hash.github.io/brc-pulse/#stamp checks proof straight from the
+chain, in your browser: postmark receipts of files, messages signed on the
+chain and mailbox links made in BRC Seal, and whether a BRC Works file you were
+given is a genuine release. Nothing you check is uploaded.
+
 My BRC
 ------
 Paste any address (https://pb-hash.github.io/brc-pulse/#my) to see its
