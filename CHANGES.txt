@@ -6,6 +6,14 @@ model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
 1.1.0 (in testing)
+  - test.2: "Check it" is now part of the dashboard, not a separate page
+    tacked on. The view is built from the same cards as the rest of Pulse
+    (check a postmark or signature, is this file genuine, BRC Works
+    addresses); the home page links to it from the top and from a BRC Works
+    band that replaces the old Vault box; the drand and recent-block helpers
+    for making a postmark fold away. On narrow screens the section links
+    become a scrolling strip instead of disappearing, so Check it and the
+    giveaway are one tap away on phones.
   - Fixes from the Fable 5.1 security review (Oct 31): helper data must be
     hex or it is dropped; no giveaway winner unless the list and draw round
     were fixed on the chain by the release address 30+ minutes before the

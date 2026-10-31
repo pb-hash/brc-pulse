@@ -177,6 +177,7 @@ with sync_playwright() as pw:
     FAKE_DRAND['on'] = True
     p3 = b.new_page(); p3.route('**/*', handle)
     p3.goto(pathlib.Path(page_path).resolve().as_uri() + '#stamp')
+    p3.click('.check-more summary')
     expect(p3.locator('#stamp-latest-h')).to_be_visible(timeout=15000)
     p3.wait_for_timeout(1500)
     expect(p3.locator('#stamp-drand')).to_be_hidden()
