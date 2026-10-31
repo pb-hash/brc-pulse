@@ -1051,6 +1051,7 @@ function render() {
     if (prev != null && L.h > prev) { replay($('tip'), 'roll'); toast(L); landRing(); }
   }
   if (M.addr) { if (S.mode === 'live') catchUp(); renderAcct(); }
+  if (document.body.dataset.view === 'stamp') showOfficial();
   $('tip').innerHTML = `<span class="h">#</span>${fmt(L.h)}`;
   $('tip-meta').innerHTML = `<span class="chip"><i style="background:${colorOf(L.miner)}"></i>${nameLink(L.miner)}</span><span data-ago="${seenAt(L)}">${ago(now() - seenAt(L))}</span><span class="muted">${L.ntx} transaction${L.ntx === 1 ? '' : 's'}</span>`;
   let w = 0; for (let i = 1; i < day.win.length; i++) w += work(day.win[i].bits);
@@ -2034,18 +2035,27 @@ async function liveBalance(A) {
   }
   return { bal, h, ins, outs };
 }
-let officialAt = 0;
+// The BRC Works addresses with what each holds now. Read again whenever a new block arrives while the
+// list is on screen, so a payment shows up without reloading the page.
+const OB = { tip: -1, busy: false, retryAt: 0 };
 async function showOfficial() {
   const list = Object.entries(LABELS).filter(([, l]) => l.official);
   $('official-box').hidden = !list.length;
-  if (!list.length || Date.now() < officialAt) return;
-  officialAt = Date.now() + 60000;
-  $('official-list').innerHTML = list.map(([a, l]) => `<li><span><a class="who-link" href="#my=${a}">${esc(l.name)}</a></span><span class="ob" data-a="${a}">…</span><span class="mono">${a}</span></li>`).join('');
-  for (const [a] of list) {
-    const cell = $('official-list').querySelector(`[data-a="${a}"]`);
-    try { const b = await liveBalance(a); cell.innerHTML = `${brc(b.bal)} <span class="muted">· ${fmt(b.outs)} sent</span>`; }
-    catch { cell.textContent = "couldn't read"; officialAt = Date.now() + 15000; }
-  }
+  if (!list.length || OB.busy || Date.now() < OB.retryAt) return;
+  const tip = last().h, live = S.mode === 'live';
+  if (tip === OB.tip && OB.live === live) return;
+  OB.busy = true;
+  try {
+    const box = $('official-list');
+    if (!box.children.length) box.innerHTML = list.map(([a, l]) => `<li><span><a class="who-link" href="#my=${a}">${esc(l.name)}</a></span><span class="ob" data-a="${a}">…</span><span class="mono">${a}</span></li>`).join('');
+    let failed = false;
+    for (const [a] of list) {
+      const cell = box.querySelector(`[data-a="${a}"]`);
+      try { const b = await liveBalance(a); cell.innerHTML = `${brc(b.bal)} <span class="muted">· ${fmt(b.outs)} sent</span>`; }
+      catch { failed = true; if (cell.textContent === '…') cell.textContent = "couldn't read"; }
+    }
+    if (failed) OB.retryAt = Date.now() + 15000; else { OB.tip = tip; OB.live = live; }
+  } finally { OB.busy = false; }
 }
 $('stamp-facts').addEventListener('click', (e) => { if (e.target.id === 'stamp-older') checkStamp(true); });
 

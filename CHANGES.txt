@@ -5,6 +5,12 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+1.1.2 (Oct 31, 2026)
+  - The BRC Works addresses' balances are read again on every new block while
+    Check it is open. Before, they were read once when the page opened, so a
+    payment made after the page's built-in data was missed until a reload
+    (found when the release address was funded in block 93,208).
+
 1.1.1 (Oct 31, 2026)
   - The BRC Works addresses (release address, giveaway mailbox, prize pool)
     are listed under Check it with what each holds, and look-alikes of them
