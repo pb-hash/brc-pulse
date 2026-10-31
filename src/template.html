@@ -676,7 +676,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
         <h2 id="gv-wall-h">The mailbox</h2>
         <p>Every entry, as it arrives. Each envelope is one sealed letter; only the mailbox key can open them.</p>
       </div>
-      <div class="gv-count"><b id="gv-count">–</b><span>sealed letters received</span></div>
+      <div class="gv-count"><b id="gv-count">–</b><span>sealed letters received <span class="fine">(not yet opened: repeats and non-entries are only set aside when the letters are opened)</span></span></div>
       <div class="gv-wall" id="gv-wall" aria-hidden="true"></div>
       <p class="fine" id="gv-wall-note"></p>
       <button type="button" class="btn-ghost" id="gv-dl" style="margin-top:10px">Download every letter</button>
@@ -933,12 +933,13 @@ function rate(hs, plain) {
 }
 const mmss = (s) => { s = Math.max(0, Math.round(s)); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`; };
 function ago(s) { s = Math.max(0, Math.round(s)); if (s < 60) return `${s}s ago`; if (s < 3600) return `${Math.floor(s / 60)}m ago`; return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m ago`; }
-const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+const isAddr = (a) => typeof a === 'string' && /^[0-9a-f]{64}$/.test(a);
+const short = (a) => (isAddr(a) ? `${a.slice(0, 6)}…${a.slice(-4)}` : '(not an address)');
 const name = (a) => (LABELS[a] ? LABELS[a].name : short(a));
 /* An address with the same first or last 6 characters as a named one, but not it: someone may be imitating it. */
 const lookalikeOf = (a) => (LABELS[a] ? null : BRCKit.known.lookalikeOf(a, Object.entries(LABELS).map(([address, l]) => ({ address, name: l.name }))));
 const nameHtml = (a) => (LABELS[a] ? LABELS[a].name : `<span class="mono">${short(a)}</span>${lookalikeOf(a) ? ' <span class="fake" title="Looks like a named address, but isn\'t">look-alike!</span>' : ''}`);
-const nameLink = (a) => `<a class="who-link" href="#my=${a}" title="Look up in My BRC">${nameHtml(a)}</a>`;
+const nameLink = (a) => (isAddr(a) ? `<a class="who-link" href="#my=${a}" title="Look up in My BRC">${nameHtml(a)}</a>` : '(not an address)');
 const now = () => (S.mode === 'live' ? Date.now() / 1000 : S.mode === 'replay' ? S.vnow : S.at / 1000);
 // Same clock, interpolated between replay steps so the frame moves smoothly at 60 fps.
 const nowSmooth = () => (S.mode === 'replay' ? S.vnow + Math.min(0.1, (performance.now() - (S.vnowAt || 0)) / 1000) * SPEED : now());
@@ -1595,7 +1596,7 @@ function parseStampReceipt(text) {
   if (bl) { r.block = Number(bl.replace(/[,\s]/g, '')); if (!Number.isSafeInteger(r.block) || r.block < 1) throw new Error('The receipt\'s "Block:" line should be a block number.'); }
   return r;
 }
-const stampPhrase = (r) => `BRCSTAMP1_${r.fingerprint}_${r.salt}${r.after ? `_A${r.after.height}_${r.after.hash}` : ''}${r.drand ? `_D${r.drand.round}_${r.drand.signature}` : ''}`;
+const stampPhrase = (r) => `${r.prefix || 'BRCSTAMP1'}_${r.fingerprint}_${r.salt}${r.after ? `_A${r.after.height}_${r.after.hash}` : ''}${r.drand ? `_D${r.drand.round}_${r.drand.signature}` : ''}`;
 async function stampScriptHash(r, owner = r.owner) {
   const inner = await sha(await sha(enc8.encode(stampPhrase(r))));
   return hx(await sha(cat8(new Uint8Array([0xa8, 0x20]), inner, new Uint8Array([0x88, 0x20]), unhx(owner), new Uint8Array([0xac]))));
@@ -1608,7 +1609,7 @@ async function matchLock(r, locks) {
   if (!r._want) r._want = await stampScriptHash(r);
   // A chain-signed message counts only from its signer's own lock. Anyone could copy its script
   // into a lock of their own, so a copy is never mistaken for the signature (or allowed to hide it).
-  if (r.chain) return locks.find((x) => x.scriptHash === r._want && x.from === r.owner) || locks.find((x) => x.scriptHash === r._want) || null;
+  if (r.chain) return locks.find((x) => x.scriptHash === r._want && x.from === r.owner) || null;
   for (const L of locks) if (L.scriptHash === r._want || L.scriptHash === await stampScriptHash(r, L.from)) return L;
   return null;
 }
@@ -1748,7 +1749,8 @@ async function searchRange(host, r, from, to, newestFirst, paced) {
    and its address, so it is found exactly like one; then its lock must be the signer's own. */
 function parseChainSignedAsReceipt(text) {
   const cs = BRCChain.parseChainSigned(text);
-  return { fingerprint: cs.stamp.fingerprint, salt: cs.stamp.salt, owner: cs.address, lockId: cs.lockId, block: cs.block, file: null,
+  // Each kind of message has its own phrase prefix (BRCSIGN1, BRCLINK1, BRCREL1, BRCLIST1), never BRCSTAMP1.
+  return { fingerprint: cs.stamp.fingerprint, salt: cs.stamp.salt, owner: cs.address, lockId: cs.lockId, block: cs.block, file: null, prefix: BRCChain.chainPhrase(cs).split('_')[0],
     after: cs.stamp.after ? { height: cs.stamp.after.height, hash: cs.stamp.after.hash } : null, drand: cs.stamp.drand, chain: cs };
 }
 function parseAnyReceipt(text) {
@@ -1975,7 +1977,14 @@ $('stamp-facts').addEventListener('click', (e) => { if (e.target.id === 'stamp-o
 /* ---------- live mode ---------- */
 async function get(host, path, ms = 6000) {
   const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
-  try { const r = await fetch(`https://${host}${path}`, { signal: c.signal, cache: 'no-store' }); if (!r.ok) throw new Error(`HTTP ${r.status}`); return await r.json(); }
+  try {
+    const r = await fetch(`https://${host}${path}`, { signal: c.signal, cache: 'no-store' }); if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    const d = await r.json();
+    // Helpers aren't trusted: a block is hex and nothing else, so no helper can put markup in front of
+    // anyone through an address or a name (security review, Oct 31). Anything else is dropped.
+    if (d && d.blocks !== undefined) d.blocks = Array.isArray(d.blocks) ? d.blocks.filter((x) => typeof x === 'string' && x.length >= 304 && x.length % 2 === 0 && /^[0-9a-f]+$/.test(x)) : [];
+    return d;
+  }
   finally { clearTimeout(t); }
 }
 const probe = () => Promise.all(SEEDS.map(async (host) => {
@@ -2195,7 +2204,7 @@ async function drandRound(round) {
 }
 function gvHow() {
   const ph = gvPhase(), round = gvRound(), at = tsOf(GIVE.drawAt), t = nowS();
-  const list = GIVE.entries ? `The organizer published the entry list: <b>${fmt(GIVE.entries.count)} entries</b>, fingerprint <span class="mono">${esc(GIVE.entries.fingerprint)}</span>.` : `After entries close, the organizer opens the letters and publishes the entry list and its fingerprint here, before the draw.`;
+  const list = GIVE.entries ? `The organizer published the entry list: <b>${fmt(GIVE.entries.count)} entries</b>, fingerprint <span class="mono">${esc(GIVE.entries.fingerprint)}</span>, and fixed it on the chain with the BRC Works release address, together with the draw round. This page checks that happened at least 30 minutes before the draw.` : `After entries close, the organizer opens the letters, publishes the entry list and its fingerprint here, and fixes both the list and the draw round on the chain at least 30 minutes before the draw. Nobody can change either after that.`;
   const items = [
     `Entries close <span class="when">${esc(localWhen(tsOf(GIVE.closesAt)))}</span>.`,
     list,
@@ -2204,17 +2213,45 @@ function gvHow() {
   ];
   $('gv-how').innerHTML = items.map((x, i) => `<li${(i === 0 && ph !== 'soon' && ph !== 'open') || (i === 1 && GIVE.entries) ? ' class="done"' : ''}>${x}</li>`).join('');
 }
+/* The list must have been fixed on the chain, by the BRC Works release address, well before the draw
+   round: otherwise whoever publishes the list could try lists after seeing the beacon (security review,
+   Oct 31). Returns where it was fixed, or throws a plain reason, and then no winner is shown. */
+const COMMIT_MARGIN = 1800; // the list's block must be settled at least 30 minutes before the draw round
+async function gvCheckCommit() {
+  const fail = (t) => { const e = new Error(t); e.commit = true; throw e; };
+  if (!GIVE.commitment) fail("The entry list hasn't been fixed on the chain before the draw, so no winner is shown. The organizer must sign the list on the chain, before the draw round, with the BRC Works release address.");
+  let r; try { r = parseChainSignedAsReceipt(GIVE.commitment); } catch (e) { fail(`The list commitment can't be read: ${e.message}`); }
+  const c = BRCGiveaway.readListCommit(r.chain.message);
+  if (!c) fail('The list commitment is not a giveaway list message.');
+  if (c.fingerprint !== GIVE.entries.fingerprint || c.count !== GV.entries.addresses.length) fail("The list fixed on the chain is not the list published here, so no winner is shown.");
+  if (c.round !== gvRound()) fail(`The draw round fixed on the chain (${fmt(c.round)}) is not the one this page uses (${fmt(gvRound())}), so no winner is shown.`);
+  const rel = OFFICIAL.find((o) => o.role === 'release');
+  if (!rel || r.owner !== rel.address) fail('The list was not signed by the BRC Works release address, so no winner is shown.');
+  if (!r.block) fail('The list commitment has no "Block:" line, so it cannot be checked.');
+  const H = await stampHelpers(), b = await blockAt(H.host, r.block), L = await matchLock(r, b.locks);
+  if (!L || L.from !== rel.address || L.scriptHash !== await stampScriptHash(r)) fail(`The release address's lock fixing this list isn't in block ${fmt(r.block)}, so no winner is shown.`);
+  const cc = await confirmBlock(H, b.height, b.id), dl = await deadlineFor(H.host, b);
+  if (cc.disagree || cc.ops < 2) fail('The block fixing the list cannot be confirmed by two independent helper operators yet. Try again later.');
+  if (!dl.settled) fail('The block fixing the list is not settled yet. Try again in a few minutes.');
+  const roundAtTs = BRCDrand.drandRoundTime(c.round);
+  if (dl.at > roundAtTs - COMMIT_MARGIN) fail(`The list was fixed on the chain at ${utc(dl.at)}, too close to the draw at ${utcS(roundAtTs)}. It must be at least 30 minutes earlier, so no winner is shown.`);
+  return { height: b.height, at: dl.at, lockId: L.id };
+}
+
 async function gvDraw() {
   gvHow();
-  if (gvPhase() !== 'drawn' || GV.drawn || GV.drawBusy) return;
+  if (gvPhase() !== 'drawn' || GV.drawn || GV.drawBusy || Date.now() < (GV.retryAt || 0)) return;
   if (GV.entriesErr) { gvDrawFail(GV.entriesErr); return; }
   if (!GV.entries) return; // still loading
   GV.drawBusy = true;
   try {
+    let fixed;
+    try { fixed = await gvCheckCommit(); } catch (e) { GV.retryAt = Date.now() + 30000; gvDrawFail(e.commit ? e.message : "Couldn't check where the list was fixed on the chain yet. It will retry."); return; }
     const beacon = await drandRound(gvRound());
-    if (!beacon) { gvDrawFail("Couldn't fetch drand's beacon for the draw round yet. It will retry."); return; }
+    if (!beacon) { GV.retryAt = Date.now() + 10000; gvDrawFail("Couldn't fetch drand's beacon for the draw round yet. It will retry."); return; }
     GV.drawn = BRCGiveaway.drawWinner(GV.entries.addresses, GIVE.entries.fingerprint, { round: Number(beacon.round), signature: beacon.signature });
     GV.drawn.signature = beacon.signature;
+    GV.drawn.fixed = fixed;
     gvShowWinner(); gvSteps();
   } catch (e) { gvDrawFail(e.message); } finally { GV.drawBusy = false; }
 }
@@ -2228,6 +2265,7 @@ function gvShowWinner() {
   w.append(p, tx);
   const facts = [
     ['Entry list', `${fmt(d.count)} entries, fingerprint <span class="mono">${esc(d.fingerprint)}</span> <span class="ok">matches the published list</span>`],
+    ['List fixed', `in block ${fmt(d.fixed.height)} by ${esc(utc(d.fixed.at))}, by the BRC Works release address, <span class="ok">before the draw</span>`],
     ['drand round', `${fmt(d.round)}, published ${esc(utcS(BRCDrand.drandRoundTime(d.round)))} <span class="ok">signature checked here</span>`],
     ['Signature', `<span class="mono">${esc(d.signature)}</span>`],
     ['Seed', `SHA-256("BRC Works giveaway draw v1", fingerprint, round, signature) = <span class="mono">${esc(d.seed)}</span>`],
@@ -2255,7 +2293,7 @@ $('gv-dl').addEventListener('click', async () => {
       const d = await r.json(); letters.push(...d.letters); if (d.next == null) break; after = d.next;
     }
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify({ mailbox: GIVE.mailbox, count: letters.length, downloaded: new Date().toISOString(), letters }, null, 1) + '\n'], { type: 'application/json' }));
+    a.href = URL.createObjectURL(new Blob([JSON.stringify({ mailbox: GIVE.mailbox, round: gvRound(), drawAt: GIVE.drawAt, count: letters.length, downloaded: new Date().toISOString(), letters }, null, 1) + '\n'], { type: 'application/json' }));
     a.download = `brc-mailbox-${GIVE.mailbox.slice(0, 8)}-letters.json`; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     btn.textContent = `Downloaded ${fmt(letters.length)} letters`;
   } catch { btn.textContent = "Couldn't download. Try again"; }

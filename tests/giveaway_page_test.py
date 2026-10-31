@@ -6,6 +6,7 @@ from urllib.parse import urlparse, parse_qs
 from playwright.sync_api import sync_playwright, expect
 
 open_page, drawn_page, chain_path, fx_path, core_path, out = sys.argv[1:7]
+nocommit_page, late_page = sys.argv[7:9]
 out = pathlib.Path(out); out.mkdir(parents=True, exist_ok=True)
 chain = json.load(open(chain_path)); fx = json.load(open(fx_path))
 blocks = {int(k): v for k, v in chain['blocks'].items()}
@@ -139,8 +140,17 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
     expect(page.locator('#gv-proof')).to_contain_text(fx['expected']['seed'])
     expect(page.locator('#gv-proof')).to_contain_text('signature checked here')
     expect(page.locator('#gv-proof')).to_contain_text(f"seed mod {fx['entries']['count']} = {fx['expected']['index']}")
+    expect(page.locator('#gv-proof')).to_contain_text('in block 92,610')
+    expect(page.locator('#gv-proof')).to_contain_text('before the draw')
     page.screenshot(path=str(out / 'giveaway-drawn.png'), full_page=True)
-    ok('after the draw time, the page fetches the drand beacon, checks it, and shows the same winner the core code picks')
+    ok('after the draw time, the page checks the list was fixed on the chain before the draw, fetches and checks the drand beacon, and shows the same winner the core code picks')
+    for pg_path, want in [(nocommit_page, "hasn't been fixed on the chain"), (late_page, 'too close to the draw')]:
+        px = ctx.new_page(); px.on('pageerror', lambda e: errors.append(str(e))); px.route('**/*', handle)
+        px.goto(pathlib.Path(pg_path).resolve().as_uri() + '#giveaway')
+        expect(px.locator('#gv-winner')).to_contain_text(want, timeout=30000)
+        expect(px.locator('#gv-winner')).not_to_contain_text('The winner')
+        px.close()
+    ok('no winner is shown when the list was never fixed on the chain, or was fixed too close to the draw')
 
     page.fill('#gv-mine-addr', fx['entries']['addresses'][0])
     page.click('#gv-mine-form button')

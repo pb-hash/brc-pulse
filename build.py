@@ -107,7 +107,11 @@ def main():
     # whenever the code does and never because of the hourly data.
     # Release postmarks (releases/*.txt: chain-signed release messages) for "Is this file genuine?",
     # and, for tests only, a stand-in list of official addresses (the real one is in the kit).
-    rel_texts = [open(os.path.join(releases_dir, f)).read() for f in sorted(os.listdir(releases_dir)) if f.endswith('.txt')] if os.path.isdir(releases_dir) else []
+    rel_texts = [open(os.path.join(releases_dir, f)).read() for f in sorted(os.listdir(releases_dir)) if f.endswith('.txt') and f != 'README.txt'] if os.path.isdir(releases_dir) else []
+    for t in rel_texts:
+        # A release postmark names its exact block and lock, so a copy of its script that someone
+        # else locks can never be found first (security review, Oct 31). Check it on Pulse first.
+        assert re.search(r'^Block: \d+$', t, re.M) and re.search(r'^Lock ID: [0-9a-f]{64}$', t, re.M), 'every releases/*.txt needs its Block: and Lock ID: lines (check it on BRC Pulse to get them)'
     tpl = tpl.replace('/*__RELEASES__*/[]', json.dumps(rel_texts).replace('</', '<\\/'))
     if official_path:
         tpl = tpl.replace('/*__OFFICIAL__*/null', json.dumps(json.load(open(official_path))))

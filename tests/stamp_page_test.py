@@ -40,6 +40,9 @@ def handle(route):
                     if LIAR['mode'] == 'fork' and u.hostname == LIAR['host'] and h == 92510:
                         out.append('0001695e' + blocks[92509][8:])  # a different block claiming height 92,510
                     else: out.append(blocks[h])
+            if LIAR['mode'] == 'markup':  # a hostile helper puts markup where an address goes
+                inj = ('"><a id=pwn href=//evil.example/x>CLAIM 500 BRC</a>' + ' ' * 64)[:64]
+                out = [x[:232] + inj + x[296:] for x in out]
             return route.fulfill(json={'blocks': out}, headers=CORS)
         if u.path == '/stats':
             return route.fulfill(json={'peerCount': 9}, headers=CORS)
@@ -183,6 +186,13 @@ with sync_playwright() as pw:
     page.goto(pathlib.Path(page_path).resolve().as_uri() + '#share')
     expect(page.locator('#stamp-top')).to_be_hidden()
     ok('the network view is unaffected')
+    LIAR['mode'] = 'markup'
+    pm = b.new_page(viewport={'width': 1200, 'height': 900}); pm.route('**/*', handle)
+    pm.goto(pathlib.Path(page_path).resolve().as_uri())
+    pm.wait_for_timeout(8000)
+    assert pm.locator('#pwn').count() == 0 and 'evil.example' not in pm.content(), 'helper markup reached the page'
+    pm.close(); LIAR['mode'] = None
+    ok('a helper that puts markup where an address goes cannot get it onto the page')
 
     ph = b.new_page(viewport={'width': 390, 'height': 844}, is_mobile=True)
     ph.route('**/*', handle)
@@ -213,6 +223,8 @@ with sync_playwright() as pw:
     expect(page.locator('#stamp-facts')).to_contain_text("the mailbox's own signature agrees")
     ok('a mailbox link is checked on both sides: the coin address on the chain, the mailbox by its signature')
     check(fx['chainCopy'])
+    expect(page.locator('#stamp-verdict')).to_contain_text("isn't in the last 8,000 blocks", timeout=30000)
+    check(fx['chainCopyWithId'])
     expect(page.locator('#stamp-verdict')).to_contain_text('Not signed by this address', timeout=30000)
     ok("a copy of a message locked by someone else is not taken as the address's signature")
     check(fx['chainEdited'])
@@ -232,7 +244,7 @@ with sync_playwright() as pw:
     expect(page.locator('#stamp-verdict')).to_contain_text('Genuine: BRC Vault 1.1.0', timeout=30000)
     expect(page.locator('#stamp-verdict')).to_contain_text('matches it byte for byte')
     page.screenshot(path=str(pathlib.Path(out) / 'pulse-genuine.png'), full_page=True)
-    ok('a genuine release file is matched to its release and its chain signature by the release address is checked')
+    ok('a genuine release file is matched to its release and its chain signature by the release address is checked, even with a copy of its script locked in a newer block')
     genuine('00' * 40, 'brc-vault.html')
     expect(page.locator('#genuine-msg')).to_contain_text('Not a BRC Works release')
     ok('a file that was never released is called out')
