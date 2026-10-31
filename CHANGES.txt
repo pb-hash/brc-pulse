@@ -5,8 +5,29 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
-1.1.3 (in testing)
-  - test.1: BRC Seal is now BRC Post in every mention.
+1.1.4 (in testing)
+  - test.1: Check it, rebuilt after an "it just works" review. "Is it real?
+    Check it." One box takes anything: a postmark receipt, a message signed
+    on the chain or with a BRC Post mailbox, a sealed letter, a mailbox link,
+    an address (spaces and capitals fine), or a file on its own (is it a BRC
+    Works release?). It says what it recognised, checks at once on paste,
+    and answers in one plain verdict ("Real. Made between 2:35 and 2:55 PM
+    UTC on Oct 30, 2026.") with the evidence behind Details. A postmark not
+    found is "Not on the chain yet" and is looked for again at every new
+    block; a matching file is never shown green before the postmark is
+    found. Wallet files and recovery words pasted by mistake are cleared.
+    #check=<text> links (from BRC Post) check straight away. The block timer
+    and new-block toasts stay off this view; the drand/recent-block helpers
+    for hand-made postmarks moved to a closed section that loads only when
+    opened. Check it and Giveaway come first in the tab bar, so they show on
+    a phone. MY BRC takes addresses in groups of 8, capitals or inside a
+    link, and a bad address clears the old result.
+  - Includes 1.1.3-test.1: BRC Seal is now BRC Post in every mention.
+
+1.1.3 (Oct 31, 2026)
+  - MY BRC: blocks you find now show in Activity ("Found a block", +reward),
+    newest first with your payments. Before, they were only counted under
+    Mining, so a block found an hour ago seemed missing (Patrick, Oct 31).
 
 1.1.2 (Oct 31, 2026)
   - The BRC Works addresses' balances are read again on every new block while

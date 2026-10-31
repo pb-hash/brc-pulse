@@ -130,6 +130,7 @@ def main():
             if base_hour is None: base_hour = t // 3600
             if m['firstMined'] is None: m['firstMined'] = h
             m['lastMined'] = h
+            m['recent'].append([h, t, 'mined', '', got, 0])
             m['days'][datetime.datetime.fromtimestamp(t, datetime.timezone.utc).strftime('%Y-%m-%d')] += 1
 
     total = sum(a['bal'] for a in A.values()) + sum(locks.values())
