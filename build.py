@@ -101,7 +101,7 @@ def main():
     # drand checking and the giveaway code, built from BRC Seal's src/drand-core.js and src/giveaway-core.js
     # (see vendor/README.txt).
     kit = open(os.path.join(HERE, 'vendor', 'brc-kit.js')).read().strip()
-    tpl = tpl.replace('/*__DRAND__*/', kit + '\nvar BRCDrand = BRCKit.drand, BRCGiveaway = BRCKit.giveaway;')
+    tpl = tpl.replace('/*__DRAND__*/', kit + '\nvar BRCDrand = BRCKit.drand, BRCGiveaway = BRCKit.giveaway, BRCChain = BRCKit.chain;')
     # Version (VERSION file) and a build code from the page's code alone, so it changes
     # whenever the code does and never because of the hourly data.
     version = open(os.path.join(HERE, 'VERSION')).read().strip()

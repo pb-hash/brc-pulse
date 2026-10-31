@@ -193,6 +193,34 @@ with sync_playwright() as pw:
     assert ph.evaluate('document.documentElement.scrollWidth') <= 390
     ph.screenshot(path=str(out / 'pulse-stamp-phone.png'), full_page=True)
     ok('fits a phone screen')
+    # --- Messages signed on the chain, and mailbox links (BRC Seal 0.5) ---
+    page.goto(pathlib.Path(page_path).resolve().as_uri() + '#stamp')
+    expect(page.locator('#stamp-top h1')).to_be_visible()
+    def check(text):
+        page.fill('#stamp-receipt', text)
+        page.click('#stamp-go')
+    check(fx['chainSigned'])
+    expect(page.locator('#stamp-verdict')).to_contain_text('Signed by ' + fx['owner'][:10], timeout=30000)
+    expect(page.locator('#stamp-facts')).to_contain_text(fx['chainMessage'])
+    expect(page.locator('#stamp-facts')).to_contain_text('signed the lock')
+    expect(page.locator('#stamp-facts')).not_to_contain_text('Fingerprint')
+    upd = page.locator('#stamp-updated pre').text_content()
+    assert 'Block: 92520' in upd and 'Lock ID: ' in upd and upd.rstrip().endswith('-----END BRC CHAIN SIGNATURE-----'), upd
+    page.screenshot(path=str(pathlib.Path(out) / 'pulse-chain-signed.png'), full_page=True)
+    ok('a message signed on the chain is found, shown with its signer, and given back with its Lock ID and block')
+    check(fx['chainLink'])
+    expect(page.locator('#stamp-verdict')).to_contain_text('mailbox link', timeout=30000)
+    expect(page.locator('#stamp-facts')).to_contain_text("the mailbox's own signature agrees")
+    ok('a mailbox link is checked on both sides: the coin address on the chain, the mailbox by its signature')
+    check(fx['chainCopy'])
+    expect(page.locator('#stamp-verdict')).to_contain_text('Not signed by this address', timeout=30000)
+    ok("a copy of a message locked by someone else is not taken as the address's signature")
+    check(fx['chainEdited'])
+    expect(page.locator('#stamp-verdict')).to_contain_text("isn't in the last 8,000 blocks", timeout=30000)
+    check(fx['chainBadLink'])
+    expect(page.locator('#stamp-verdict')).to_contain_text("isn't valid")
+    ok('an edited message, or a link to a mailbox that never agreed, is refused')
+
     assert not errors, errors
     ok('no page errors')
     b.close()

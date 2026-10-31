@@ -208,6 +208,7 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .stamp-facts { margin-top: 14px; display: grid; gap: 0; border-top: 1px solid var(--hairline); }
 .stamp-facts > div { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--hairline); font-size: .92rem; }
 .stamp-facts dt { color: var(--muted); }
+.stamp-facts .signed-msg { white-space: pre-wrap; overflow-wrap: anywhere; padding: 8px 10px; border-radius: 8px; background: var(--sunken, rgba(0,0,0,.04)); }
 .stamp-facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
 .stamp-facts .ok { color: var(--good); font-weight: 600; } .stamp-facts .no { color: var(--danger); font-weight: 600; }
 .stamp-updated { margin-top: 14px; }
@@ -528,9 +529,9 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   </div>
   <div class="intro-text stamp-intro stamp-only" id="stamp-top">
     <h1>Check a stamp.</h1>
-    <p>A stamp proves a file existed by a certain date, using the BrowserCoin chain. Paste the <strong>stamp receipt</strong> made in BRC Seal. Add the file too, to check it is the same one. <strong>The file is read here and never uploaded.</strong></p>
+    <p>A stamp proves a file existed by a certain date, using the BrowserCoin chain. Paste the <strong>stamp receipt</strong> made in BRC Seal. Add the file too, to check it is the same one. <strong>The file is read here and never uploaded.</strong> A <strong>message signed on the chain</strong>, or a <strong>mailbox link</strong>, is checked here too: paste the whole block.</p>
     <form class="stamp-form" id="stamp-form" autocomplete="off">
-      <textarea id="stamp-receipt" spellcheck="false" autocapitalize="off" aria-label="Stamp receipt" placeholder="-----BEGIN BRC STAMP RECEIPT-----&#10;Fingerprint: …&#10;Salt: …&#10;Owner: …&#10;Lock ID: …&#10;-----END BRC STAMP RECEIPT-----"></textarea>
+      <textarea id="stamp-receipt" spellcheck="false" autocapitalize="off" aria-label="Stamp receipt or chain-signed message" placeholder="-----BEGIN BRC STAMP RECEIPT-----&#10;Fingerprint: …&#10;Salt: …&#10;Owner: …&#10;Lock ID: …&#10;-----END BRC STAMP RECEIPT-----"></textarea>
       <div class="stamp-row">
         <label class="file"><input type="file" id="stamp-file"><span id="stamp-file-name">Add the file (optional)</span></label>
         <button type="submit" class="go" id="stamp-go">Check stamp</button>
@@ -842,7 +843,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 </main>
 
 <footer class="wrap">
-  <span class="fl"><svg aria-hidden="true"><use href="#pulse-mark"/></svg>BRC Pulse <span id="app-version"><!--__VERSION__--></span>, build <span class="mono"><!--__BUILD__--></span></span>
+  <span class="fl"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span>BRC Pulse <span id="app-version"><!--__VERSION__--></span>, build <span class="mono"><!--__BUILD__--></span></span></span>
   <div class="works">
     <p><b>BRC Works:</b> <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener">Vault</a> · <span aria-current="page">Pulse</span></p>
     <p>Independent tools by <a href="https://github.com/pb-hash" target="_blank" rel="noopener">pb-hash</a>. Not part of the official BrowserCoin project. · <a href="https://github.com/pb-hash/brc-pulse" target="_blank" rel="noopener">Source</a></p>
@@ -1571,6 +1572,9 @@ async function stampScriptHash(r, owner = r.owner) {
 async function matchLock(r, locks) {
   if (r.lockId) return locks.find((x) => x.id === r.lockId) || null;
   if (!r._want) r._want = await stampScriptHash(r);
+  // A chain-signed message counts only from its signer's own lock. Anyone could copy its script
+  // into a lock of their own, so a copy is never mistaken for the signature (or allowed to hide it).
+  if (r.chain) return locks.find((x) => x.scriptHash === r._want && x.from === r.owner) || locks.find((x) => x.scriptHash === r._want) || null;
   for (const L of locks) if (L.scriptHash === r._want || L.scriptHash === await stampScriptHash(r, L.from)) return L;
   return null;
 }
@@ -1688,7 +1692,7 @@ function showStamp(tone, lead, sub, facts, updated = '') {
   if (updated) { $('stamp-updated').innerHTML = `<p class="muted">${esc(updated.note)}</p><pre></pre>`; $('stamp-updated').querySelector('pre').textContent = updated.text; }
   $('stamp-result').hidden = false;
 }
-const fileFact = (r) => fact('File', stampFileFp == null ? '<span class="muted">Not added. Add the file to check it matches.</span>'
+const fileFactFor = (r) => fact('File', stampFileFp == null ? '<span class="muted">Not added. Add the file to check it matches.</span>'
   : stampFileFp === r.fingerprint ? `<span class="ok">Matches the receipt exactly</span>${r.file ? ` <span class="muted">(${esc(r.file)})</span>` : ''}`
   : '<span class="no">Doesn\'t match. This is a different file, or it changed after it was stamped.</span>');
 
@@ -1706,10 +1710,31 @@ async function searchRange(host, r, from, to, newestFirst, paced) {
   return null;
 }
 
+/* A message signed on the chain in BRC Seal (or a mailbox link) is a stamp of the message
+   and its address, so it is found exactly like one; then its lock must be the signer's own. */
+function parseChainSignedAsReceipt(text) {
+  const cs = BRCChain.parseChainSigned(text);
+  return { fingerprint: cs.stamp.fingerprint, salt: cs.stamp.salt, owner: cs.address, lockId: cs.lockId, block: cs.block, file: null,
+    after: cs.stamp.after ? { height: cs.stamp.after.height, hash: cs.stamp.after.hash } : null, drand: cs.stamp.drand, chain: cs };
+}
+function parseAnyReceipt(text) {
+  return BRCChain.looksChainSigned(text) ? parseChainSignedAsReceipt(text) : parseStampReceipt(text);
+}
+function chainFacts(r) {
+  const cs = r.chain, f = [fact('Message', `<div class="signed-msg">${esc(cs.message)}</div>`)];
+  if (cs.hidden) f.push(fact('Careful', '<span class="no">The message has invisible or direction-changing characters, so it may not read the way it looks</span>'));
+  if (cs.link) f.push(cs.link.valid
+    ? fact('Mailbox link', `${nameLink(cs.link.coin)} <span class="muted">says its mailbox is</span> ${nameLink(cs.link.mailbox)} <span class="muted">and the mailbox's own signature agrees</span>`)
+    : fact('Mailbox link', `<span class="no">${esc(cs.link.reason)}</span>`));
+  return f;
+}
+
 async function checkStamp(continueOlder = false) {
   stampMsg(''); $('stamp-result').hidden = true;
   let r;
-  try { r = continueOlder && stampSearch ? stampSearch.r : parseStampReceipt($('stamp-receipt').value); } catch (err) { stampMsg(err.message, 'danger'); return; }
+  try { r = continueOlder && stampSearch ? stampSearch.r : parseAnyReceipt($('stamp-receipt').value); } catch (err) { stampMsg(err.message, 'danger'); return; }
+  if (r.chain && r.chain.link && !r.chain.link.valid) { showStamp('bad', 'This mailbox link isn\'t valid.', r.chain.link.reason, chainFacts(r)); return; }
+  const fileFact = r.chain ? () => '' : fileFactFor;
   const go = $('stamp-go'); go.disabled = true;
   try {
     const H = continueOlder && stampSearch ? stampSearch.H : await stampHelpers();
@@ -1747,10 +1772,14 @@ async function checkStamp(continueOlder = false) {
     }
     const { blk, lock } = hit;
     const facts = [];
+    if (r.chain && lock.from !== r.owner) {
+      showStamp('bad', 'Not signed by this address.', `The lock holding this message was made by ${lock.from.slice(0, 10)}…, not by ${r.owner.slice(0, 10)}…. Anyone can copy a shared message into a lock of their own, so this proves nothing about ${r.owner.slice(0, 10)}….`, [fact('Block', fmt(blk.height)), ...chainFacts(r)]);
+      return;
+    }
     let want = await stampScriptHash(r), ownerFixed = null;
-    if (lock.scriptHash !== want && lock.scriptHash === await stampScriptHash(r, lock.from)) ownerFixed = lock.from; // the app's recipient was its own wallet
+    if (!r.chain && lock.scriptHash !== want && lock.scriptHash === await stampScriptHash(r, lock.from)) ownerFixed = lock.from; // the app's recipient was its own wallet
     if (lock.scriptHash !== want && !ownerFixed) {
-      showStamp('bad', 'This lock exists, but it holds a different stamp.', 'The fingerprint, salt or "After" line on this receipt is not what was stamped. The receipt may have been edited.', [fact('Block', fmt(blk.height)), fileFact(r)]);
+      showStamp('bad', r.chain ? 'This lock exists, but it holds a different message.' : 'This lock exists, but it holds a different stamp.', r.chain ? 'The message, address or salt is not what was signed. It may have been edited.' : 'The fingerprint, salt or "After" line on this receipt is not what was stamped. The receipt may have been edited.', [fact('Block', fmt(blk.height)), fileFact(r)]);
       return;
     }
     const now = Date.now() / 1000;
@@ -1762,14 +1791,22 @@ async function checkStamp(continueOlder = false) {
     let afterBlockTs = null;
     let tone = 'good', lead = `Existed by ${utc(dl.at)}`;
     let sub = `Stamped in block ${fmt(blk.height)}. The file existed by then; it may be older. Miners set block times, so allow about half an hour either way.`;
-    if (stampFileFp != null && stampFileFp !== r.fingerprint) { tone = 'bad'; lead = "This file doesn't match the stamp."; sub = `The stamp itself is on the chain (block ${fmt(blk.height)}), but it is for a different file, or this file changed after it was stamped.`; }
+    if (r.chain) {
+      const who = r.chain.link ? `The mailbox link from ${r.owner.slice(0, 10)}…` : `Signed by ${r.owner.slice(0, 10)}…${r.owner.slice(-4)}`;
+      lead = `${who}, by ${utc(dl.at)}`;
+      sub = r.chain.link
+        ? `This coin address signed the link on the chain, in block ${fmt(blk.height)}, and the mailbox signed it too. Letters sealed to the mailbox reach this address's owner.`
+        : `The chain shows this address signed exactly this message, in block ${fmt(blk.height)}. Only its key could have made the lock. Miners set block times, so allow about half an hour either way.`;
+      facts.push(...chainFacts(r));
+    }
+    if (!r.chain && stampFileFp != null && stampFileFp !== r.fingerprint) { tone = 'bad'; lead = "This file doesn't match the stamp."; sub = `The stamp itself is on the chain (block ${fmt(blk.height)}), but it is for a different file, or this file changed after it was stamped.`; }
     facts.push(fileFact(r));
     facts.push(fact('Block', `${fmt(blk.height)} <span class="mono">${esc(blk.id.slice(0, 16))}…</span>, block time ${esc(utc(blk.ts))}`));
     facts.push(fact('Confirmations', conf >= 6 ? `<span class="ok">${fmt(conf)}</span>` : `${fmt(conf)} <span class="muted">(final after 6)</span>`));
     facts.push(fact('Helper servers', cc.disagree ? `<span class="no">${fmt(cc.disagree)} report a different block ${fmt(blk.height)}</span>`
       : cc.ops >= 2 ? `<span class="ok">${fmt(cc.ops)} independent operators agree on this block</span>`
       : '<span class="no">Only one operator\'s helper servers could be checked, so this can\'t be confirmed yet</span>'));
-    facts.push(fact('Stamped by', `${nameLink(lock.from)} <span class="muted">signed the lock</span>`));
+    facts.push(fact(r.chain ? 'Signed by' : 'Stamped by', `${nameLink(lock.from)} <span class="muted">signed the lock</span>`));
     if (ownerFixed) facts.push(fact('Coins go back to', `${nameLink(ownerFixed)} <span class="muted">(the receipt's Owner line was wrong; corrected below)</span>`));
     else if (r.owner !== lock.from) facts.push(fact('Coins go back to', nameLink(r.owner)));
     if (r.after) {
@@ -1804,15 +1841,16 @@ async function checkStamp(continueOlder = false) {
     }
     if (cc.disagree) { tone = 'bad'; lead = 'Helper servers disagree about this block.'; sub = "Don't rely on this stamp until they agree. Try again later."; }
     else if (tone === 'good' && (cc.ops < 2 || conf < 6 || !dl.settled)) { tone = 'warn'; if (cc.ops < 2) lead = `Found, not yet confirmed. ${lead}`; }
-    facts.push(fact('Fingerprint', `<span class="mono">${esc(r.fingerprint)}</span>`));
+    if (!r.chain) facts.push(fact('Fingerprint', `<span class="mono">${esc(r.fingerprint)}</span>`));
     let updated = '';
     const final = conf >= 6 && cc.ops >= 2 && !cc.disagree;
     if (final && (ownerFixed || !r.block || !r.lockId)) {
       let text = $('stamp-receipt').value.trim();
       if (ownerFixed) text = text.replace(/^(\s*>?\s*Owner:\s*).*$/mi, `$1${ownerFixed}`);
-      if (!r.lockId) text = text.replace(/(-----END BRC STAMP RECEIPT-----)/, `Lock ID: ${lock.id}\n$1`);
-      if (!r.block) text = text.replace(/(-----END BRC STAMP RECEIPT-----)/, `Block: ${blk.height}\n$1`);
-      updated = { note: ownerFixed ? 'Use this corrected receipt from now on:' : 'Add the block number to your receipt so future checks are instant:', text };
+      const END = r.chain ? /(-----END BRC CHAIN SIGNATURE-----)/ : /(-----END BRC STAMP RECEIPT-----)/;
+      if (!r.lockId) text = text.replace(END, `Lock ID: ${lock.id}\n$1`);
+      if (!r.block) text = text.replace(END, `Block: ${blk.height}\n$1`);
+      updated = { note: ownerFixed ? 'Use this corrected receipt from now on:' : r.chain ? 'Share this version from now on, so future checks are instant:' : 'Add the block number to your receipt so future checks are instant:', text };
     }
     showStamp(tone, lead, sub, facts, updated);
   } catch (err) {
