@@ -5,6 +5,11 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+1.1.1 (not yet published)
+  - The BRC Works addresses (release address, giveaway mailbox, prize pool)
+    are listed under Check it with what each holds, and look-alikes of them
+    are flagged across Pulse.
+
 1.1.0 (Oct 31, 2026)
   - Release: "Is this BRC Works file genuine?" stays hidden until the first
     release is postmarked, instead of calling every file unreleased.
