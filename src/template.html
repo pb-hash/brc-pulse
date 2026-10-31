@@ -193,14 +193,25 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .stamp-form textarea { width: 100%; min-height: 150px; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--hairline-strong); background: var(--surface); color: var(--ink); font: 500 .78rem/1.55 var(--mono); box-shadow: var(--shadow); resize: vertical; }
 .stamp-form textarea:focus { outline: none; border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-tint); }
 .stamp-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
-.stamp-row .file { position: relative; display: inline-flex; align-items: center; height: 46px; padding: 0 16px; border-radius: 12px; border: 1px dashed var(--hairline-strong); background: var(--surface); color: var(--ink-2); font: 600 .86rem var(--sans); cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.stamp-row .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.stamp-row .file, .genuine .file { position: relative; display: inline-flex; align-items: center; height: 46px; padding: 0 16px; border-radius: 12px; border: 1px dashed var(--hairline-strong); background: var(--surface); color: var(--ink-2); font: 600 .86rem var(--sans); cursor: pointer; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stamp-row .file input, .genuine .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
 .stamp-row button.go { height: 46px; padding: 0 22px; border: 0; border-radius: 12px; background: var(--brand); color: #fff; font: 700 .92rem var(--sans); cursor: pointer; }
 .stamp-row button.go:hover { background: var(--brand-deep); }
 .stamp-row button.go:disabled { opacity: .5; cursor: progress; }
 .latest-box { max-width: 820px; font-size: .86rem; color: var(--muted); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .latest-box .mono { color: var(--ink-2); overflow-wrap: anywhere; }
 .latest-box[hidden], .stamp-updated[hidden], #stamp-result[hidden] { display: none !important; }
+.genuine, .official-box { max-width: 820px; margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--hairline); }
+.genuine h2, .official-box h2 { font-size: 1.05rem; margin: 0 0 6px; letter-spacing: -.01em; }
+.genuine p, .official-box p { margin: 0 0 12px; color: var(--muted); font-size: .9rem; }
+.genuine .msg { margin-top: 10px; }
+.official-box[hidden] { display: none !important; }
+.official-box ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.official-box li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; padding: 10px 12px; border: 1px solid var(--hairline); border-radius: 10px; font-size: .9rem; }
+.official-box li .mono { grid-column: 1 / -1; color: var(--muted); font-size: .78rem; overflow-wrap: anywhere; }
+.lookalike-warn { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: rgba(214, 64, 40, .1); color: var(--danger, #b3261e); font-size: .88rem; font-weight: 500; }
+.lookalike-warn[hidden] { display: none !important; }
+.who-link .fake { color: var(--danger, #b3261e); font-weight: 600; }
 .latest-older, .latest-box button { appearance: none; height: 28px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-2); font: 600 .76rem var(--sans); cursor: pointer; }
 .stamp-verdict { display: grid; gap: 6px; }
 .stamp-verdict .lead { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.02em; line-height: 1.25; }
@@ -540,6 +551,17 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <p class="msg" id="stamp-msg" role="status" hidden></p>
     <div class="latest-box" id="stamp-drand" hidden>Making a new stamp? The latest drand beacon, for BRC Seal's "prove when it was made": <b id="stamp-drand-h"></b><span class="mono" id="stamp-drand-sig"></span><button type="button" id="stamp-drand-copy">Copy</button></div>
     <div class="latest-box" id="stamp-latest" hidden>Or a recent, settled block: <b id="stamp-latest-h"></b><span class="mono" id="stamp-latest-id"></span><span class="muted" id="stamp-latest-note"></span><button type="button" id="stamp-latest-copy">Copy both</button></div>
+    <div class="genuine" id="genuine">
+      <h2>Is this BRC Works file genuine?</h2>
+      <p>Every BRC Works release is signed on the chain by the BRC Works release address. Choose a copy of BRC Vault, BRC Seal or another BRC Works file you were given: it is fingerprinted here, never uploaded, and checked against those signatures.</p>
+      <label class="file"><input type="file" id="genuine-file"><span id="genuine-file-name">Choose the file</span></label>
+      <p class="msg" id="genuine-msg" role="status" hidden></p>
+    </div>
+    <div class="official-box" id="official-box" hidden>
+      <h2>BRC Works addresses</h2>
+      <p>The only addresses that belong to BRC Works, with what they hold now. Anything else claiming to be BRC Works isn't. Look-alikes are flagged across this page.</p>
+      <ul id="official-list"></ul>
+    </div>
   </div>
   <div class="intro-text give-intro giveaway-only" id="give-top">
     <p class="eyebrow">BRC Works · Block 100,000</p>
@@ -573,6 +595,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div>
         <div class="who"><b id="a-name">Address</b><span class="tag pool" id="a-tag" hidden>Pool</span></div>
         <div class="addr" id="a-addr"></div>
+        <p class="lookalike-warn" id="a-lookalike" hidden></p>
         <div class="bal" id="a-bal">–</div>
         <p class="sub" id="a-sub"></p>
       </div>
@@ -860,6 +883,9 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <script>
 /*__DRAND__*/
 const GIVE = /*__GIVEAWAY__*/null;
+// BRC Works addresses (BRC Seal src/official.js, through the kit) and the release postmarks in releases/.
+const OFFICIAL = /*__OFFICIAL__*/null || BRCKit.known.OFFICIAL;
+const RELEASES = /*__RELEASES__*/[];
 const SNAP = /*__SNAPSHOT__*/null;
 const REWARD = 50, TARGET = 150, HALVING = 210000, CAP = 21e6, HOUR = 3600, DAY = 86400, TRACE_WIN = 45 * 60;
 const SEEDS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'];
@@ -867,6 +893,7 @@ const LABELS = {
   'ff811ae0d83c0bde47bc10db95d1e869641d897975c1fe7fc61884efa6d5c698': { name: 'Cryptec Pool', url: 'https://brcpool.cryptec.tech/' },
   '89d081ad360f4ee55e704b449b6f4491619fa8bddf0c35eedaafa0b6a306b768': { name: 'Tabpool', url: 'https://tabpool.xhash.xyz/' },
 };
+for (const o of OFFICIAL) LABELS[o.address] = { name: o.name, official: true, role: o.role };
 const POOLS = [
   { name: 'brcove', url: 'https://www.brcove.com/', fee: '0%', payout: 'Direct to you', note: 'Terminal miner' },
   { name: 'Tabpool', url: 'https://tabpool.xhash.xyz/', fee: '1%', payout: '1 BRC', note: 'Browser or Windows app', addr: '89d081ad360f4ee55e704b449b6f4491619fa8bddf0c35eedaafa0b6a306b768' },
@@ -907,7 +934,9 @@ const mmss = (s) => { s = Math.max(0, Math.round(s)); return `${Math.floor(s / 6
 function ago(s) { s = Math.max(0, Math.round(s)); if (s < 60) return `${s}s ago`; if (s < 3600) return `${Math.floor(s / 60)}m ago`; return `${Math.floor(s / 3600)}h ${Math.floor((s % 3600) / 60)}m ago`; }
 const short = (a) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 const name = (a) => (LABELS[a] ? LABELS[a].name : short(a));
-const nameHtml = (a) => (LABELS[a] ? LABELS[a].name : `<span class="mono">${short(a)}</span>`);
+/* An address with the same first or last 6 characters as a named one, but not it: someone may be imitating it. */
+const lookalikeOf = (a) => (LABELS[a] ? null : BRCKit.known.lookalikeOf(a, Object.entries(LABELS).map(([address, l]) => ({ address, name: l.name }))));
+const nameHtml = (a) => (LABELS[a] ? LABELS[a].name : `<span class="mono">${short(a)}</span>${lookalikeOf(a) ? ' <span class="fake" title="Looks like a named address, but isn\'t">look-alike!</span>' : ''}`);
 const nameLink = (a) => `<a class="who-link" href="#my=${a}" title="Look up in My BRC">${nameHtml(a)}</a>`;
 const now = () => (S.mode === 'live' ? Date.now() / 1000 : S.mode === 'replay' ? S.vnow : S.at / 1000);
 // Same clock, interpolated between replay steps so the frame moves smoothly at 60 fps.
@@ -1394,6 +1423,9 @@ function renderAcct() {
   const L = LABELS[A];
   $('a-name').textContent = L ? L.name : A === DEAD ? 'Burn address' : A === store.get() ? 'Your address' : 'Address';
   $('a-tag').hidden = !L; $('a-tag').textContent = L && L.official ? 'BRC Works' : 'Pool'; $('a-addr').textContent = A;
+  const fake = lookalikeOf(A);
+  $('a-lookalike').hidden = !fake;
+  if (fake) $('a-lookalike').textContent = `Careful: this address looks like ${fake.name} (${fake.address.slice(0, 6)}…${fake.address.slice(-6)}), but it isn't. Someone may be imitating it. Don't send coins here unless you are sure.`;
   const bal = $('a-bal'), html = brc(a.bal);
   if (bal.innerHTML !== html) { bal.innerHTML = html; if (a.fresh && performance.now() - a.fresh < 3000) replay(bal, 'bump'); }
   const asOf = M.applied > (M.idxH || 0) ? `live to block ${fmt(M.applied)}` : M.idxH ? `as of block ${fmt(M.idxH)}` : 'live';
@@ -1482,7 +1514,7 @@ function renderTry() {
 }
 function route() {
   if (location.hash === '#giveaway' && GIVE) { setView('giveaway'); M.addr = null; M.token++; scrollTo(0, 0); gvShow(); return; }
-  if (location.hash === '#stamp') { setView('stamp'); M.addr = null; M.token++; scrollTo(0, 0); showLatestForStamp(); return; }
+  if (location.hash === '#stamp') { setView('stamp'); M.addr = null; M.token++; scrollTo(0, 0); showLatestForStamp(); showOfficial(); return; }
   const m = location.hash.match(/^#my(?:=([0-9a-fA-F]{64}))?$/);
   if (!m) {
     setView('net'); M.addr = null; M.token++;
@@ -1721,7 +1753,8 @@ function parseAnyReceipt(text) {
   return BRCChain.looksChainSigned(text) ? parseChainSignedAsReceipt(text) : parseStampReceipt(text);
 }
 function chainFacts(r) {
-  const cs = r.chain, f = [fact('Message', `<div class="signed-msg">${esc(cs.message)}</div>`)];
+  const cs = r.chain, rel = BRCKit.release.readRelease(cs.message);
+  const f = [rel ? fact('Release', `<b>${esc(rel.tool)} ${esc(rel.version)}</b> <span class="muted">${esc(rel.file)}</span>`) : fact('Message', `<div class="signed-msg">${esc(cs.message)}</div>`)];
   if (cs.hidden) f.push(fact('Careful', '<span class="no">The message has invisible or direction-changing characters, so it may not read the way it looks</span>'));
   if (cs.link) f.push(cs.link.valid
     ? fact('Mailbox link', `${nameLink(cs.link.coin)} <span class="muted">says its mailbox is</span> ${nameLink(cs.link.mailbox)} <span class="muted">and the mailbox's own signature agrees</span>`)
@@ -1729,10 +1762,11 @@ function chainFacts(r) {
   return f;
 }
 
-async function checkStamp(continueOlder = false) {
+async function checkStamp(continueOlder = false, genuineFile = false) {
   stampMsg(''); $('stamp-result').hidden = true;
   let r;
   try { r = continueOlder && stampSearch ? stampSearch.r : parseAnyReceipt($('stamp-receipt').value); } catch (err) { stampMsg(err.message, 'danger'); return; }
+  r.genuineFile = genuineFile;
   if (r.chain && r.chain.link && !r.chain.link.valid) { showStamp('bad', 'This mailbox link isn\'t valid.', r.chain.link.reason, chainFacts(r)); return; }
   const fileFact = r.chain ? () => '' : fileFactFor;
   const go = $('stamp-go'); go.disabled = true;
@@ -1791,7 +1825,19 @@ async function checkStamp(continueOlder = false) {
     let afterBlockTs = null;
     let tone = 'good', lead = `Existed by ${utc(dl.at)}`;
     let sub = `Stamped in block ${fmt(blk.height)}. The file existed by then; it may be older. Miners set block times, so allow about half an hour either way.`;
-    if (r.chain) {
+    const rel = r.chain && BRCKit.release.readRelease(r.chain.message);
+    if (rel) {
+      const relAddr = OFFICIAL.find((o) => o.role === 'release');
+      if (!relAddr || lock.from !== relAddr.address) {
+        showStamp('bad', 'Not a genuine BRC Works release.', `This release message was signed by ${lock.from.slice(0, 10)}…, which is not the BRC Works release address. Don't use this file.`, [fact('Block', fmt(blk.height)), ...chainFacts(r)]);
+        return;
+      }
+    }
+    if (rel) {
+      lead = `Genuine: ${rel.tool} ${rel.version}`;
+      sub = `Signed on the chain by the BRC Works release address in block ${fmt(blk.height)}, by ${utc(dl.at)}.${r.genuineFile ? ' Your file matches it byte for byte.' : ''}`;
+      facts.push(...chainFacts(r));
+    } else if (r.chain) {
       const who = r.chain.link ? `The mailbox link from ${r.owner.slice(0, 10)}…` : `Signed by ${r.owner.slice(0, 10)}…${r.owner.slice(-4)}`;
       lead = `${who}, by ${utc(dl.at)}`;
       sub = r.chain.link
@@ -1858,6 +1904,70 @@ async function checkStamp(continueOlder = false) {
   } finally { go.disabled = false; }
 }
 $('stamp-form').addEventListener('submit', (e) => { e.preventDefault(); stampSearch = null; checkStamp(false); });
+
+/* Is this file genuine? Fingerprint it here, find the release that names that fingerprint, and check
+   that release's chain signature exactly as a pasted one would be checked. */
+let genuineTok = 0;
+$('genuine-file').addEventListener('change', async (e) => {
+  const f = e.target.files && e.target.files[0], tok = ++genuineTok, msg = $('genuine-msg');
+  const say = (t, cls = '') => { msg.hidden = !t; msg.className = `msg ${cls}`; msg.textContent = t || ''; };
+  say(''); if (!f) return;
+  if (f.size > 64 * 1024 ** 2) { say('This file is far larger than any BRC Works release. It is not one.', 'danger'); return; }
+  $('genuine-file-name').textContent = `${f.name}: checking…`;
+  let fp;
+  try { fp = hx(await sha(await f.arrayBuffer())); } catch { say("This file couldn't be read.", 'danger'); return; }
+  if (tok !== genuineTok) return;
+  $('genuine-file-name').textContent = f.name;
+  let hit = null;
+  for (const text of RELEASES) {
+    try { const cs = BRCChain.parseChainSigned(text), rel = BRCKit.release.readRelease(cs.message); if (rel && rel.sha256 === fp) { hit = text; break; } } catch {}
+  }
+  if (!hit) {
+    say(`Not a BRC Works release${RELEASES.length ? '' : ' (no releases have been postmarked yet)'}. This exact file was never released, so it may have been changed. Don't open it, and never type a key into it. Fingerprint ${fp.slice(0, 16)}…`, 'danger');
+    return;
+  }
+  say('This file matches a BRC Works release. Checking its signature on the chain…');
+  $('stamp-receipt').value = hit;
+  stampSearch = null;
+  await checkStamp(false, true);
+  say('');
+  $('stamp-result').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+});
+
+/* The BRC Works addresses, with live balances read from the chain like any My BRC address. */
+async function liveBalance(A) {
+  let shard;
+  if (SAMPLE) shard = SAMPLE; else { const r = await fetch(`${ACCT_BASE}${A.slice(0, 3)}.json`, { cache: 'no-cache' }); shard = r.status === 404 ? { h: null, a: {} } : await r.json(); }
+  const rec = shard.a[A]; let bal = rec ? BigInt(rec.b) : 0n, h = shard.h || last().h, ins = rec ? rec.ni : 0, outs = rec ? rec.no : 0;
+  const tipH = last().h;
+  if (S.mode === 'live' && tipH > h && tipH - h <= 4000) {
+    for (const x of await rawRange(S.source, h + 1, tipH)) {
+      const bh = parseInt(x.slice(0, 8), 16); if (bh <= h) continue; h = bh;
+      let fees = 0n;
+      for (const t of parseTxs(x)) {
+        fees += t.fee;
+        if ((t.k === 't' || t.k === 'l') && t.from === A) { bal -= t.amt + t.fee; outs++; }
+        if (t.k === 't' && t.to === A) { bal += t.amt; ins++; }
+        if (t.k === 'r' && t.to === A && t.amt > t.fee) { bal += t.amt - t.fee; ins++; }
+      }
+      if (x.slice(232, 296) === A) bal += rewardWei(bh) + fees;
+    }
+  }
+  return { bal, h, ins, outs };
+}
+let officialAt = 0;
+async function showOfficial() {
+  const list = Object.entries(LABELS).filter(([, l]) => l.official);
+  $('official-box').hidden = !list.length;
+  if (!list.length || Date.now() < officialAt) return;
+  officialAt = Date.now() + 60000;
+  $('official-list').innerHTML = list.map(([a, l]) => `<li><span><a class="who-link" href="#my=${a}">${esc(l.name)}</a></span><span class="ob" data-a="${a}">…</span><span class="mono">${a}</span></li>`).join('');
+  for (const [a] of list) {
+    const cell = $('official-list').querySelector(`[data-a="${a}"]`);
+    try { const b = await liveBalance(a); cell.innerHTML = `${brc(b.bal)} <span class="muted">· ${fmt(b.outs)} sent</span>`; }
+    catch { cell.textContent = "couldn't read"; officialAt = Date.now() + 15000; }
+  }
+}
 $('stamp-facts').addEventListener('click', (e) => { if (e.target.id === 'stamp-older') checkStamp(true); });
 
 /* ---------- live mode ---------- */

@@ -93,6 +93,7 @@ def main():
             i = args.index(flag); v = args[i + 1]; del args[i:i + 2]; return v
         return None
     preview, accounts, site = opt('--preview'), opt('--accounts'), opt('--site')
+    official_path, releases_dir = opt('--official'), opt('--releases') or os.path.join(HERE, 'releases')
     give_path = opt('--giveaway') or os.path.join(HERE, 'giveaway', 'config.json')
     give = json.load(open(give_path)) if os.path.exists(give_path) else None
     hist = json.load(open(args[0] if args else 'history.json'))
@@ -104,6 +105,12 @@ def main():
     tpl = tpl.replace('/*__DRAND__*/', kit + '\nvar BRCDrand = BRCKit.drand, BRCGiveaway = BRCKit.giveaway, BRCChain = BRCKit.chain;')
     # Version (VERSION file) and a build code from the page's code alone, so it changes
     # whenever the code does and never because of the hourly data.
+    # Release postmarks (releases/*.txt: chain-signed release messages) for "Is this file genuine?",
+    # and, for tests only, a stand-in list of official addresses (the real one is in the kit).
+    rel_texts = [open(os.path.join(releases_dir, f)).read() for f in sorted(os.listdir(releases_dir)) if f.endswith('.txt')] if os.path.isdir(releases_dir) else []
+    tpl = tpl.replace('/*__RELEASES__*/[]', json.dumps(rel_texts).replace('</', '<\\/'))
+    if official_path:
+        tpl = tpl.replace('/*__OFFICIAL__*/null', json.dumps(json.load(open(official_path))))
     version = open(os.path.join(HERE, 'VERSION')).read().strip()
     assert re.fullmatch(r'\d+\.\d+\.\d+(-test\.\d+)?', version), f'VERSION {version!r} is not like 1.2.3 or 1.2.3-test.4'
     build_id = hashlib.sha256(tpl.encode()).hexdigest()[:8]

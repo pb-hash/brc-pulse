@@ -221,6 +221,29 @@ with sync_playwright() as pw:
     expect(page.locator('#stamp-verdict')).to_contain_text("isn't valid")
     ok('an edited message, or a link to a mailbox that never agreed, is refused')
 
+    # --- Is this file genuine? Official addresses and look-alikes (build with the test list and releases) ---
+    page.goto(pathlib.Path(page_path).resolve().as_uri() + '#stamp')
+    expect(page.locator('#official-box')).to_be_visible()
+    expect(page.locator('#official-list')).to_contain_text('BRC Works release address')
+    ok('the Stamps view lists the BRC Works addresses')
+    def genuine(hexbytes, name):
+        page.locator('#genuine-file').set_input_files({'name': name, 'mimeType': 'text/html', 'buffer': bytes.fromhex(hexbytes)})
+    genuine(fx['relFileHex'], 'brc-vault.html')
+    expect(page.locator('#stamp-verdict')).to_contain_text('Genuine: BRC Vault 1.1.0', timeout=30000)
+    expect(page.locator('#stamp-verdict')).to_contain_text('matches it byte for byte')
+    page.screenshot(path=str(pathlib.Path(out) / 'pulse-genuine.png'), full_page=True)
+    ok('a genuine release file is matched to its release and its chain signature by the release address is checked')
+    genuine('00' * 40, 'brc-vault.html')
+    expect(page.locator('#genuine-msg')).to_contain_text('Not a BRC Works release')
+    ok('a file that was never released is called out')
+    genuine(fx['fakeFileHex'], 'brc-vault.html')
+    expect(page.locator('#stamp-verdict')).to_contain_text('Not a genuine BRC Works release', timeout=30000)
+    ok('a release message signed by any other address is refused')
+    assert 'look-alike' in page.evaluate(f"nameHtml({json.dumps(fx['lookalike'])})")
+    assert 'look-alike' not in page.evaluate(f"nameHtml({json.dumps(fx['relAddress'])})")
+    assert 'BRC Works release address' in page.evaluate(f"nameHtml({json.dumps(fx['relAddress'])})")
+    ok('an address imitating a named one is marked as a look-alike wherever it is named')
+
     assert not errors, errors
     ok('no page errors')
     b.close()

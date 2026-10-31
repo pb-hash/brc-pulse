@@ -11,6 +11,12 @@ comes from the page's code alone, so the hourly data never changes it.
   - The block 100,000 giveaway: address-only entries sealed in the page and
     dropped in the BRC Mailbox, the prize pool, the published lists and their
     fingerprints, and the drand draw, all checked in the page.
+  - Messages signed on the chain in BRC Seal, and mailbox links, are checked
+    in Check a stamp. A copy locked by another address is refused.
+  - Is this BRC Works file genuine? A file is fingerprinted in the page and
+    matched to a release signed on the chain by the BRC Works release address.
+  - BRC Works addresses, with live balances, on the Stamps view. Addresses
+    imitating any named address are marked as look-alikes.
   - The version and build code are shown in the footer.
 
 1.0.0
