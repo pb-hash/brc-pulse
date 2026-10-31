@@ -1998,7 +1998,10 @@ async function range(host, from, to) { const out = []; for (let f = from; f <= t
 function merge(nb) { const m = new Map(S.blocks.map((b) => [b.h, b])); for (const b of nb) m.set(b.h, b); S.blocks = [...m.values()].sort((a, b) => a.h - b.h).slice(-900); }
 async function goLive() {
   let p; try { p = await probe(); } catch { return false; }
-  const up = p.filter((x) => x.ok).sort((a, b) => b.height - a.height || a.ms - b.ms); if (!up.length) return false;
+  let up = p.filter((x) => x.ok).sort((a, b) => b.height - a.height || a.ms - b.ms); if (!up.length) return false;
+  // Never follow a helper that claims a tip far above the others (review, Oct 31).
+  const hs0 = up.map((x) => x.height).sort((a, b) => a - b), med0 = hs0[Math.floor((hs0.length - 1) / 2)];
+  up = up.filter((x) => x.height <= med0 + 2);
   try {
     merge(await range(up[0].host, Math.max(last().h - 5, up[0].height - 799), up[0].height));
     try { S.peers = (await get(up[0].host, '/stats')).peerCount; } catch {}
@@ -2009,7 +2012,8 @@ async function goLive() {
     n++;
     try {
       const t = await get(S.source, '/tip'), have = last().h;
-      if (t.height > have) { const at = Date.now() / 1000; S.freshFrom = have + 1; merge(await range(S.source, have - 3, t.height)); for (const b of S.blocks) if (b.h > have && !S.seen[b.h]) S.seen[b.h] = at; render(); }
+      if (!Number.isSafeInteger(t.height) || t.height > have + 5000) throw new Error('implausible tip');
+      if (t.height > have) { const at = Date.now() / 1000; S.freshFrom = have + 1; merge(await range(S.source, Math.max(have - 3, t.height - 899), t.height)); for (const b of S.blocks) if (b.h > have && !S.seen[b.h]) S.seen[b.h] = at; render(); }
       if (n % 10 === 0) { S.helpers = await probe(); try { S.peers = (await get(S.source, '/stats')).peerCount; } catch {} renderHelpers(); }
     } catch { const q = await probe(), alt = q.filter((x) => x.ok).sort((a, b) => a.ms - b.ms)[0]; S.helpers = q; if (alt) S.source = alt.host; renderHelpers(); }
   }, 6000);
@@ -2072,6 +2076,7 @@ function gvRules() {
     '<b>Adding to the prize pool</b> doesn\'t enter you or change anyone\'s chances.',
     '<b>Privacy:</b> your address is sealed in your browser. The mailbox and everyone else see only a sealed letter. After entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached.',
     `<b>The draw:</b> drand beacon round ${fmt(gvRound())}, published at ${esc(utc(tsOf(GIVE.drawAt)))}. The winner is SHA-256("BRC Works giveaway draw v1", the entry list's fingerprint, the round and its signature) modulo the number of entries, counting from the first address in sorted order. Anyone can rerun it here.`,
+    `<b>Fixed on the chain:</b> these rules and the draw round were signed by the BRC Works release address${GV.launch ? ` in block ${fmt(GV.launch.height)} <span class="ok">checked here</span>` : ''}. The entry list is signed the same way at least 6 hours before the draw, and the release address signs nothing else until the draw, so the list can't be swapped afterwards.`,
     'Run by pb-hash as part of BRC Works. Independent tools; not part of the official BrowserCoin project.',
   ];
   $('gv-rules').innerHTML = rules.map((r) => `<li>${r}</li>`).join('');
@@ -2086,7 +2091,7 @@ async function gvLoadLists() {
         const d = await r.json();
         if (d.fingerprint !== GIVE.eligible.fingerprint || BRCGiveaway.eligibleFingerprint(d.addresses) !== GIVE.eligible.fingerprint) GV.eligibleErr = "The eligible list doesn't match its published fingerprint, so entries are paused. Please tell the organizer.";
         else GV.eligible = new Set(d.addresses);
-      } catch { GV.eligibleErr = null; }
+      } catch { GV.eligibleErr = null; GV.listRetryAt = Date.now() + 15000; }
     }
     if (GIVE.entries && !GV.entries && !GV.entriesErr) {
       try {
@@ -2094,7 +2099,7 @@ async function gvLoadLists() {
         const d = await r.json();
         if (d.fingerprint !== GIVE.entries.fingerprint || BRCGiveaway.listFingerprint(d.addresses) !== GIVE.entries.fingerprint) GV.entriesErr = "The published entry list doesn't match its fingerprint. Don't trust this result; please tell the organizer.";
         else GV.entries = d;
-      } catch { GV.entriesErr = null; }
+      } catch { GV.entriesErr = null; GV.listRetryAt = Date.now() + 15000; }
     }
   } finally { GV.loading = false; }
   gvEnterState(); gvDraw(); gvMineCard();
@@ -2118,12 +2123,19 @@ function gvShowCheck(out, c) {
 }
 function gvEnterState() {
   const ph = gvPhase(), form = $('gv-form'), p = $('gv-enter-p');
-  const open = ph === 'open' && !GV.eligibleErr;
+  if (ph === 'open' && !GV.launch && !GV.launchErr && !GV.launchBusy) {
+    GV.launchBusy = true;
+    gvCheckLaunch().then((l) => { GV.launch = l; GV.launchErr = null; }, (e) => { GV.launchErr = e.commit ? e.message : "Couldn't check the giveaway's rules on the chain yet. It will retry."; setTimeout(() => { GV.launchErr = null; }, 30000); })
+      .finally(() => { GV.launchBusy = false; gvEnterState(); gvRules(); });
+  }
+  const open = ph === 'open' && !GV.eligibleErr && !!GV.launch;
   form.hidden = ph !== 'open';
   $('gv-go').disabled = !open || !GV.eligible;
   if (ph === 'soon') p.innerHTML = `Entries open <b>${esc(localWhen(tsOf(GIVE.opensAt)))}</b>. Entering will need only your BrowserCoin <strong>address</strong>: no private key, no wallet file, nothing to sign.`;
   else if (ph !== 'open') p.innerHTML = `Entries closed <b>${esc(localWhen(tsOf(GIVE.closesAt)))}</b>.${GIVE.entries ? ' The entry list is published below.' : ' The organizer is opening the letters; the entry list will appear here before the draw.'}`;
   if (GV.eligibleErr) gvMsg(GV.eligibleErr, 'danger');
+  else if (ph === 'open' && GV.launchErr) gvMsg(GV.launchErr, 'danger');
+  else if (ph === 'open' && !GV.launch) gvMsg("Checking the giveaway's rules on the chain…");
   if (ph === 'open') gvShowCheck($('gv-check'), gvCheckText($('gv-addr').value));
 }
 function gvMsg(text, cls = '') { const m = $('gv-msg'); m.hidden = !text; m.className = `msg ${cls}`; m.textContent = text || ''; }
@@ -2133,18 +2145,25 @@ $('gv-form').addEventListener('submit', async (e) => {
   if (gvPhase() !== 'open') { gvEnterState(); return; }
   const c = gvCheckText($('gv-addr').value);
   if (c.kind === 'danger') { $('gv-addr').value = ''; gvShowCheck($('gv-check'), c); return; }
-  if (c.kind !== 'ok' || !GV.eligible) { gvShowCheck($('gv-check'), c); return; }
+  if (c.kind !== 'ok' || !GV.eligible || !GV.launch) { gvShowCheck($('gv-check'), c); return; }
   const go = $('gv-go'); go.disabled = true; go.textContent = 'Sealing…';
   let letter;
   try { letter = BRCGiveaway.sealEntry(GIVE.mailbox, c.addr).armored; } catch (err) { gvMsg(err.message, 'danger'); go.disabled = false; go.textContent = 'Seal and drop my entry'; return; }
   go.textContent = 'Dropping it in…';
   try {
-    const r = await fetch(`${GIVE.service}/m/${GIVE.mailbox}/letters`, { method: 'POST', body: letter, headers: { 'content-type': 'text/plain' } });
-    const d = await r.json().catch(() => ({}));
+    let r, d;
+    for (let tries = 0; ; tries++) {
+      r = await fetch(`${GIVE.service}/m/${GIVE.mailbox}/letters`, { method: 'POST', body: letter, headers: { 'content-type': 'text/plain' } });
+      d = await r.json().catch(() => ({}));
+      if (r.status !== 429 || tries >= 4) break;
+      go.textContent = 'Mailbox busy, trying again…'; gvMsg('The mailbox is busy just now. Trying again in 15 seconds; keep this page open.');
+      await pause(15000);
+    }
+    gvMsg('');
     if (r.status === 201 || r.status === 200) {
       const day = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
       gvStore.set(c.addr, day);
-      $('gv-done-s').textContent = `Sealed letter #${fmt(d.seq)} of ${fmt(d.count)} in the mailbox. Keep this page open to watch it arrive, or come back for the draw.`;
+      $('gv-done-s').textContent = `Sealed letter #${fmt(d.seq)} of ${fmt(d.count)} in the mailbox${typeof d.id === 'string' && /^[0-9a-f]{64}$/.test(d.id) ? `, letter ID ${d.id.slice(0, 16)}…` : ''}. When the entry list is published, check your address is on it before the draw: after the list is fixed on the chain it can't change.`;
       $('gv-letter').textContent = letter;
       $('gv-done').hidden = false; $('gv-addr').value = ''; gvShowCheck($('gv-check'), { kind: 'none' });
       GV.pollAt = 0; gvWall();
@@ -2203,7 +2222,7 @@ async function drandRound(round) {
 }
 function gvHow() {
   const ph = gvPhase(), round = gvRound(), at = tsOf(GIVE.drawAt), t = nowS();
-  const list = GIVE.entries ? `The organizer published the entry list: <b>${fmt(GIVE.entries.count)} entries</b>, fingerprint <span class="mono">${esc(GIVE.entries.fingerprint)}</span>, and fixed it on the chain with the BRC Works release address, together with the draw round. This page checks that happened at least 30 minutes before the draw.` : `After entries close, the organizer opens the letters, publishes the entry list and its fingerprint here, and fixes both the list and the draw round on the chain at least 30 minutes before the draw. Nobody can change either after that.`;
+  const list = GIVE.entries ? `The organizer published the entry list: <b>${fmt(GIVE.entries.count)} entries</b>, fingerprint <span class="mono">${esc(GIVE.entries.fingerprint)}</span>, and fixed it on the chain with the BRC Works release address, together with the draw round. This page checks that happened at least 6 hours before the draw.` : `After entries close, the organizer opens the letters, publishes the entry list and its fingerprint here, and fixes both the list and the draw round on the chain at least 6 hours before the draw. Nobody can change either after that.`;
   const items = [
     `Entries close <span class="when">${esc(localWhen(tsOf(GIVE.closesAt)))}</span>.`,
     list,
@@ -2212,29 +2231,74 @@ function gvHow() {
   ];
   $('gv-how').innerHTML = items.map((x, i) => `<li${(i === 0 && ph !== 'soon' && ph !== 'open') || (i === 1 && GIVE.entries) ? ' class="done"' : ''}>${x}</li>`).join('');
 }
-/* The list must have been fixed on the chain, by the BRC Works release address, well before the draw
-   round: otherwise whoever publishes the list could try lists after seeing the beacon (security review,
-   Oct 31). Returns where it was fixed, or throws a plain reason, and then no winner is shown. */
-const COMMIT_MARGIN = 1800; // the list's block must be settled at least 30 minutes before the draw round
-async function gvCheckCommit() {
-  const fail = (t) => { const e = new Error(t); e.commit = true; throw e; };
-  if (!GIVE.commitment) fail("The entry list hasn't been fixed on the chain before the draw, so no winner is shown. The organizer must sign the list on the chain, before the draw round, with the BRC Works release address.");
-  let r; try { r = parseChainSignedAsReceipt(GIVE.commitment); } catch (e) { fail(`The list commitment can't be read: ${e.message}`); }
-  const c = BRCGiveaway.readListCommit(r.chain.message);
-  if (!c) fail('The list commitment is not a giveaway list message.');
-  if (c.fingerprint !== GIVE.entries.fingerprint || c.count !== GV.entries.addresses.length) fail("The list fixed on the chain is not the list published here, so no winner is shown.");
-  if (c.round !== gvRound()) fail(`The draw round fixed on the chain (${fmt(c.round)}) is not the one this page uses (${fmt(gvRound())}), so no winner is shown.`);
-  const rel = OFFICIAL.find((o) => o.role === 'release');
-  if (!rel || r.owner !== rel.address) fail('The list was not signed by the BRC Works release address, so no winner is shown.');
-  if (!r.block) fail('The list commitment has no "Block:" line, so it cannot be checked.');
+/* Giveaway messages signed on the chain by the BRC Works release address (security review, Oct 31):
+   - the launch fixes the rules and the draw round before entries close;
+   - the list commitment fixes the entry list at least 6 hours before the draw round;
+   - between the launch and the first block after the draw round, the release address makes exactly
+     one lock: the list commitment. So nobody can fix several lists (or rounds) and later publish
+     whichever one wins. Anyone can rerun every check here. */
+const COMMIT_MARGIN = 6 * 3600;
+const gvFail = (t) => { const e = new Error(t); e.commit = true; throw e; };
+const releaseAddr = () => (OFFICIAL.find((o) => o.role === 'release') || {}).address;
+/* Miners set block times, so a block's "existed by" time comes from the median of the next 11,
+   read from every independent operator; the latest answer counts. */
+async function settledBy(H, blk) {
+  const byOp = new Map();
+  for (const x of [{ host: H.host }, ...H.all.filter((y) => y.host !== H.host)]) if (!byOp.has(operator(x.host))) byOp.set(operator(x.host), x.host);
+  const got = (await Promise.all([...byOp.values()].map(async (host) => { try { return await deadlineFor(host, blk); } catch { return null; } }))).filter((d) => d && d.settled);
+  if (got.length < 2) gvFail('The block is not settled at two independent helper operators yet. Try again in a few minutes.');
+  return Math.max(...got.map((d) => d.at));
+}
+/* Read a chain-signed giveaway message from the release address, in its own Block:, confirmed. */
+async function gvSigned(text, what) {
+  let r; try { r = parseChainSignedAsReceipt(text); } catch (e) { gvFail(`The ${what} can't be read: ${e.message}`); }
+  const rel = releaseAddr();
+  if (!rel || r.owner !== rel) gvFail(`The ${what} was not signed by the BRC Works release address.`);
+  if (!r.block) gvFail(`The ${what} has no "Block:" line, so it cannot be checked.`);
   const H = await stampHelpers(), b = await blockAt(H.host, r.block), L = await matchLock(r, b.locks);
-  if (!L || L.from !== rel.address || L.scriptHash !== await stampScriptHash(r)) fail(`The release address's lock fixing this list isn't in block ${fmt(r.block)}, so no winner is shown.`);
-  const cc = await confirmBlock(H, b.height, b.id), dl = await deadlineFor(H.host, b);
-  if (cc.disagree || cc.ops < 2) fail('The block fixing the list cannot be confirmed by two independent helper operators yet. Try again later.');
-  if (!dl.settled) fail('The block fixing the list is not settled yet. Try again in a few minutes.');
-  const roundAtTs = BRCDrand.drandRoundTime(c.round);
-  if (dl.at > roundAtTs - COMMIT_MARGIN) fail(`The list was fixed on the chain at ${utc(dl.at)}, too close to the draw at ${utcS(roundAtTs)}. It must be at least 30 minutes earlier, so no winner is shown.`);
-  return { height: b.height, at: dl.at, lockId: L.id };
+  if (!L || L.from !== rel || L.scriptHash !== await stampScriptHash(r)) gvFail(`The release address's lock for the ${what} isn't in block ${fmt(r.block)}.`);
+  const cc = await confirmBlock(H, b.height, b.id);
+  if (cc.disagree || cc.ops < 2) gvFail(`The block holding the ${what} cannot be confirmed by two independent helper operators yet.`);
+  return { r, H, blk: b, lock: L, at: await settledBy(H, b) };
+}
+let gvLaunchP = null;
+function gvCheckLaunch() {
+  if (!gvLaunchP) gvLaunchP = (async () => {
+    if (!GIVE.launch) gvFail("The giveaway's rules haven't been fixed on the chain yet, so entering is closed.");
+    const s = await gvSigned(GIVE.launch, 'giveaway rules');
+    const L = BRCGiveaway.readLaunch(s.r.chain.message);
+    if (!L) gvFail('The rules signed on the chain are not a giveaway launch message.');
+    if (L.mailbox !== GIVE.mailbox || L.pool !== GIVE.pool || L.eligible !== GIVE.eligible.fingerprint || L.closesAt !== GIVE.closesAt || L.round !== gvRound())
+      gvFail("This page's giveaway settings are not the ones fixed on the chain, so they can't be trusted.");
+    if (s.at >= tsOf(GIVE.closesAt)) gvFail('The rules were fixed on the chain after entries closed.');
+    return { height: s.blk.height, at: s.at, round: L.round };
+  })();
+  gvLaunchP.catch(() => { setTimeout(() => { gvLaunchP = null; }, 30000); });
+  return gvLaunchP;
+}
+async function gvCheckCommit() {
+  const launch = await gvCheckLaunch();
+  if (!GIVE.commitment) gvFail("The entry list hasn't been fixed on the chain before the draw, so no winner is shown. The organizer must sign the list on the chain, at least 6 hours before the draw, with the BRC Works release address.");
+  const s = await gvSigned(GIVE.commitment, 'list commitment');
+  const c = BRCGiveaway.readListCommit(s.r.chain.message);
+  if (!c) gvFail('The list commitment is not a giveaway list message.');
+  if (c.fingerprint !== GIVE.entries.fingerprint || c.count !== GV.entries.addresses.length) gvFail('The list fixed on the chain is not the list published here, so no winner is shown.');
+  if (c.round !== launch.round) gvFail(`The draw round in the list commitment (${fmt(c.round)}) is not the one fixed at launch (${fmt(launch.round)}), so no winner is shown.`);
+  const roundTs = BRCDrand.drandRoundTime(c.round);
+  if (s.at > roundTs - COMMIT_MARGIN) gvFail(`The list was fixed on the chain by ${utc(s.at)}, too close to the draw at ${utcS(roundTs)}. It must be at least 6 hours earlier, so no winner is shown.`);
+  // Exactly one lock by the release address from the launch to the first block after the draw round.
+  const rel = releaseAddr(), needle = `4c4f434bc01dfeed${rel}`;
+  let found = 0, ended = false;
+  for (let f = launch.height + 1; f <= s.H.tip && !ended; f += 200) {
+    const page = (await get(s.H.host, `/blocks?fromHeight=${f}&max=${Math.min(200, s.H.tip - f + 1)}`, 15000)).blocks || [];
+    for (const hb of page) {
+      if (parseInt(hb.slice(200, 216), 16) > roundTs) { ended = true; break; }
+      if (hb.includes(needle)) { const b = await readChainBlock(hb); found += b.locks.filter((x) => x.from === rel).length; }
+    }
+  }
+  if (!ended) gvFail('Waiting for the first block after the draw round, to check the release address fixed only one list. Try again in a few minutes.');
+  if (found !== 1) gvFail(`The release address made ${fmt(found)} locks between the launch and the draw. Only one, the list, is allowed, so nobody could fix several lists and pick one later. No winner is shown.`);
+  return { height: s.blk.height, at: s.at, lockId: s.lock.id };
 }
 
 async function gvDraw() {
@@ -2264,7 +2328,7 @@ function gvShowWinner() {
   w.append(p, tx);
   const facts = [
     ['Entry list', `${fmt(d.count)} entries, fingerprint <span class="mono">${esc(d.fingerprint)}</span> <span class="ok">matches the published list</span>`],
-    ['List fixed', `in block ${fmt(d.fixed.height)} by ${esc(utc(d.fixed.at))}, by the BRC Works release address, <span class="ok">before the draw</span>`],
+    ['List fixed', `in block ${fmt(d.fixed.height)} by ${esc(utc(d.fixed.at))}, by the BRC Works release address, <span class="ok">6+ hours before the draw, and its only lock since the launch</span>`],
     ['drand round', `${fmt(d.round)}, published ${esc(utcS(BRCDrand.drandRoundTime(d.round)))} <span class="ok">signature checked here</span>`],
     ['Signature', `<span class="mono">${esc(d.signature)}</span>`],
     ['Seed', `SHA-256("BRC Works giveaway draw v1", fingerprint, round, signature) = <span class="mono">${esc(d.seed)}</span>`],
@@ -2286,13 +2350,17 @@ $('gv-mine-form').addEventListener('submit', (e) => {
 $('gv-dl').addEventListener('click', async () => {
   const btn = $('gv-dl'); btn.disabled = true; btn.textContent = 'Downloading…';
   try {
-    const letters = []; let after = 0;
-    for (let i = 0; i < 200; i++) {
+    // Every letter, however many: a letters file that silently stopped early would leave entries out.
+    const letters = []; let after = 0, count = 0;
+    for (;;) {
       const r = await fetch(`${GIVE.service}/m/${GIVE.mailbox}/letters?after=${after}&limit=500`, { cache: 'no-store' }); if (!r.ok) throw new Error();
-      const d = await r.json(); letters.push(...d.letters); if (d.next == null) break; after = d.next;
+      const d = await r.json(); letters.push(...d.letters); count = d.count;
+      if (d.next == null) break;
+      if (!(d.next > after)) throw new Error(); after = d.next;
     }
+    if (letters.length < count) throw new Error();
     const a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([JSON.stringify({ mailbox: GIVE.mailbox, round: gvRound(), drawAt: GIVE.drawAt, count: letters.length, downloaded: new Date().toISOString(), letters }, null, 1) + '\n'], { type: 'application/json' }));
+    a.href = URL.createObjectURL(new Blob([JSON.stringify({ mailbox: GIVE.mailbox, pool: GIVE.pool, round: gvRound(), drawAt: GIVE.drawAt, count: letters.length, downloaded: new Date().toISOString(), letters }, null, 1) + '\n'], { type: 'application/json' }));
     a.download = `brc-mailbox-${GIVE.mailbox.slice(0, 8)}-letters.json`; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
     btn.textContent = `Downloaded ${fmt(letters.length)} letters`;
   } catch { btn.textContent = "Couldn't download. Try again"; }
@@ -2313,6 +2381,7 @@ if (GIVE) {
     if (document.body.dataset.view !== 'giveaway') return;
     const ph = gvPhase(); if (ph !== gvPh) { gvPh = ph; gvShow(); return; }
     gvSteps(); gvHow(); gvWall(); gvPool(); if (ph === 'drawn' && !GV.drawn) gvDraw();
+    if (GV.listRetryAt && Date.now() > GV.listRetryAt) { GV.listRetryAt = 0; gvLoadLists(); }
   }, 1000);
 }
 

@@ -6,10 +6,12 @@ from urllib.parse import urlparse, parse_qs
 from playwright.sync_api import sync_playwright, expect
 
 open_page, drawn_page, chain_path, fx_path, core_path, out = sys.argv[1:7]
-nocommit_page, late_page = sys.argv[7:9]
+nocommit_page, late_page, nolaunch_page, moved_page = sys.argv[7:11]
 out = pathlib.Path(out); out.mkdir(parents=True, exist_ok=True)
-chain = json.load(open(chain_path)); fx = json.load(open(fx_path))
-blocks = {int(k): v for k, v in chain['blocks'].items()}
+chains = json.load(open(chain_path)); fx = json.load(open(fx_path))
+CHAIN = {'name': 'good'}
+def cur(): return chains[CHAIN['name']]
+def curb(): return {int(k): v for k, v in cur()['blocks'].items()}
 CORS = {'Access-Control-Allow-Origin': '*'}
 HELPERS = {'api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'}
 DRAND = {'drand.cloudflare.com', 'api.drand.sh', 'api2.drand.sh', 'api3.drand.sh'}
@@ -21,9 +23,11 @@ def handle(route):
     req = route.request; u = urlparse(req.url)
     if u.hostname in HELPERS:
         if u.path == '/tip':
-            return route.fulfill(json={'height': chain['tip'], 'tipHash': hashlib.sha256(bytes.fromhex(blocks[chain['tip']][:296])).hexdigest()}, headers=CORS)
+            blocks = curb()
+            return route.fulfill(json={'height': cur()['tip'], 'tipHash': hashlib.sha256(bytes.fromhex(blocks[cur()['tip']][:296])).hexdigest()}, headers=CORS)
         if u.path == '/blocks':
             q = parse_qs(u.query); f = int(q['fromHeight'][0]); m = int(q.get('max', ['100'])[0])
+            blocks = curb()
             return route.fulfill(json={'blocks': [blocks[h] for h in range(f, f + m) if h in blocks]}, headers=CORS)
         if u.path == '/stats': return route.fulfill(json={'peerCount': 9}, headers=CORS)
         return route.fulfill(status=404, body='')
@@ -43,7 +47,7 @@ def handle(route):
             a = {}
             if fx['pool'].startswith(pre):
                 a[fx['pool']] = {'b': '5000000000', 'm': 0, 'mw': '0', 'iw': '5000000000', 'ow': '0', 'fw': '0', 'ni': 1, 'no': 0, 'f': 1, 'l': 1, 'fm': None, 'lm': None, 'rk': None, 'p': [], 'r': []}
-            return route.fulfill(json={'h': chain['tip'], 't': 0, 'd0': '2026-10-01', 'hd': 1, 'hb': 0, 'a': a})
+            return route.fulfill(json={'h': cur()['tip'], 't': 0, 'd0': '2026-10-01', 'hd': 1, 'hb': 0, 'a': a})
         return route.fulfill(status=404, body='')
     if u.hostname == MB:
         if STATE['mailbox_down']: return route.abort()
@@ -140,17 +144,26 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
     expect(page.locator('#gv-proof')).to_contain_text(fx['expected']['seed'])
     expect(page.locator('#gv-proof')).to_contain_text('signature checked here')
     expect(page.locator('#gv-proof')).to_contain_text(f"seed mod {fx['entries']['count']} = {fx['expected']['index']}")
-    expect(page.locator('#gv-proof')).to_contain_text('in block 92,610')
+    expect(page.locator('#gv-proof')).to_contain_text('in block 92,605')
     expect(page.locator('#gv-proof')).to_contain_text('before the draw')
     page.screenshot(path=str(out / 'giveaway-drawn.png'), full_page=True)
     ok('after the draw time, the page checks the list was fixed on the chain before the draw, fetches and checks the drand beacon, and shows the same winner the core code picks')
-    for pg_path, want in [(nocommit_page, "hasn't been fixed on the chain"), (late_page, 'too close to the draw')]:
+    for pg_path, chain_name, want in [(nocommit_page, 'good', "hasn't been fixed on the chain"), (late_page, 'late', 'too close to the draw'),
+                                      (drawn_page, 'double', 'Only one, the list, is allowed'), (moved_page, 'good', 'not the ones fixed on the chain')]:
+        CHAIN['name'] = chain_name
         px = ctx.new_page(); px.on('pageerror', lambda e: errors.append(str(e))); px.route('**/*', handle)
         px.goto(pathlib.Path(pg_path).resolve().as_uri() + '#giveaway')
-        expect(px.locator('#gv-winner')).to_contain_text(want, timeout=30000)
+        expect(px.locator('#gv-winner')).to_contain_text(want, timeout=40000)
         expect(px.locator('#gv-winner')).not_to_contain_text('The winner')
         px.close()
-    ok('no winner is shown when the list was never fixed on the chain, or was fixed too close to the draw')
+    CHAIN['name'] = 'good'
+    ok('no winner is shown if the list was never fixed, fixed too late, fixed alongside another lock, or the draw time was moved')
+    pn = ctx.new_page(); pn.route('**/*', handle)
+    pn.goto(pathlib.Path(nolaunch_page).resolve().as_uri() + '#giveaway')
+    expect(pn.locator('#gv-msg')).to_contain_text("rules haven't been fixed on the chain", timeout=30000)
+    expect(pn.locator('#gv-go')).to_be_disabled()
+    pn.close()
+    ok("entering stays closed until the giveaway's rules are fixed on the chain")
 
     page.fill('#gv-mine-addr', fx['entries']['addresses'][0])
     page.click('#gv-mine-form button')
