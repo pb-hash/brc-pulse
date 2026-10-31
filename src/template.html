@@ -1837,7 +1837,7 @@ let stampFileFp = null, stampFileTok = 0, stampFileName = '';
 $('stamp-file').addEventListener('change', async (e) => {
   const f = e.target.files && e.target.files[0], tok = ++stampFileTok; stampFileFp = null; stampFileName = '';
   if (!f) { $('stamp-file-name').textContent = '…or add a file'; return; }
-  if (f.size > 1024 ** 3) { $('stamp-file-name').textContent = `${f.name}: over 1 GB, too large to check here`; return; }
+  if (f.size > 1024 ** 3) { $('stamp-file-name').textContent = `${f.name}: over 1 GB, too large to check here`; checkTok++; pendingCheck = null; $('stamp-result').hidden = true; return; }
   $('stamp-file-name').textContent = `${f.name}: reading…`;
   try {
     const fp = hx(await sha(await f.arrayBuffer()));
@@ -1907,7 +1907,7 @@ function chainFacts(r) {
 }
 
 // A postmark or chain signature not found yet is looked for again at every new block; one found but not yet final is re-checked.
-let pendingCheck = null, recheckBusy = false, checkTok = 0;  // checkTok: only the newest check may show its verdict
+let pendingCheck = null, recheckBusy = false, checkTok = 0, checkedText = null;  // checkTok: only the newest check may show its verdict
 async function recheckPending() {
   const p = pendingCheck; if (!p || recheckBusy) return;
   const tip = last().h; if (tip <= p.to) return;
@@ -1917,17 +1917,17 @@ async function recheckPending() {
       const hit = await searchRange(p.host, p.r, p.to + 1, tip, false, false, true);
       if (pendingCheck !== p) return;
       p.to = tip;
-      if (hit) { pendingCheck = null; p.r._at = hit.blk.height; await checkStamp({ r: p.r }); }
-    } else { pendingCheck = null; await checkStamp({ r: p.r }); }
+      if (hit) { pendingCheck = null; p.r._at = hit.blk.height; await checkStamp({ r: p.r, text: p.text }); }
+    } else { pendingCheck = null; await checkStamp({ r: p.r, text: p.text }); }
   } catch { /* try again at the next block */ } finally { recheckBusy = false; }
 }
 
-async function checkStamp({ text = '', r: given = null, older = false, genuineFile = false } = {}) {
+async function checkStamp({ text = '', r: given = null, older = false } = {}) {
   const tok = ++checkTok, show = (...a) => { if (tok === checkTok) showStamp(...a); };
   stampMsg(''); $('stamp-result').hidden = true; pendingCheck = null;
   let r;
   try { r = older && stampSearch ? stampSearch.r : given || parseAnyReceipt(text); } catch (err) { stampMsg(err.message, 'danger'); return; }
-  if (genuineFile) r.genuineFile = true;
+  const srcText = text || (older && stampSearch && stampSearch.text) || $('stamp-receipt').value;
   const what = r.chain ? (r.chain.link ? 'mailbox link' : 'signature') : 'postmark';
   if (r.chain && r.chain.link && !r.chain.link.valid) { show('bad', "This mailbox link isn't valid.", r.chain.link.reason, chainFacts(r)); return; }
   const fileFact = r.chain ? () => '' : fileFactFor;
@@ -1953,7 +1953,7 @@ async function checkStamp({ text = '', r: given = null, older = false, genuineFi
       hit = await searchRange(H.host, r, r.after.height, H.tip, false, H.tip - r.after.height > 8000);
     } else if (!older) {
       hit = await searchRange(H.host, r, Math.max(SCRIPTS_FROM, H.tip - QUICK_PAGES * 200 + 1), H.tip, true, false);
-      stampSearch = { r, H, olderTo: Math.max(SCRIPTS_FROM, H.tip - QUICK_PAGES * 200 + 1) - 1 };
+      stampSearch = { r, H, text: srcText, olderTo: Math.max(SCRIPTS_FROM, H.tip - QUICK_PAGES * 200 + 1) - 1 };
     } else {
       hit = await searchRange(H.host, r, SCRIPTS_FROM, stampSearch.olderTo, true, true);
       stampSearch = null;
@@ -1968,7 +1968,7 @@ async function checkStamp({ text = '', r: given = null, older = false, genuineFi
         ? 'If it was signed in the last few minutes, it will show up soon: this page looks again at every new block. If it is older, it may never have been locked in the BrowserCoin app.'
         : 'If it was postmarked in the last few minutes, it will show up soon: this page looks again at every new block. If it is older, check that Lock coins was pressed in the BrowserCoin app.',
         [fileFact(r, false), r.after ? '' : fact('Looked in', `The last 8,000 blocks (about two weeks). <button type="button" class="latest-older" id="stamp-older">Look further back (a few minutes)</button>`)], '', { openDetails: false });
-      if (tok === checkTok) pendingCheck = { kind: 'find', r, host: H.host, to: H.tip };
+      if (tok === checkTok) pendingCheck = { kind: 'find', r, text: srcText, host: H.host, to: H.tip };
       return;
     }
     const { blk, lock } = hit;
@@ -2003,10 +2003,18 @@ async function checkStamp({ text = '', r: given = null, older = false, genuineFi
         return;
       }
     }
+    if (rel && stampFileFp != null && stampFileFp !== rel.sha256) {
+      show('bad', `This file isn't ${rel.tool} ${rel.version}. Don't open it.`, `The release message is genuine, but the file you added is a different file: it may have been changed. Get ${rel.tool} only from its official page.`, [fact('Your file', `<span class="mono">${esc(stampFileFp)}</span>`), fact('The release', `<span class="mono">${esc(rel.sha256)}</span>`), ...chainFacts(r)]);
+      return;
+    }
     if (rel) {
       lead = `Genuine: ${rel.tool} ${rel.version}.`;
-      sub = `Signed on the chain by the BRC Works release address in block ${fmt(blk.height)}, by ${utc(dl.at)}.${r.genuineFile ? ' Your file matches it byte for byte.' : ''}`;
+      sub = `Signed on the chain by the BRC Works release address in block ${fmt(blk.height)}, by ${utc(dl.at)}.${stampFileFp === rel.sha256 ? ' Your file matches it byte for byte.' : ' Add the file to check it is this exact release.'}`;
       facts.push(...chainFacts(r));
+    } else if (r.chain && (lookalikeOf(r.owner) || (r.chain.link && lookalikeOf(r.chain.link.coin)))) {
+      const fake = lookalikeOf(r.owner) || lookalikeOf(r.chain.link.coin);
+      show('bad', `Not ${fake.name}.`, `This was signed on the chain by ${short(r.owner)}, an address made to look like ${fake.name}. Don't trust it.`, [fact('Block', fmt(blk.height)), ...chainFacts(r)], '', { pic: r.owner });
+      return;
     } else if (r.chain && r.chain.link) {
       const coin = r.chain.link.coin, mb = r.chain.link.mailbox;
       lead = `This mailbox belongs to ${name(coin)}.`;
@@ -2060,12 +2068,12 @@ async function checkStamp({ text = '', r: given = null, older = false, genuineFi
     else if (tone === 'good' && (cc.ops < 2 || conf < 6 || !dl.settled)) {
       tone = 'warn';
       if (cc.ops < 2) { lead = `Found, not confirmed yet. ${lead}`; sub = `Only one operator's helper servers could be checked, so this can't be confirmed yet. ${sub}`; }
-      else { sub = `${sub} Almost final: ${fmt(Math.min(conf, 6))} of 6 confirmations. This page checks again at every new block.`; if (tok === checkTok) pendingCheck = { kind: 'confirm', r, to: H.tip }; r._at = blk.height; }
+      else { sub = `${sub} Almost final: ${fmt(Math.min(conf, 6))} of 6 confirmations. This page checks again at every new block.`; if (tok === checkTok) pendingCheck = { kind: 'confirm', r, text: srcText, to: H.tip }; r._at = blk.height; }
     }
     if (!r.chain) facts.push(fact('Fingerprint', `<span class="mono">${esc(r.fingerprint)}</span>`));
     let updated = '';
     const final = conf >= 6 && cc.ops >= 2 && !cc.disagree;
-    const recvText = text || $('stamp-receipt').value;
+    const recvText = srcText;
     if (final && (ownerFixed || !r.block || !r.lockId) && recvText.trim()) {
       let t = recvText.trim();
       if (ownerFixed) t = t.replace(/^(\s*>?\s*Owner:\s*).*$/mi, `$1${ownerFixed}`);
@@ -2081,7 +2089,7 @@ async function checkStamp({ text = '', r: given = null, older = false, genuineFi
 }
 
 /* ---------- one box for anything: what was pasted, and the right check for it ---------- */
-const SECRET_RE = /privatekey|"type"\s*:\s*"(browsercoin-wallet|brc-vault)|BRCMBOX1|BRCVAULT1/i;
+const SECRET_RE = /privatekey|"type"\s*:\s*"(browsercoin-wallet|brc-vault)|BRCMBOX1|BRCVAULT1|BRCKEY1|BROWSERCOIN-WALLET/i;
 function kindOf(text) {
   const t = String(text || '').trim();
   if (!t) return null;
@@ -2106,7 +2114,7 @@ function showKind(kd) {
   el.hidden = !(kd && kd.label); el.textContent = kd && kd.label ? `✓ ${kd.label}` : '';
 }
 async function checkAny() {
-  checkTok++; pendingCheck = null; stampMsg(''); $('stamp-result').hidden = true;
+  checkTok++; pendingCheck = null; checkedText = $('stamp-receipt').value; stampMsg(''); $('stamp-result').hidden = true;
   const text = $('stamp-receipt').value, kd = kindOf(text);
   showKind(kd);
   if (!kd) { if (stampFileFp) return checkFileAlone(); stampMsg('Paste something to check, or add a file.'); return; }
@@ -2132,8 +2140,8 @@ function checkSignedMessage(text) {
   if (look) return showStamp('bad', `Not ${look.name}.`, `It was signed by ${short(v.address)}, an address made to look like ${look.name}. Don't trust it.`, facts, '', { pic: v.address });
   const careful = v.hidden ? ' Careful: it has hidden characters, so it may not read the way it looks (see Details).' : '';
   if (off) return showStamp(v.hidden ? 'warn' : 'good', `Signed by ${off.name}.`, `Nobody else could have written this exact text.${careful}`, facts, '', { pic: v.address });
-  showStamp(v.hidden ? 'warn' : 'good', `Signed by ${short(v.address)}.`, `Nobody else could have written this exact text.${careful} It proves which mailbox signed it, not whose mailbox that is: if they also sent their mailbox link signed on the chain, paste that here to check.`,
-    facts, '', { pic: v.address, actions: [{ href: `${POST_URL}#to=${v.address}`, text: 'Write back in BRC Post' }] });
+  showStamp(v.hidden ? 'warn' : 'good', `Signed by ${short(v.address)}.`, `Nobody else could have written this exact text.${careful} It proves which address signed it, not whose address that is: if they also sent their mailbox link signed on the chain, paste that here to check.`,
+    facts, '', { pic: v.address });
 }
 function checkSealed(text) {
   let s; try { s = BRCKit.seal.parseSealed(text); } catch (e) { stampMsg(e.message, 'danger'); return; }
@@ -2148,7 +2156,7 @@ function showMailbox(a) {
   if (off && off.role === 'mailbox') return showStamp('good', `The official ${off.name}.`, 'Letters sealed to it can only be opened by BRC Works.', [lookFact(a)], '', { pic: a });
   if (off) return showStamp('bad', "This isn't a mailbox.", `It's ${off.name}, which holds coins. A letter sealed to it can never be opened.`, [lookFact(a)], '', { pic: a });
   if (look) return showStamp('bad', `Not ${look.name}.`, `This mailbox, ${short(a)}, is made to look like ${look.name}. Don't send it anything.`, [lookFact(a)], '', { pic: a });
-  showStamp('info', `A mailbox: ${short(a)}.`, "Letters sealed to it can only be opened by whoever holds its key. A link on its own doesn't say whose it is: if they also sent their mailbox link signed on the chain, paste that here to check.", [lookFact(a)], '',
+  showStamp('info', `A mailbox link: ${short(a)}.`, "Letters sealed to it can only be opened by whoever holds its key. A link on its own doesn't say whose it is, or prove it's a mailbox: if they also sent their mailbox link signed on the chain, paste that here to check.", [lookFact(a)], '',
     { pic: a, actions: [{ href: `${POST_URL}#to=${a}`, text: 'Write to this mailbox in BRC Post', primary: true }] });
 }
 function showAddress(a) {
@@ -2156,14 +2164,14 @@ function showAddress(a) {
   const my = { href: `#my=${a}`, text: 'Open it in MY BRC' };
   if (off) return showStamp('good', `Official: ${off.name}.`, 'One of the three addresses BRC Works uses. Anything else claiming to be BRC Works isn\'t.', [lookFact(a)], '', { pic: a, actions: [my] });
   if (look) return showStamp('bad', `Not BRC Works. It imitates ${look.name}.`, "At a glance it looks like a BRC Works address, but it isn't one. Don't send it anything.", [lookFact(a)], '', { pic: a });
-  showStamp('info', `An address: ${short(a)}.`, "It isn't a BRC Works address. Addresses are public: open it in MY BRC to see its balance and payments.", [lookFact(a)], '', { pic: a, actions: [my] });
+  showStamp('info', `An address: ${short(a)}.`, "It isn't a BRC Works address. Addresses are public: open it in MY BRC to see its balance and payments. (A private key looks exactly the same: if that's what this is, don't paste it anywhere.)", [lookFact(a)], '', { pic: a, actions: [my] });
 }
 /* A file on its own: is it a BRC Works release? Fingerprint it here, find the release that names that
    fingerprint, and check that release's chain signature exactly as a pasted one would be checked. */
 async function checkFileAlone() {
   const fp = stampFileFp, nm = stampFileName;
   for (const t of RELEASES) {
-    try { const cs = BRCChain.parseChainSigned(t), rel = BRCKit.release.readRelease(cs.message); if (rel && rel.sha256 === fp) { stampSearch = null; return checkStamp({ text: t, genuineFile: true }); } } catch {}
+    try { const cs = BRCChain.parseChainSigned(t), rel = BRCKit.release.readRelease(cs.message); if (rel && rel.sha256 === fp) { stampSearch = null; return checkStamp({ text: t }); } } catch {}
   }
   const facts = [fact('Fingerprint', `<span class="mono">${esc(fp)}</span>`)];
   if (/brc[\s_-]*(vault|post|seal|pulse|works)/i.test(nm) && RELEASES.length) return showStamp('bad', "This isn't a genuine BRC Works file. Don't open it.", "BRC Works never released this exact file, so it may have been changed. Never type a key into it. Get BRC Vault only from pb-hash.github.io/brc-vault.", facts);
@@ -2174,7 +2182,11 @@ async function checkFileAlone() {
 $('stamp-form').addEventListener('submit', (e) => { e.preventDefault(); checkAny(); });
 $('stamp-receipt').addEventListener('paste', () => setTimeout(checkAny, 0));
 let kindT;
-$('stamp-receipt').addEventListener('input', () => { clearTimeout(kindT); kindT = setTimeout(() => showKind(kindOf($('stamp-receipt').value)), 150); });
+$('stamp-receipt').addEventListener('input', () => {
+  // A verdict is only ever for the text it was made from: once the box changes, it goes, and so does any re-check.
+  if (checkedText !== null && $('stamp-receipt').value !== checkedText) { checkTok++; pendingCheck = null; stampSearch = null; checkedText = null; $('stamp-result').hidden = true; stampMsg(''); }
+  clearTimeout(kindT); kindT = setTimeout(() => showKind(kindOf($('stamp-receipt').value)), 150);
+});
 
 /* The BRC Works addresses, with live balances read from the chain like any My BRC address. */
 async function liveBalance(A) {

@@ -265,6 +265,16 @@ with sync_playwright() as pw:
     genuine('00' * 40, 'holiday-photo.jpg')
     expect(page.locator('#stamp-verdict')).to_contain_text('Paste its postmark receipt', timeout=20000)
     ok('a file named like a BRC Works file but never released is called out; any other lone file asks for its receipt')
+    rel_text = None
+    for f in sorted((pathlib.Path(fx_path).parent / 'pulse-releases').glob('*.txt')):
+        t = f.read_text()
+        if bytes.fromhex(fx['relFileHex']) and __import__('hashlib').sha256(bytes.fromhex(fx['relFileHex'])).hexdigest() in t: rel_text = t
+    assert rel_text, 'test release text not found'
+    page.locator('#stamp-file').set_input_files({'name': 'brc-vault.html', 'mimeType': 'text/html', 'buffer': bytes.fromhex(fx['fakeFileHex'])})
+    page.fill('#stamp-receipt', rel_text); page.click('#stamp-go')
+    expect(page.locator('#stamp-verdict')).to_contain_text("This file isn't BRC Vault", timeout=30000)
+    expect(page.locator('#stamp-verdict')).to_have_class(re.compile('bad'))
+    ok('a genuine release message pasted with a different (tampered) file is refused, never "Genuine"')
     genuine(fx['fakeFileHex'], 'brc-vault.html')
     expect(page.locator('#stamp-verdict')).to_contain_text('Not a genuine BRC Works release', timeout=30000)
     ok('a release message signed by any other address is refused')
@@ -299,7 +309,7 @@ console.log(JSON.stringify({{ signed: c.signMessage(w, "I'm the one you met at t
     page.fill('#stamp-receipt', g['sealed']); page.click('#stamp-go')
     expect(vd).to_contain_text('A sealed letter for ' + g['to'][:6])
     page.fill('#stamp-receipt', 'https://brc-post.github.io/#to=' + g['to']); page.click('#stamp-go')
-    expect(vd).to_contain_text('A mailbox: ' + g['to'][:6])
+    expect(vd).to_contain_text('A mailbox link: ' + g['to'][:6])
     assert page.locator('#v-acts a').get_attribute('href') == 'https://brc-post.github.io/#to=' + g['to']
     ok('a sealed letter says whose mailbox it is for; a mailbox link offers to write to it in BRC Post')
     spaced = ' '.join(fx['relAddress'][i:i + 8] for i in range(0, 64, 8)).upper()
@@ -324,6 +334,12 @@ console.log(JSON.stringify({{ signed: c.signMessage(w, "I'm the one you met at t
     page.evaluate(f"(() => {{ const t = document.getElementById('stamp-receipt'); t.value = {json.dumps(g['signed'])}; t.dispatchEvent(new Event('paste')); }})()")
     expect(vd).to_contain_text('Signed by ' + g['addr'][:6] + '\u2026')
     ok('pasting checks at once, with no button press')
+    page.fill('#stamp-receipt', fx['fakeReceiptNoBlock']); page.click('#stamp-go')
+    expect(vd).to_contain_text('Not on the chain yet.', timeout=30000)
+    page.locator('#stamp-receipt').press('End'); page.keyboard.type(' ')
+    expect(page.locator('#stamp-result')).to_be_hidden()
+    assert page.evaluate('pendingCheck') is None, 'a pending re-check survived an edit of the box'
+    ok('editing the box drops the verdict and any pending re-check, so a result never sits under different text')
 
     page.goto(pathlib.Path(page_path).resolve().as_uri() + '#my')
     page.fill('#addr-in', spaced); page.click('#lookup button')

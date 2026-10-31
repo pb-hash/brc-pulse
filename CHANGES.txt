@@ -5,7 +5,14 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
-1.1.5 (in testing)
+1.1.5 (Oct 31, 2026)
+  - Security review before release: a verdict now always belongs to the
+    exact text it was made from (editing the box drops it and any re-check);
+    a genuine release message pasted with a different file says "This file
+    isn't …", never "Genuine"; look-alike signers are refused on the chain
+    path too; more secret-key formats are caught; no "write back" from a bare
+    signature (its signer may not be a mailbox).
+  - BRC Post is in the family switcher, footer and BRC Works section.
   - test.1 (was 1.1.4-test.1): Check it, rebuilt after an "it just works" review. "Is it real?
     Check it." One box takes anything: a postmark receipt, a message signed
     on the chain or with a BRC Post mailbox, a sealed letter, a mailbox link,
