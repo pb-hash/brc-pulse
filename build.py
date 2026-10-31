@@ -93,11 +93,17 @@ def main():
             i = args.index(flag); v = args[i + 1]; del args[i:i + 2]; return v
         return None
     preview, accounts, site = opt('--preview'), opt('--accounts'), opt('--site')
+    give_path = opt('--giveaway') or os.path.join(HERE, 'giveaway', 'config.json')
+    give = json.load(open(give_path)) if os.path.exists(give_path) else None
     hist = json.load(open(args[0] if args else 'history.json'))
     snap, probes = snapshot(hist)
     tpl = open(os.path.join(HERE, 'src', 'template.html')).read()
-    # drand signature checking, built from BRC Seal's src/drand-core.js (see vendor/README.txt).
-    tpl = tpl.replace('/*__DRAND__*/', open(os.path.join(HERE, 'vendor', 'brc-drand.js')).read().strip())
+    # drand checking and the giveaway code, built from BRC Seal's src/drand-core.js and src/giveaway-core.js
+    # (see vendor/README.txt).
+    kit = open(os.path.join(HERE, 'vendor', 'brc-kit.js')).read().strip()
+    tpl = tpl.replace('/*__DRAND__*/', kit + '\nvar BRCDrand = BRCKit.drand, BRCGiveaway = BRCKit.giveaway;')
+    # The giveaway's settings (giveaway/config.json): addresses, times, published list fingerprints.
+    tpl = tpl.replace('/*__GIVEAWAY__*/null', json.dumps(give, separators=(',', ':')))
     html = tpl.replace('/*__SNAPSHOT__*/null', json.dumps(snap, separators=(',', ':')))
 
     if preview and accounts:
@@ -134,9 +140,13 @@ def main():
     assert len(scripts) == 1, 'expected exactly one inline script'
     sha = base64.b64encode(hashlib.sha256(scripts[0].encode()).digest()).decode()
     connect = ' '.join(f'https://{h}' for h in HELPERS + DRAND)
+    if give and give.get('service'):
+        svc = give['service']
+        assert re.fullmatch(r'https://[a-z0-9.-]+', svc), 'giveaway service must be a bare https origin'
+        connect += ' ' + svc
     head = '\n'.join([
         '<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">',
-        '<!-- Only this page\'s own script runs, and it can only talk to the BrowserCoin helper servers and the drand beacon. -->',
+        '<!-- Only this page\'s own script runs, and it can only talk to the BrowserCoin helper servers, the drand beacon and the BRC Mailbox. -->',
         f'<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; script-src \'sha256-{sha}\'; style-src \'unsafe-inline\'; '
         f'font-src data:; img-src data:; connect-src {connect} https://pb-hash.github.io; base-uri \'none\'; form-action \'none\'">',
         '<meta name="referrer" content="no-referrer">',
@@ -156,6 +166,13 @@ def main():
         open(os.path.join(site, 'index.html'), 'w').write(html)
         open(os.path.join(site, '.nojekyll'), 'w').write('')
         shutil.copy(os.path.join(HERE, 'brand', 'brc-pulse-social.png'), os.path.join(site, 'og.png'))
+        # The giveaway's published lists, next to the page (giveaway/eligible.json, giveaway/entries.json).
+        gdir = os.path.join(HERE, 'giveaway')
+        if os.path.isdir(gdir):
+            os.makedirs(os.path.join(site, 'giveaway'), exist_ok=True)
+            for f in os.listdir(gdir):
+                if f.endswith('.json') and f != 'config.json':
+                    shutil.copy(os.path.join(gdir, f), os.path.join(site, 'giveaway', f))
     os.makedirs(os.path.join(HERE, 'dist'), exist_ok=True)
     open(os.path.join(HERE, 'dist', 'brc-pulse.html'), 'w').write(html)
     digest = hashlib.sha256(html.encode()).hexdigest()

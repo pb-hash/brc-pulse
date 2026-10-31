@@ -1,4 +1,6 @@
-brc-drand.js checks drand quicknet beacon signatures (BLS12-381) inside the page,
-so a stamp's "made after" moment doesn't depend on trusting a drand relay.
-It is built from BRC Seal's src/drand-core.js with:  node tools/build-drand-bundle.mjs
-(@noble/curves 1.9.7 and @noble/hashes 1.8.0, MIT License.)
+brc-kit.js is BRC Seal code that BRC Pulse runs in the page:
+- drand quicknet beacon checking (BLS12-381), so a stamp's "made after" moment and the giveaway draw
+  don't depend on trusting a drand relay;
+- the giveaway: sealing an entry to the giveaway mailbox, list fingerprints, and the draw.
+It is built from BRC Seal's src/drand-core.js and src/giveaway-core.js with:  node tools/build-pulse-kit.mjs
+(@noble/curves, @noble/hashes, @noble/ed25519, @noble/ciphers, @scure/bip39, @scure/base; MIT License.)

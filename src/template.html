@@ -181,6 +181,9 @@ main.wrap { display: grid; gap: 20px; padding-bottom: 20px; }
 body[data-view="my"] .net-only { display: none !important; }
 body:not([data-view="my"]) .my-only { display: none !important; }
 body[data-view="stamp"] .net-only { display: none !important; }
+body[data-view="giveaway"] .net-only { display: none !important; }
+body:not([data-view="giveaway"]) .giveaway-only { display: none !important; }
+body[data-view="giveaway"] .nav a[href="#giveaway"] { color: var(--brand-deep); }
 body:not([data-view="stamp"]) .stamp-only { display: none !important; }
 body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .stamp-intro { gap: 14px; }
@@ -210,6 +213,65 @@ body[data-view="stamp"] .nav a[href="#stamp"] { color: var(--brand-deep); }
 .stamp-updated { margin-top: 14px; }
 .stamp-updated pre { margin: 8px 0 0; padding: 12px 14px; border-radius: 12px; background: var(--sunken); border: 1px solid var(--hairline); font: .74rem/1.55 var(--mono); white-space: pre-wrap; word-break: break-all; }
 @media (max-width: 560px) { .stamp-facts > div { grid-template-columns: 1fr; gap: 2px; } }
+/* Giveaway */
+.give-intro { gap: 14px; }
+.give-intro .eyebrow { font-size: .78rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--brand-deep); }
+.give-intro > p { font-size: 1.05rem; color: var(--muted); max-width: 42rem; }
+.give-intro > p strong { color: var(--ink); font-weight: 600; }
+.gv-pool-hero { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.gv-pool-v { font-size: clamp(2.2rem, 6vw, 3.2rem); font-weight: 800; letter-spacing: -0.03em; line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
+.gv-pool-v small { font-size: .45em; font-weight: 700; color: var(--muted); }
+.gv-pool-l { color: var(--muted); font-size: .92rem; }
+.gv-pool-l span { display: block; font-size: .78rem; }
+.gv-steps { list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 820px; }
+.gv-steps li { padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--hairline); display: grid; gap: 2px; min-width: 0; }
+.gv-steps li b { font-size: .84rem; }
+.gv-steps li span { font-size: .76rem; color: var(--muted); }
+.gv-steps li.now { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-tint); }
+.gv-steps li.done { opacity: .62; }
+.gv-steps li.done b::after { content: " ✓"; color: var(--good); }
+@media (max-width: 720px) { .gv-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+#give-main { display: grid; gap: 20px; }
+#give-main .lookup { margin-top: 14px; }
+#gv-go:disabled { opacity: .5; cursor: progress; }
+.gv-check { margin-top: 10px; font-size: .9rem; color: var(--muted); display: flex; gap: 10px; align-items: center; min-height: 1.4em; overflow-wrap: anywhere; }
+.gv-check .ok { color: var(--good); font-weight: 600; } .gv-check .no { color: var(--danger); font-weight: 600; }
+.gv-idc { flex: none; display: inline-grid; grid-template-columns: repeat(3, 1fr); gap: 2px; width: 30px; height: 30px; padding: 4px; border-radius: 9px; background: var(--brand-tint); }
+.gv-idc i { border-radius: 2px; }
+.gv-done { margin-top: 14px; padding: 14px 16px; border-radius: 14px; background: var(--good-tint, #e6f4ef); animation: gvIn .5s cubic-bezier(.2,.7,.2,1); }
+.gv-done-head { display: flex; gap: 12px; align-items: center; }
+.gv-done-head svg { width: 34px; height: 34px; color: var(--ink-2); flex: none; animation: gvDrop .7s cubic-bezier(.34,1.56,.64,1); }
+.gv-done-head b { display: block; color: var(--good); }
+.gv-done-head span { font-size: .86rem; color: var(--ink-2); }
+.gv-letter { margin-top: 10px; }
+.gv-letter summary { cursor: pointer; font-size: .84rem; font-weight: 600; color: var(--brand-deep); }
+.gv-letter pre { margin: 8px 0 0; padding: 10px 12px; border-radius: 10px; background: var(--surface); border: 1px solid var(--hairline); font: .7rem/1.5 var(--mono); white-space: pre-wrap; word-break: break-all; max-height: 14rem; overflow: auto; }
+.gv-count { display: flex; align-items: baseline; gap: 10px; margin-top: 14px; }
+.gv-count b { font-size: 2.4rem; font-weight: 800; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+.gv-count span { color: var(--muted); font-size: .9rem; }
+.gv-wall { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(26px, 1fr)); gap: 6px; }
+.gv-wall i { display: block; aspect-ratio: 4 / 3; border-radius: 4px; background: var(--surface); border: 1.5px solid var(--hairline-strong); position: relative; overflow: hidden; }
+.gv-wall i::before { content: ""; position: absolute; left: -10%; right: -10%; top: -55%; height: 100%; border-bottom: 1.5px solid var(--hairline-strong); transform: rotate(0deg); border-radius: 0 0 50% 50% / 0 0 60% 60%; }
+.gv-wall i::after { content: ""; position: absolute; left: 50%; top: 38%; width: 6px; height: 6px; margin-left: -3px; border-radius: 50%; background: var(--brand); }
+.gv-wall i.new { animation: gvDrop .7s cubic-bezier(.34,1.56,.64,1); }
+.gv-wall .more { grid-column: span 3; font-size: .78rem; color: var(--muted); align-self: center; }
+.gv-addrline { display: flex; align-items: center; gap: 12px; margin-top: 14px; padding: 12px; border-radius: 12px; background: var(--sunken); min-width: 0; }
+.gv-addrline > span:nth-child(2) { flex: 1; min-width: 0; display: grid; }
+.gv-addrline b { font-size: .9rem; }
+.gv-addrline .mono { font-size: .72rem; color: var(--ink-2); overflow-wrap: anywhere; }
+.gv-how { margin: 14px 0 0; padding-left: 1.2rem; display: grid; gap: 8px; font-size: .92rem; color: var(--ink-2); max-width: 46rem; }
+.gv-how .mono { font-size: .76rem; overflow-wrap: anywhere; }
+.gv-how .when { color: var(--ink); font-weight: 600; }
+.gv-how li.done { color: var(--muted); }
+.gv-winner { margin-top: 16px; padding: 16px; border-radius: 14px; border: 1.5px solid var(--brand); background: var(--brand-tint); display: flex; gap: 14px; align-items: center; animation: gvIn .6s cubic-bezier(.2,.7,.2,1); }
+.gv-winner .gv-idc { width: 46px; height: 46px; border-radius: 12px; background: var(--surface); }
+.gv-winner b { display: block; font-size: 1.15rem; }
+.gv-winner .mono { font-size: .74rem; overflow-wrap: anywhere; color: var(--ink-2); }
+.gv-rules { margin: 12px 0 0; padding-left: 1.2rem; display: grid; gap: 6px; font-size: .9rem; color: var(--ink-2); max-width: 50rem; }
+#give-main [hidden] { display: none !important; }
+@keyframes gvIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes gvDrop { 0% { opacity: 0; transform: translateY(-40%) scale(.6); } 60% { opacity: 1; transform: translateY(2%) scale(1.08); } 100% { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .gv-done, .gv-done-head svg, .gv-wall i.new, .gv-winner { animation: none; } }
 .nav a.my-link { white-space: nowrap; color: var(--brand-deep); background: var(--brand-tint); padding: 6px 12px; border-radius: 999px; }
 .nav a.my-link .wordmark { font-size: .92rem; }
 .nav a.my-link:hover { color: var(--brand-deep); }
@@ -440,7 +502,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <header class="topbar" id="topbar">
   <div class="wrap">
     <a class="brand" href="#top" aria-label="BRC Pulse"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark" aria-hidden="true"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></a>
-    <nav class="nav" aria-label="Sections"><a href="#my" class="my-link" aria-label="My BRC"><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span></a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a><a href="#stamp">Stamps</a></nav>
+    <nav class="nav" aria-label="Sections"><a href="#my" class="my-link" aria-label="My BRC"><span class="wordmark"><span class="wm-b">MY</span><span class="wm-l">BRC</span></span></a><a href="#share">Miners</a><a href="#calc">Mining</a><a href="#helpers-s">Helpers</a><a href="#history">History</a><a href="#supply">Supply</a><a href="#stamp">Stamps</a><a href="#giveaway" class="give-link" id="give-link" hidden>Giveaway</a></nav>
     <span class="spacer"></span>
     <nav class="family" aria-label="BRC Works">
       <span class="cur" aria-current="page"><svg aria-hidden="true"><use href="#pulse-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">PULSE</span></span></span>
@@ -477,6 +539,13 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <p class="msg" id="stamp-msg" role="status" hidden></p>
     <div class="latest-box" id="stamp-drand" hidden>Making a new stamp? The latest drand beacon, for BRC Seal's "prove when it was made": <b id="stamp-drand-h"></b><span class="mono" id="stamp-drand-sig"></span><button type="button" id="stamp-drand-copy">Copy</button></div>
     <div class="latest-box" id="stamp-latest" hidden>Or a recent, settled block: <b id="stamp-latest-h"></b><span class="mono" id="stamp-latest-id"></span><span class="muted" id="stamp-latest-note"></span><button type="button" id="stamp-latest-copy">Copy both</button></div>
+  </div>
+  <div class="intro-text give-intro giveaway-only" id="give-top">
+    <p class="eyebrow">BRC Works · Block 100,000</p>
+    <h1>The block 100,000 giveaway.</h1>
+    <p>One winner takes the whole prize pool. <strong>Entering is free and needs only your address.</strong> Your entry goes in as a sealed letter: nobody can see which address you entered except the organizer's mailbox.</p>
+    <div class="gv-pool-hero"><span class="gv-pool-v" id="gv-pool-v">–</span><span class="gv-pool-l">in the prize pool<span id="gv-pool-asof"></span></span></div>
+    <ol class="gv-steps" id="gv-steps"></ol>
   </div>
   <figure class="live-mark" aria-label="Time since the last block">
     <svg viewBox="307.6 90 1316 1316" aria-hidden="true">
@@ -554,6 +623,77 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     </div>
     <div class="tbl" style="margin-top:12px"><table><thead><tr><th>When</th><th>Block</th><th>What</th><th>With</th><th class="r">Amount</th></tr></thead><tbody id="aa-rows"></tbody></table></div>
     <p class="fine" id="aa-note"></p>
+  </section>
+</main>
+
+<main class="wrap giveaway-only" id="give-main">
+  <section class="card pad" aria-labelledby="gv-enter-h" id="gv-enter">
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-pool"/></svg>
+      <h2 id="gv-enter-h">Enter</h2>
+      <p id="gv-enter-p">Paste your BrowserCoin <strong>address</strong>. It's sealed in your browser so only the giveaway mailbox can read it, then dropped in. <strong>No private key, no wallet file, nothing to sign.</strong></p>
+    </div>
+    <form class="lookup" id="gv-form" autocomplete="off">
+      <input id="gv-addr" type="text" spellcheck="false" autocapitalize="off" placeholder="Your BrowserCoin address (64 characters)" aria-label="Your BrowserCoin address">
+      <button type="submit" id="gv-go">Seal and drop my entry</button>
+    </form>
+    <div class="gv-check" id="gv-check" aria-live="polite"></div>
+    <div class="gv-done" id="gv-done" hidden>
+      <div class="gv-done-head"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m3.5 7.5 8.5 6 8.5-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="14" r="2.3" fill="var(--brand)"/></svg><div><b id="gv-done-t">Your entry is in the mailbox.</b><span id="gv-done-s"></span></div></div>
+      <details class="gv-letter"><summary>See what everyone else sees</summary><pre id="gv-letter"></pre><p class="fine">Only the "To:" line is readable: the giveaway mailbox. Your address is inside the sealed part.</p></details>
+    </div>
+    <p class="msg" id="gv-msg" role="status" hidden></p>
+  </section>
+
+  <div class="row">
+    <section class="card pad" aria-labelledby="gv-wall-h">
+      <div class="sh">
+        <svg class="ic" aria-hidden="true"><use href="#i-hist"/></svg>
+        <h2 id="gv-wall-h">The mailbox</h2>
+        <p>Every entry, as it arrives. Each envelope is one sealed letter; only the mailbox key can open them.</p>
+      </div>
+      <div class="gv-count"><b id="gv-count">–</b><span>sealed letters received</span></div>
+      <div class="gv-wall" id="gv-wall" aria-hidden="true"></div>
+      <p class="fine" id="gv-wall-note"></p>
+    </section>
+    <section class="card pad" aria-labelledby="gv-pool-h">
+      <div class="sh">
+        <svg class="ic" aria-hidden="true"><use href="#i-pool"/></svg>
+        <h2 id="gv-pool-h">Prize pool</h2>
+        <p>The whole pool goes to the winner. Anyone can add to it: send any amount of BRC to the pool's address. <strong>Adding doesn't enter you or change anyone's chances.</strong></p>
+      </div>
+      <div class="gv-addrline"><span class="gv-idc" id="gv-pool-idc"></span><span><b>BRC Works prize pool</b><span class="mono" id="gv-pool-addr"></span></span><button type="button" class="btn-ghost" id="gv-pool-copy">Copy</button></div>
+      <p class="fine" id="gv-pool-note"></p>
+    </section>
+  </div>
+
+  <section class="card pad" aria-labelledby="gv-draw-h" id="gv-draw">
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-calc"/></svg>
+      <h2 id="gv-draw-h">How the winner is picked</h2>
+      <p>Nobody chooses the winner, not the organizer and not the miners. A public random number does, and anyone can check the result.</p>
+    </div>
+    <ol class="gv-how" id="gv-how"></ol>
+    <div class="gv-winner" id="gv-winner" hidden></div>
+    <dl class="stamp-facts" id="gv-proof" hidden></dl>
+  </section>
+
+  <section class="card pad" aria-labelledby="gv-mine-h" id="gv-mine" hidden>
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-pool"/></svg>
+      <h2 id="gv-mine-h">Check my entry</h2>
+      <p>Is an address on the published entry list?</p>
+    </div>
+    <form class="lookup" id="gv-mine-form" autocomplete="off"><input id="gv-mine-addr" type="text" spellcheck="false" autocapitalize="off" placeholder="A BrowserCoin address" aria-label="Address to check"><button type="submit">Check</button></form>
+    <div class="gv-check" id="gv-mine-out" aria-live="polite"></div>
+  </section>
+
+  <section class="card pad" aria-labelledby="gv-rules-h">
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-hist"/></svg>
+      <h2 id="gv-rules-h">The rules</h2>
+    </div>
+    <ul class="gv-rules" id="gv-rules"></ul>
   </section>
 </main>
 
@@ -717,6 +857,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 
 <script>
 /*__DRAND__*/
+const GIVE = /*__GIVEAWAY__*/null;
 const SNAP = /*__SNAPSHOT__*/null;
 const REWARD = 50, TARGET = 150, HALVING = 210000, CAP = 21e6, HOUR = 3600, DAY = 86400, TRACE_WIN = 45 * 60;
 const SEEDS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'];
@@ -1250,7 +1391,7 @@ function renderAcct() {
   const A = M.addr, a = M.acc; if (!A || !a) return;
   const L = LABELS[A];
   $('a-name').textContent = L ? L.name : A === DEAD ? 'Burn address' : A === store.get() ? 'Your address' : 'Address';
-  $('a-tag').hidden = !L; $('a-addr').textContent = A;
+  $('a-tag').hidden = !L; $('a-tag').textContent = L && L.official ? 'BRC Works' : 'Pool'; $('a-addr').textContent = A;
   const bal = $('a-bal'), html = brc(a.bal);
   if (bal.innerHTML !== html) { bal.innerHTML = html; if (a.fresh && performance.now() - a.fresh < 3000) replay(bal, 'bump'); }
   const asOf = M.applied > (M.idxH || 0) ? `live to block ${fmt(M.applied)}` : M.idxH ? `as of block ${fmt(M.idxH)}` : 'live';
@@ -1338,6 +1479,7 @@ function renderTry() {
   $('try').innerHTML = '<span>Or look at</span>' + picks.slice(0, 5).map((x) => `<button type="button" data-a="${x}">${name(x)}</button>`).join('');
 }
 function route() {
+  if (location.hash === '#giveaway' && GIVE) { setView('giveaway'); M.addr = null; M.token++; scrollTo(0, 0); gvShow(); return; }
   if (location.hash === '#stamp') { setView('stamp'); M.addr = null; M.token++; scrollTo(0, 0); showLatestForStamp(); return; }
   const m = location.hash.match(/^#my(?:=([0-9a-fA-F]{64}))?$/);
   if (!m) {
@@ -1710,6 +1852,264 @@ async function goLive() {
     } catch { const q = await probe(), alt = q.filter((x) => x.ok).sort((a, b) => a.ms - b.ms)[0]; S.helpers = q; if (alt) S.source = alt.host; renderHelpers(); }
   }, 6000);
   return true;
+}
+
+/* ---------- Block 100,000 giveaway (BRC Works) ----------
+   Entering: the address is sealed here, in the browser, to the giveaway mailbox (BRC Seal's sealing code,
+   in brc-kit.js) and dropped into the BRC Mailbox. No key is involved: the prize can only ever go to the
+   address in an entry, so entering someone else's address only gives its owner a chance. After entries
+   close, the organizer opens the letters offline in BRC Seal and publishes the entry list and its
+   fingerprint here. The winner comes from a drand beacon whose round is fixed in advance:
+     SHA-256("BRC Works giveaway draw v1\n" + list fingerprint + "\n" + round + "\n" + signature) mod entries. */
+const GIVE_BASE = 'https://pb-hash.github.io/brc-pulse/giveaway/';
+const GV = { eligible: null, eligibleErr: null, entries: null, entriesErr: null, count: null, shown: 0, pollAt: 0, drawn: null, drawErr: null, drawBusy: false, pool: null, poolAt: 0, loading: false };
+const tsOf = (iso) => Math.floor(Date.parse(iso) / 1000);
+const nowS = () => Date.now() / 1000;
+const gvRound = () => BRCGiveaway.roundAt(tsOf(GIVE.drawAt));
+const gvStore = { get(a) { try { return localStorage.getItem('brc-pulse:gv:' + a); } catch { return null; } }, set(a, v) { try { localStorage.setItem('brc-pulse:gv:' + a, v); } catch {} } };
+function gvPhase() {
+  const t = nowS();
+  if (GIVE.entries && t >= tsOf(GIVE.drawAt)) return 'drawn';
+  if (GIVE.entries) return 'listed';
+  if (t >= tsOf(GIVE.closesAt)) return 'closed';
+  if (t >= tsOf(GIVE.opensAt)) return 'open';
+  return 'soon';
+}
+const localWhen = (ts) => new Date(ts * 1000).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+function inWords(sec) {
+  sec = Math.max(0, Math.round(sec));
+  const d = Math.floor(sec / DAY), h = Math.floor((sec % DAY) / HOUR), m = Math.floor((sec % HOUR) / 60), s = sec % 60;
+  return d ? `${d}d ${h}h` : h ? `${h}h ${m}m` : m ? `${m}m ${s}s` : `${s}s`;
+}
+/* The same 3x3 picture BRC Seal draws for each address, so an address looks the same across BRC Works. */
+const IDC_COLORS = ['#5956fd', '#0d7a5f', '#e0552f', '#1f8fd6', '#c2417a', '#7c5cff', '#d99a0b', '#2f9e8f'];
+function identicon(el, a) {
+  el.replaceChildren();
+  const b = a.slice(0, 16).match(/../g).map((x) => parseInt(x, 16));
+  const c1 = IDC_COLORS[b[0] % 8]; let c2 = IDC_COLORS[b[1] % 8]; if (c2 === c1) c2 = IDC_COLORS[(b[1] + 3) % 8];
+  for (let r = 0; r < 3; r++) { const l = b[2 + r] & 3, m = b[5 + r] & 3; for (const v of [l, m, l]) { const i = document.createElement('i'); i.style.background = v === 0 ? 'transparent' : v === 3 ? c2 : c1; el.append(i); } }
+}
+
+function gvSteps() {
+  const ph = gvPhase(), t = nowS(), tipH = last().h;
+  const eta = tipH >= 100000 ? null : t + (100000 - tipH) * TARGET;
+  const steps = [
+    ['Entries open', localWhen(tsOf(GIVE.opensAt)), ph !== 'soon', ph === 'soon'],
+    ['Entries close', localWhen(tsOf(GIVE.closesAt)), ['closed', 'listed', 'drawn'].includes(ph), ph === 'open'],
+    ['Block 100,000', tipH >= 100000 ? 'Reached' : `About ${new Date(eta * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · ${fmt(100000 - tipH)} blocks to go`, tipH >= 100000, false],
+    ['Winner drawn', localWhen(tsOf(GIVE.drawAt)), ph === 'drawn' && !!GV.drawn, ['closed', 'listed'].includes(ph) || (ph === 'drawn' && !GV.drawn)],
+  ];
+  $('gv-steps').innerHTML = steps.map(([b, s, done, now]) => `<li class="${done ? 'done' : now ? 'now' : ''}"><b>${esc(b)}</b><span>${esc(s)}</span></li>`).join('');
+}
+
+function gvRules() {
+  const e = GIVE.eligible;
+  const rules = [
+    `<b>Who can enter:</b> any address that received BRC (mined a block, was paid, or redeemed a hash-locked payment) in the 30 days up to block ${fmt(e.cutoff)}. That's ${fmt(e.count)} addresses. List fingerprint <span class="mono">${esc(e.fingerprint)}</span>; anyone can rebuild the list from the public chain archive with <span class="mono">tools/giveaway_eligible.py</span>.`,
+    '<b>One entry per address.</b> Entering again doesn\'t add a chance.',
+    '<b>Entering is free.</b> No purchase, no fee, no wallet: you only paste an address.',
+    '<b>The prize only ever goes to the winning address itself.</b> You can enter an address that isn\'t yours, but that only gives its owner a chance.',
+    `<b>The prize:</b> everything in the prize pool when the winner is drawn, sent straight to the winning address. Nothing to claim.`,
+    '<b>Adding to the prize pool</b> doesn\'t enter you or change anyone\'s chances.',
+    '<b>Privacy:</b> your address is sealed in your browser. The mailbox and everyone else see only a sealed letter. After entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached.',
+    `<b>The draw:</b> drand beacon round ${fmt(gvRound())}, published at ${esc(utc(tsOf(GIVE.drawAt)))}. The winner is SHA-256("BRC Works giveaway draw v1", the entry list's fingerprint, the round and its signature) modulo the number of entries, counting from the first address in sorted order. Anyone can rerun it here.`,
+    'Run by pb-hash as part of BRC Works. Independent tools; not part of the official BrowserCoin project.',
+  ];
+  $('gv-rules').innerHTML = rules.map((r) => `<li>${r}</li>`).join('');
+}
+
+async function gvLoadLists() {
+  if (GV.loading) return; GV.loading = true;
+  try {
+    if (!GV.eligible && !GV.eligibleErr) {
+      try {
+        const r = await fetch(`${GIVE_BASE}eligible.json`, { cache: 'no-cache' }); if (!r.ok) throw new Error();
+        const d = await r.json();
+        if (d.fingerprint !== GIVE.eligible.fingerprint || BRCGiveaway.eligibleFingerprint(d.addresses) !== GIVE.eligible.fingerprint) GV.eligibleErr = "The eligible list doesn't match its published fingerprint, so entries are paused. Please tell the organizer.";
+        else GV.eligible = new Set(d.addresses);
+      } catch { GV.eligibleErr = null; }
+    }
+    if (GIVE.entries && !GV.entries && !GV.entriesErr) {
+      try {
+        const r = await fetch(`${GIVE_BASE}entries.json`, { cache: 'no-cache' }); if (!r.ok) throw new Error();
+        const d = await r.json();
+        if (d.fingerprint !== GIVE.entries.fingerprint || BRCGiveaway.listFingerprint(d.addresses) !== GIVE.entries.fingerprint) GV.entriesErr = "The published entry list doesn't match its fingerprint. Don't trust this result; please tell the organizer.";
+        else GV.entries = d;
+      } catch { GV.entriesErr = null; }
+    }
+  } finally { GV.loading = false; }
+  gvEnterState(); gvDraw(); gvMineCard();
+}
+
+function gvCheckText(raw) {
+  const v = raw.trim().toLowerCase().replace(/^0x/, '');
+  if (/privatekey|"type"\s*:\s*"browsercoin-wallet"|\b[a-z]+(\s+[a-z]+){11,}\b/i.test(raw)) return { kind: 'danger', text: "That looks like a wallet file, private key or recovery words. Don't paste those anywhere. Entering needs only your address." };
+  if (!v) return { kind: 'none' };
+  if (!/^[0-9a-f]{64}$/.test(v)) return { kind: 'no', text: 'A BrowserCoin address is 64 characters, using only 0–9 and a–f. Check the whole address was pasted.' };
+  try { BRCGiveaway.entryText(v); } catch (e) { return { kind: 'no', text: e.message }; }
+  if (v === GIVE.mailbox || v === GIVE.pool) return { kind: 'no', text: 'That\'s one of the giveaway\'s own addresses. Paste your own address.' };
+  if (GV.eligible && !GV.eligible.has(v)) return { kind: 'no', addr: v, text: `This address hasn't received BRC in the 30 days up to block ${fmt(GIVE.eligible.cutoff)}, so it can't enter. Check you pasted your mining or payout address.` };
+  const before = gvStore.get(v);
+  return { kind: 'ok', addr: v, text: GV.eligible ? `Eligible.${before ? ` You entered this address on ${before}; entering again doesn't add a chance.` : ''}` : 'Checking the eligible list…' };
+}
+function gvShowCheck(out, c) {
+  out.replaceChildren();
+  if (c.addr) { const p = document.createElement('span'); p.className = 'gv-idc'; identicon(p, c.addr); out.append(p); }
+  if (c.text) { const s = document.createElement('span'); s.className = c.kind === 'ok' ? 'ok' : c.kind === 'none' ? '' : 'no'; s.textContent = c.text; out.append(s); }
+}
+function gvEnterState() {
+  const ph = gvPhase(), form = $('gv-form'), p = $('gv-enter-p');
+  const open = ph === 'open' && !GV.eligibleErr;
+  form.hidden = ph !== 'open';
+  $('gv-go').disabled = !open || !GV.eligible;
+  if (ph === 'soon') p.innerHTML = `Entries open <b>${esc(localWhen(tsOf(GIVE.opensAt)))}</b>. Entering will need only your BrowserCoin <strong>address</strong>: no private key, no wallet file, nothing to sign.`;
+  else if (ph !== 'open') p.innerHTML = `Entries closed <b>${esc(localWhen(tsOf(GIVE.closesAt)))}</b>.${GIVE.entries ? ' The entry list is published below.' : ' The organizer is opening the letters; the entry list will appear here before the draw.'}`;
+  if (GV.eligibleErr) gvMsg(GV.eligibleErr, 'danger');
+  if (ph === 'open') gvShowCheck($('gv-check'), gvCheckText($('gv-addr').value));
+}
+function gvMsg(text, cls = '') { const m = $('gv-msg'); m.hidden = !text; m.className = `msg ${cls}`; m.textContent = text || ''; }
+$('gv-addr').addEventListener('input', () => { gvMsg(''); gvShowCheck($('gv-check'), gvCheckText($('gv-addr').value)); });
+$('gv-form').addEventListener('submit', async (e) => {
+  e.preventDefault(); gvMsg('');
+  if (gvPhase() !== 'open') { gvEnterState(); return; }
+  const c = gvCheckText($('gv-addr').value);
+  if (c.kind === 'danger') { $('gv-addr').value = ''; gvShowCheck($('gv-check'), c); return; }
+  if (c.kind !== 'ok' || !GV.eligible) { gvShowCheck($('gv-check'), c); return; }
+  const go = $('gv-go'); go.disabled = true; go.textContent = 'Sealing…';
+  let letter;
+  try { letter = BRCGiveaway.sealEntry(GIVE.mailbox, c.addr).armored; } catch (err) { gvMsg(err.message, 'danger'); go.disabled = false; go.textContent = 'Seal and drop my entry'; return; }
+  go.textContent = 'Dropping it in…';
+  try {
+    const r = await fetch(`${GIVE.service}/m/${GIVE.mailbox}/letters`, { method: 'POST', body: letter, headers: { 'content-type': 'text/plain' } });
+    const d = await r.json().catch(() => ({}));
+    if (r.status === 201 || r.status === 200) {
+      const day = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      gvStore.set(c.addr, day);
+      $('gv-done-s').textContent = `Sealed letter #${fmt(d.seq)} of ${fmt(d.count)} in the mailbox. Keep this page open to watch it arrive, or come back for the draw.`;
+      $('gv-letter').textContent = letter;
+      $('gv-done').hidden = false; $('gv-addr').value = ''; gvShowCheck($('gv-check'), { kind: 'none' });
+      GV.pollAt = 0; gvWall();
+    } else gvMsg(d.error || `The mailbox didn't take the letter (error ${r.status}). Try again in a minute.`, 'danger');
+  } catch { gvMsg("Couldn't reach the mailbox. Check your connection and try again.", 'danger'); }
+  finally { go.textContent = 'Seal and drop my entry'; go.disabled = gvPhase() !== 'open'; }
+});
+
+async function gvWall() {
+  if (Date.now() < GV.pollAt) return; GV.pollAt = Date.now() + 20000;
+  let info;
+  try { const r = await fetch(`${GIVE.service}/m/${GIVE.mailbox}`, { cache: 'no-store' }); if (!r.ok) throw new Error(); info = await r.json(); }
+  catch { $('gv-wall-note').textContent = "Can't reach the mailbox right now. The count will update when it's back."; return; }
+  const n = info.count, prev = GV.count == null ? n : GV.count; GV.count = n;
+  $('gv-count').textContent = fmt(n);
+  const wall = $('gv-wall'), cap = 120, show = Math.min(n, cap);
+  while (wall.querySelectorAll('i').length < show) { const i = document.createElement('i'); if (wall.querySelectorAll('i').length >= Math.min(prev, cap)) i.className = 'new'; wall.insertBefore(i, wall.querySelector('.more')); }
+  let more = wall.querySelector('.more');
+  if (n > cap) { if (!more) { more = document.createElement('span'); more.className = 'more'; wall.append(more); } more.textContent = `+${fmt(n - cap)} more`; } else if (more) more.remove();
+  $('gv-wall-note').innerHTML = `Mailbox address <span class="mono">${esc(GIVE.mailbox)}</span>${info.lastAt ? ` · last letter ${esc(ago(nowS() - Date.parse(info.lastAt) / 1000))}` : ''}. Anyone can download every sealed letter from the BRC Mailbox to check the count.`;
+}
+
+async function gvPool() {
+  if (Date.now() < GV.poolAt) return; GV.poolAt = Date.now() + 60000;
+  const A = GIVE.pool;
+  try {
+    let shard;
+    if (SAMPLE) shard = SAMPLE; else { const r = await fetch(`${ACCT_BASE}${A.slice(0, 3)}.json`, { cache: 'no-cache' }); shard = r.status === 404 ? { h: null, a: {} } : await r.json(); }
+    const rec = shard.a[A]; let bal = rec ? BigInt(rec.b) : 0n, h = shard.h || last().h, ins = rec ? rec.ni : 0;
+    const tipH = last().h;
+    if (S.mode === 'live' && tipH > h && tipH - h <= 4000) {
+      for (const x of await rawRange(S.source, h + 1, tipH)) {
+        const bh = parseInt(x.slice(0, 8), 16); if (bh <= h) continue; h = bh;
+        let fees = 0n;
+        for (const t of parseTxs(x)) {
+          fees += t.fee;
+          if ((t.k === 't' || t.k === 'l') && t.from === A) bal -= t.amt + t.fee;
+          if (t.k === 't' && t.to === A) { bal += t.amt; ins++; }
+          if (t.k === 'r' && t.to === A && t.amt > t.fee) { bal += t.amt - t.fee; ins++; }
+        }
+        if (x.slice(232, 296) === A) bal += rewardWei(bh) + fees;
+      }
+    }
+    GV.pool = { bal, h, ins };
+    $('gv-pool-v').innerHTML = brc(bal); $('gv-pool-asof').textContent = ` · live to block ${fmt(h)}`;
+    $('gv-pool-note').textContent = `${fmt(ins)} payment${ins === 1 ? '' : 's'} into the pool so far. Its balance is read straight from the chain, block by block.`;
+  } catch { GV.poolAt = Date.now() + 15000; $('gv-pool-note').textContent = "Couldn't read the pool's balance just now."; }
+}
+
+async function drandRound(round) {
+  for (const relay of ['drand.cloudflare.com', 'api.drand.sh', 'api2.drand.sh', 'api3.drand.sh']) {
+    const c = new AbortController(); const t = setTimeout(() => c.abort(), 5000);
+    try { const r = await fetch(`https://${relay}/${BRCDrand.QUICKNET.chainHash}/public/${round}`, { signal: c.signal, cache: 'no-store' }).then((x) => x.json()); if (Number(r.round) === round && BRCDrand.verifyDrand(round, r.signature)) return r; } catch {} finally { clearTimeout(t); }
+  }
+  return null;
+}
+function gvHow() {
+  const ph = gvPhase(), round = gvRound(), at = tsOf(GIVE.drawAt), t = nowS();
+  const list = GIVE.entries ? `The organizer published the entry list: <b>${fmt(GIVE.entries.count)} entries</b>, fingerprint <span class="mono">${esc(GIVE.entries.fingerprint)}</span>.` : `After entries close, the organizer opens the letters and publishes the entry list and its fingerprint here, before the draw.`;
+  const items = [
+    `Entries close <span class="when">${esc(localWhen(tsOf(GIVE.closesAt)))}</span>.`,
+    list,
+    `drand, a public randomness beacon run by independent organisations, publishes round <b>${fmt(round)}</b> at <span class="when">${esc(localWhen(at))}</span>${t < at ? ` (in ${esc(inWords(at - t))})` : ''}. Nobody can know it before then.`,
+    'That beacon and the list fingerprint pick one position on the sorted list. That address wins, and the whole pool is sent to it.',
+  ];
+  $('gv-how').innerHTML = items.map((x, i) => `<li${(i === 0 && ph !== 'soon' && ph !== 'open') || (i === 1 && GIVE.entries) ? ' class="done"' : ''}>${x}</li>`).join('');
+}
+async function gvDraw() {
+  gvHow();
+  if (gvPhase() !== 'drawn' || GV.drawn || GV.drawBusy) return;
+  if (GV.entriesErr) { gvDrawFail(GV.entriesErr); return; }
+  if (!GV.entries) return; // still loading
+  GV.drawBusy = true;
+  try {
+    const beacon = await drandRound(gvRound());
+    if (!beacon) { gvDrawFail("Couldn't fetch drand's beacon for the draw round yet. It will retry."); return; }
+    GV.drawn = BRCGiveaway.drawWinner(GV.entries.addresses, GIVE.entries.fingerprint, { round: Number(beacon.round), signature: beacon.signature });
+    GV.drawn.signature = beacon.signature;
+    gvShowWinner(); gvSteps();
+  } catch (e) { gvDrawFail(e.message); } finally { GV.drawBusy = false; }
+}
+function gvDrawFail(text) { const w = $('gv-winner'); w.hidden = false; w.className = 'gv-winner'; w.innerHTML = `<span>${esc(text)}</span>`; }
+function gvShowWinner() {
+  const d = GV.drawn, w = $('gv-winner');
+  w.hidden = false; w.innerHTML = '';
+  const p = document.createElement('span'); p.className = 'gv-idc'; identicon(p, d.winner);
+  const tx = document.createElement('div');
+  tx.innerHTML = `<b>The winner</b><span class="mono">${esc(d.winner)}</span>${GIVE.payout ? `<span class="fine" style="display:block;margin-top:4px">Prize sent: ${esc(GIVE.payout.amount)} BRC in block ${fmt(GIVE.payout.block)}.</span>` : ''}`;
+  w.append(p, tx);
+  const facts = [
+    ['Entry list', `${fmt(d.count)} entries, fingerprint <span class="mono">${esc(d.fingerprint)}</span> <span class="ok">matches the published list</span>`],
+    ['drand round', `${fmt(d.round)}, published ${esc(utcS(BRCDrand.drandRoundTime(d.round)))} <span class="ok">signature checked here</span>`],
+    ['Signature', `<span class="mono">${esc(d.signature)}</span>`],
+    ['Seed', `SHA-256("BRC Works giveaway draw v1", fingerprint, round, signature) = <span class="mono">${esc(d.seed)}</span>`],
+    ['Position', `seed mod ${fmt(d.count)} = ${fmt(d.index)}, so address number ${fmt(d.index + 1)} in sorted order`],
+  ];
+  $('gv-proof').innerHTML = facts.map(([k, v]) => fact(k, v)).join(''); $('gv-proof').hidden = false;
+}
+
+function gvMineCard() { $('gv-mine').hidden = !GV.entries; }
+$('gv-mine-form').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const v = $('gv-mine-addr').value.trim().toLowerCase().replace(/^0x/, ''), out = $('gv-mine-out');
+  if (!/^[0-9a-f]{64}$/.test(v)) { gvShowCheck(out, { kind: 'no', text: 'A BrowserCoin address is 64 characters, using only 0–9 and a–f.' }); return; }
+  const i = GV.entries ? GV.entries.addresses.indexOf(v) : -1;
+  gvShowCheck(out, i >= 0 ? { kind: 'ok', addr: v, text: `On the list: entry ${fmt(i + 1)} of ${fmt(GV.entries.addresses.length)} in sorted order.${GV.drawn && GV.drawn.winner === v ? ' This address won!' : ''}` }
+    : { kind: 'no', addr: v, text: 'Not on the entry list.' });
+});
+$('gv-pool-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(GIVE.pool); $('gv-pool-copy').textContent = 'Copied'; setTimeout(() => ($('gv-pool-copy').textContent = 'Copy'), 1500); } catch {} });
+
+function gvShow() {
+  gvSteps(); gvRules(); gvEnterState(); gvHow(); gvWall(); gvPool(); gvLoadLists();
+}
+if (GIVE) {
+  $('give-link').hidden = false;
+  LABELS[GIVE.mailbox] = { name: 'BRC Works giveaway mailbox', official: true };
+  LABELS[GIVE.pool] = { name: 'BRC Works prize pool', official: true };
+  $('gv-pool-addr').textContent = GIVE.pool; identicon($('gv-pool-idc'), GIVE.pool);
+  let gvPh = gvPhase();
+  setInterval(() => {
+    if (document.body.dataset.view !== 'giveaway') return;
+    const ph = gvPhase(); if (ph !== gvPh) { gvPh = ph; gvShow(); return; }
+    gvSteps(); gvHow(); gvWall(); gvPool(); if (ph === 'drawn' && !GV.drawn) gvDraw();
+  }, 1000);
 }
 
 /* Replay: when the page can't reach the network (inside a preview), it plays back the last real blocks
