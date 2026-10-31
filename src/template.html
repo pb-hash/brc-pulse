@@ -655,6 +655,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div class="gv-count"><b id="gv-count">–</b><span>sealed letters received</span></div>
       <div class="gv-wall" id="gv-wall" aria-hidden="true"></div>
       <p class="fine" id="gv-wall-note"></p>
+      <button type="button" class="btn-ghost" id="gv-dl" style="margin-top:10px">Download every letter</button>
     </section>
     <section class="card pad" aria-labelledby="gv-pool-h">
       <div class="sh">
@@ -2093,6 +2094,22 @@ $('gv-mine-form').addEventListener('submit', (e) => {
   const i = GV.entries ? GV.entries.addresses.indexOf(v) : -1;
   gvShowCheck(out, i >= 0 ? { kind: 'ok', addr: v, text: `On the list: entry ${fmt(i + 1)} of ${fmt(GV.entries.addresses.length)} in sorted order.${GV.drawn && GV.drawn.winner === v ? ' This address won!' : ''}` }
     : { kind: 'no', addr: v, text: 'Not on the entry list.' });
+});
+/* Anyone can download every sealed letter: for the organizer to open in BRC Seal, and for anyone to count. */
+$('gv-dl').addEventListener('click', async () => {
+  const btn = $('gv-dl'); btn.disabled = true; btn.textContent = 'Downloading…';
+  try {
+    const letters = []; let after = 0;
+    for (let i = 0; i < 200; i++) {
+      const r = await fetch(`${GIVE.service}/m/${GIVE.mailbox}/letters?after=${after}&limit=500`, { cache: 'no-store' }); if (!r.ok) throw new Error();
+      const d = await r.json(); letters.push(...d.letters); if (d.next == null) break; after = d.next;
+    }
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify({ mailbox: GIVE.mailbox, count: letters.length, downloaded: new Date().toISOString(), letters }, null, 1) + '\n'], { type: 'application/json' }));
+    a.download = `brc-mailbox-${GIVE.mailbox.slice(0, 8)}-letters.json`; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    btn.textContent = `Downloaded ${fmt(letters.length)} letters`;
+  } catch { btn.textContent = "Couldn't download. Try again"; }
+  finally { btn.disabled = false; setTimeout(() => (btn.textContent = 'Download every letter'), 4000); }
 });
 $('gv-pool-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(GIVE.pool); $('gv-pool-copy').textContent = 'Copied'; setTimeout(() => ($('gv-pool-copy').textContent = 'Copy'), 1500); } catch {} });
 

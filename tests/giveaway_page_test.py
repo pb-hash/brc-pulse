@@ -49,6 +49,10 @@ def handle(route):
         mb = fx['mailbox']
         if req.method == 'GET' and u.path == f'/m/{mb}':
             return route.fulfill(json={'address': mb, 'count': len(letters), 'open': True, 'lastAt': '2026-10-31T12:00:00Z' if letters else None}, headers=CORS)
+        if req.method == 'GET' and u.path == f'/m/{mb}/letters':
+            q = parse_qs(u.query); after = int(q.get('after', ['0'])[0]); lim = int(q.get('limit', ['500'])[0])
+            rows = [{'seq': i + 1, 'id': str(i), 'at': '2026-11-05T12:00:00.000Z', 'letter': l} for i, l in enumerate(letters)][after:after + lim]
+            return route.fulfill(json={'mailbox': mb, 'count': len(letters), 'letters': rows, 'next': rows[-1]['seq'] if len(rows) == lim else None}, headers=CORS)
         if req.method == 'POST' and u.path == f'/m/{mb}/letters':
             body = req.post_data or ''
             posted_origins.append(req.headers.get('origin'))
@@ -111,6 +115,12 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
 
     page.fill('#gv-addr', me)
     expect(page.locator('#gv-check')).to_contain_text("entering again doesn't add a chance")
+    with page.expect_download() as dl:
+        page.click('#gv-dl')
+    got_export = json.load(open(dl.value.path()))
+    assert got_export['mailbox'] == fx['mailbox'] and [l['letter'] for l in got_export['letters']] == letters, got_export
+    assert dl.value.suggested_filename == f"brc-mailbox-{fx['mailbox'][:8]}-letters.json"
+    ok('anyone can download every sealed letter, in the file BRC Seal opens')
     ok('entering the same address again is flagged as adding no chance')
 
     STATE['mailbox_down'] = True
