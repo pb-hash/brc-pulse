@@ -7,6 +7,7 @@ from playwright.sync_api import sync_playwright, expect
 
 open_page, drawn_page, chain_path, fx_path, core_path, out = sys.argv[1:7]
 nocommit_page, late_page, nolaunch_page, moved_page = sys.argv[7:11]
+rel_page = sys.argv[11]
 out = pathlib.Path(out); out.mkdir(parents=True, exist_ok=True)
 chains = json.load(open(chain_path)); fx = json.load(open(fx_path))
 CHAIN = {'name': 'good'}
@@ -158,7 +159,8 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
     page.screenshot(path=str(out / 'giveaway-drawn.png'), full_page=True)
     ok('after the draw time, the page checks the list was fixed on the chain before the draw, fetches and checks the drand beacon, and shows the same winner the core code picks')
     for pg_path, chain_name, want in [(nocommit_page, 'good', "hasn't been fixed on the chain"), (late_page, 'late', 'too close to the draw'),
-                                      (drawn_page, 'double', 'Only two are allowed'), (moved_page, 'good', 'not the ones fixed on the chain')]:
+                                      (drawn_page, 'double', 'Only two are allowed'), (moved_page, 'good', 'not the ones fixed on the chain'),
+                                      (drawn_page, 'release', 'Only two are allowed'), (rel_page, 'double', 'Only two are allowed')]:
         CHAIN['name'] = chain_name
         px = ctx.new_page(); px.on('pageerror', lambda e: errors.append(str(e))); px.route('**/*', handle)
         px.goto(pathlib.Path(pg_path).resolve().as_uri() + '#giveaway')
@@ -167,6 +169,12 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
         px.close()
     CHAIN['name'] = 'good'
     ok('no winner is shown if the list was never fixed, fixed too late, fixed alongside another lock, or the draw time was moved')
+    CHAIN['name'] = 'release'
+    px = ctx.new_page(); px.on('pageerror', lambda e: errors.append(str(e))); px.route('**/*', handle)
+    px.goto(pathlib.Path(rel_page).resolve().as_uri() + '#giveaway')
+    expect(px.locator('#gv-winner')).to_contain_text(fx['expected']['winner'], timeout=40000)
+    px.close(); CHAIN['name'] = 'good'
+    ok('a release postmark published on the page may sit between launch and draw; an unpublished one, or any other lock, still blocks the winner')
     pn = ctx.new_page(); pn.route('**/*', handle)
     pn.goto(pathlib.Path(nolaunch_page).resolve().as_uri() + '#giveaway')
     expect(pn.locator('#gv-msg')).to_contain_text("rules haven't been fixed on the chain", timeout=30000)

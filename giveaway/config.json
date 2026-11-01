@@ -1,0 +1,16 @@
+{
+ "v": 1,
+ "mailbox": "b4b31b7337deecf2cd29d5ff22809520f819fa6b8ebfa05e029aa4709699997b",
+ "pool": "41210e34d2f518620d869caa0b097883f693c40649789eaf77edc4ae5f0758d1",
+ "service": "https://brc-mailbox.pb-59f.workers.dev",
+ "eligible": {
+  "cutoff": 93000,
+  "count": 1280,
+  "fingerprint": "a77643e54d48705fa9b390f386534490115b22a36dc3b386397579b41dbd07a4"
+ },
+ "opensAt": "2026-11-01T00:00:00Z",
+ "closesAt": "2026-11-11T23:59:59Z",
+ "drawAt": "2026-11-13T18:00:00Z",
+ "entries": null,
+ "launch": "-----BEGIN BRC CHAIN SIGNED MESSAGE-----\nBRC Works giveaway v1\nGiveaway: block 100,000\nMailbox: b4b31b7337deecf2cd29d5ff22809520f819fa6b8ebfa05e029aa4709699997b\nPrize pool: 41210e34d2f518620d869caa0b097883f693c40649789eaf77edc4ae5f0758d1\nEligible: a77643e54d48705fa9b390f386534490115b22a36dc3b386397579b41dbd07a4\nEntries close: 2026-11-11T23:59:59Z\nDraw round: 33929812\n-----BEGIN BRC CHAIN SIGNATURE-----\nAddress: 7ccb496c7bb6e78a169fdd3c2441772bc98730f3da43c3ee52046ee5e90caa00\nSalt: 52907cea4e22b303746524c7ac773ff2\nLock ID: 235c85e409b68cf5a9f8be20746d131345f2c23fb975390eb966e5ab05256c84\nBlock: 93319\n-----END BRC CHAIN SIGNATURE-----"
+}

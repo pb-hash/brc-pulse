@@ -5,7 +5,20 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
-1.1.5 (Oct 31, 2026)
+1.1.6 (Oct 31, 2026)
+  - The block 100,000 giveaway goes live: launch signed on the chain by the
+    BRC Works release address in block 93,319; 1,280 eligible addresses
+    (block 93,000); entries open as soon as the launch is settled, close
+    Nov 11 23:59:59 UTC; draw Nov 13 18:00 UTC (drand round 33,929,812).
+  - Release postmarks for BRC Vault 1.1.0 (block 93,303), 1.1.1 (93,312) and
+    BRC Post 0.6.1 (93,315): Check it now says which BRC Works files are
+    genuine.
+  - Between launch and draw the release address may also sign release
+    postmarks published on Pulse (each provably a release, never a list);
+    any other lock still blocks the winner. So BRC Works can keep shipping.
+  - An address cut short (or with extra characters) when copying is
+    explained instead of "couldn't be recognised".
+
   - Security review before release: a verdict now always belongs to the
     exact text it was made from (editing the box drops it and any re-check);
     a genuine release message pasted with a different file says "This file

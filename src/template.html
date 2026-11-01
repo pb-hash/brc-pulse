@@ -2107,6 +2107,8 @@ function kindOf(text) {
   if (to) return { k: 'mailbox', label: 'Mailbox link', a: to[1].toLowerCase() };
   const h = t.replace(/\s+/g, '').toLowerCase().replace(/^0x/, '');
   if (/^[0-9a-f]{64}$/.test(h)) return { k: 'address', label: 'Address', a: h };
+  if (/^[0-9a-f]{40,63}$/.test(h)) return { k: 'partial', n: h.length };
+  if (/^[0-9a-f]{65,80}$/.test(h)) return { k: 'toolong', n: h.length };
   return { k: 'unknown' };
 }
 function showKind(kd) {
@@ -2126,6 +2128,8 @@ async function checkAny() {
     case 'sealed': return checkSealed(text);
     case 'mailbox': return showMailbox(kd.a);
     case 'address': return showAddress(kd.a);
+    case 'partial': stampMsg(`That looks like part of an address: it has ${kd.n} of the 64 characters, so the end was probably cut off when copying. Copy it again, all of it.`, 'danger'); return;
+    case 'toolong': stampMsg(`That has ${kd.n} characters, but an address has exactly 64. Something extra was copied with it. Copy just the address.`, 'danger'); return;
     default: stampMsg("This couldn't be recognised. Paste the whole block, from the -----BEGIN line to the -----END line, or add the file.", 'danger');
   }
 }
@@ -2340,7 +2344,7 @@ function gvRules() {
     '<b>Adding to the prize pool</b> doesn\'t enter you or change anyone\'s chances.',
     '<b>Opening the letters:</b> after entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached. Repeats and addresses that can\'t enter are set aside then.',
     `<b>The draw:</b> drand beacon round ${fmt(gvRound())}, published at ${esc(utc(tsOf(GIVE.drawAt)))}. The winner is SHA-256("BRC Works giveaway draw v1", the entry list's fingerprint, the round and its signature) modulo the number of entries, counting from the first address in sorted order. Anyone can rerun it here.`,
-    `<b>Fixed on the chain:</b> these rules and the draw round were signed by the BRC Works release address${GV.launch ? ` in block ${fmt(GV.launch.height)} <span class="ok">checked here</span>` : ''}. The entry list is signed the same way at least 6 hours before the draw, and the release address signs nothing else until the draw, so the list can't be swapped afterwards. Its whole history is public${releaseAddr() ? `: ${nameLink(releaseAddr())}` : ''}. Apart from release postmarks, it should only ever hold this giveaway's launch and list; if it shows anything else, such as an earlier launch that was dropped, ask the organizer why.`,
+    `<b>Fixed on the chain:</b> these rules and the draw round were signed by the BRC Works release address${GV.launch ? ` in block ${fmt(GV.launch.height)} <span class="ok">checked here</span>` : ''}. The entry list is signed the same way at least 6 hours before the draw, and until the draw the release address signs nothing else except release postmarks published on this page (each provably a BRC Works release, never a list), so the list can't be swapped afterwards. Its whole history is public${releaseAddr() ? `: ${nameLink(releaseAddr())}` : ''}. Apart from release postmarks, it should only ever hold this giveaway's launch and list; if it shows anything else, such as an earlier launch that was dropped, ask the organizer why.`,
     'Run by pb-hash as part of BRC Works. Independent tools; not part of the official BrowserCoin project.',
   ];
   $('gv-rules').innerHTML = rules.map((r) => `<li>${r}</li>`).join('');
@@ -2559,6 +2563,13 @@ async function gvCheckCommit() {
   // two locks: the launch and this list. Read at two independent operators, every block in order, so
   // no helper can hide a second list by leaving a block out.
   const rel = releaseAddr(), needle = `4c4f434bc01dfeed${rel}`;
+  // The one other thing the release address may sign meanwhile: release postmarks published on this page.
+  // Each lock commits to exactly one phrase, and these phrases are public BRC Works release messages
+  // signed by this address, so none of them can be a second list. Every other lock still counts.
+  const releaseScripts = new Set();
+  for (const t of RELEASES) {
+    try { const r = parseChainSignedAsReceipt(t); if (r.owner === rel && BRCKit.release.readRelease(r.chain.message)) releaseScripts.add(await stampScriptHash(r)); } catch {}
+  }
   const scan = async (host, tip) => {
     const ids = [];
     for (let f = launch.height; f <= tip; f += 200) {
@@ -2568,7 +2579,7 @@ async function gvCheckCommit() {
         const hb = page[i];
         if (parseInt(hb.slice(0, 8), 16) !== f + i) throw new Error('gap');
         if (parseInt(hb.slice(200, 216), 16) > roundTs) return ids;
-        if (hb.includes(needle)) { const b = await readChainBlock(hb); ids.push(...b.locks.filter((x) => x.from === rel).map((x) => x.id)); }
+        if (hb.includes(needle)) { const b = await readChainBlock(hb); ids.push(...b.locks.filter((x) => x.from === rel && !releaseScripts.has(x.scriptHash)).map((x) => x.id)); }
       }
       if (page.length !== want) throw new Error('gap');
       await pause(300);
@@ -2582,7 +2593,7 @@ async function gvCheckCommit() {
   if (views.length < 2) gvFail('Could not read every block since the launch at two independent helper operators. Try again later.');
   if (views.some((v) => v === null)) gvFail('Waiting for the first block after the draw round, to check the release address fixed only one list. Try again in a few minutes.');
   const all = new Set(views.flat());
-  if (all.size !== 2 || !all.has(launch.lockId) || !all.has(s.lock.id)) gvFail(`From the launch to the draw, the release address made ${fmt(all.size)} locks. Only two are allowed: the launch and this list, so nobody could fix several lists and pick one later. No winner is shown.`);
+  if (all.size !== 2 || !all.has(launch.lockId) || !all.has(s.lock.id)) gvFail(`From the launch to the draw, the release address made ${fmt(all.size)} locks other than published release postmarks. Only two are allowed: the launch and this list, so nobody could fix several lists and pick one later. No winner is shown.`);
   return { height: s.blk.height, at: s.at, lockId: s.lock.id };
 }
 

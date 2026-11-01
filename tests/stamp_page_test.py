@@ -318,6 +318,9 @@ console.log(JSON.stringify({{ signed: c.signMessage(w, "I'm the one you met at t
     page.fill('#stamp-receipt', fx['lookalike']); page.click('#stamp-go')
     expect(vd).to_contain_text('Not BRC Works.')
     ok('an address, even in groups of 8 or capitals, is checked against the BRC Works addresses; look-alikes are refused')
+    page.fill('#stamp-receipt', fx['relAddress'][:56]); page.click('#stamp-go')
+    expect(page.locator('#stamp-msg')).to_contain_text('56 of the 64 characters')
+    ok('an address cut short when copying is explained, not "couldn\'t be recognised"')
     assert not [c for c in calls[n0:] if c.startswith('/blocks')], 'signed messages, letters and addresses need no chain reads'
     page.fill('#stamp-receipt', '{"type":"browsercoin-wallet","privateKey":"' + '33' * 32 + '"}'); page.click('#stamp-go')
     expect(page.locator('#stamp-msg')).to_contain_text("holds a secret key")
