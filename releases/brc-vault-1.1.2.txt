@@ -1,0 +1,12 @@
+-----BEGIN BRC CHAIN SIGNED MESSAGE-----
+BRC Works release v1
+Tool: BRC Vault
+Version: 1.1.2
+File: brc-vault.html
+SHA-256: 1bf22fcaaf62124affdf02596a4315dbc94a888e72537a9bf87a756d39c15631
+-----BEGIN BRC CHAIN SIGNATURE-----
+Address: 7ccb496c7bb6e78a169fdd3c2441772bc98730f3da43c3ee52046ee5e90caa00
+Salt: 641d9d969caa39e5ea5c0bd314c4a1bb
+Lock ID: edbe5061ece02860013b09d245d36ce8c6061eddef0dac68f08156817e45e466
+Block: 93335
+-----END BRC CHAIN SIGNATURE-----

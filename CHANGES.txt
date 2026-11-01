@@ -5,6 +5,10 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+1.1.7 (Oct 31, 2026)
+  - Release postmark for BRC Vault 1.1.2 (block 93,335), the first signed
+    after the giveaway launch under the published-release-postmark rule.
+
 1.1.6 (Oct 31, 2026)
   - The block 100,000 giveaway goes live: launch signed on the chain by the
     BRC Works release address in block 93,319; 1,280 eligible addresses
