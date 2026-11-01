@@ -2289,7 +2289,7 @@ async function goLive() {
    fingerprint here. The winner comes from a drand beacon whose round is fixed in advance:
      SHA-256("BRC Works giveaway draw v1\n" + list fingerprint + "\n" + round + "\n" + signature) mod entries. */
 const GIVE_BASE = 'https://pb-hash.github.io/brc-pulse/giveaway/';
-const GV = { eligible: null, eligibleErr: null, entries: null, entriesErr: null, count: null, shown: 0, pollAt: 0, drawn: null, drawErr: null, drawBusy: false, pool: null, poolAt: 0, loading: false };
+const GV = { eligible: null, eligibleErr: null, entries: null, entriesErr: null, count: null, shown: 0, pollAt: 0, drawn: null, drawErr: null, drawBusy: false, pool: null, poolAt: 0, poolMode: null, loading: false };
 const tsOf = (iso) => Math.floor(Date.parse(iso) / 1000);
 const nowS = () => Date.now() / 1000;
 const gvRound = () => BRCGiveaway.roundAt(tsOf(GIVE.drawAt));
@@ -2458,7 +2458,9 @@ async function gvWall() {
 }
 
 async function gvPool() {
-  if (Date.now() < GV.poolAt) return; GV.poolAt = Date.now() + 60000;
+  // Re-read at once when the page goes live: the first read can come before the helpers answer, and
+  // waiting out the minute left the hourly index's older balance on screen as if it were current.
+  if (Date.now() < GV.poolAt && GV.poolMode === S.mode) return; GV.poolAt = Date.now() + 60000; GV.poolMode = S.mode;
   const A = GIVE.pool;
   try {
     let shard;
@@ -2479,7 +2481,9 @@ async function gvPool() {
       }
     }
     GV.pool = { bal, h, ins };
-    $('gv-pool-v').innerHTML = brc(bal); $('gv-pool-asof').textContent = ` · live to block ${fmt(h)}`;
+    // "Live" only once every block up to the tip is counted; before that, say which block it's as of.
+    const fresh = S.mode === 'live' && h >= tipH;
+    $('gv-pool-v').innerHTML = brc(bal); $('gv-pool-asof').textContent = fresh ? ` · live to block ${fmt(h)}` : ` · as of block ${fmt(h)}, catching up…`;
     $('gv-pool-note').textContent = `${fmt(ins)} payment${ins === 1 ? '' : 's'} into the pool so far. Its balance is read straight from the chain, block by block.`;
   } catch { GV.poolAt = Date.now() + 15000; $('gv-pool-note').textContent = "Couldn't read the pool's balance just now."; }
 }

@@ -5,6 +5,12 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+1.1.8 (Nov 1, 2026)
+  - Giveaway prize pool: the total refreshes the moment the page connects
+    to the network, instead of showing the hourly index's older balance for
+    the first minute (it read 50 BRC after 951.1337 BRC had arrived). Until
+    every block is counted it now says "as of block N, catching up".
+
 1.1.7 (Oct 31, 2026)
   - Release postmark for BRC Vault 1.1.2 (block 93,335), the first signed
     after the giveaway launch under the published-release-postmark rule.
