@@ -1854,7 +1854,7 @@ $('stamp-file').addEventListener('change', async (e) => {
   $('stamp-file-name').textContent = `${f.name}: reading…`;
   try {
     const fp = hx(await sha(await f.arrayBuffer()));
-    if (tok === stampFileTok) { stampFileFp = fp; stampFileName = f.name; $('stamp-file-name').textContent = f.name; checkAny(); }
+    if (tok === stampFileTok) { stampFileFp = fp; stampFileName = f.name; const nm = document.createElement('span'); nm.textContent = f.name; nm.translate = false; $('stamp-file-name').replaceChildren(nm); checkAny(); }
   } catch { if (tok === stampFileTok) $('stamp-file-name').textContent = "This file couldn't be read"; }
 });
 

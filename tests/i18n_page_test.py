@@ -80,6 +80,19 @@ with sync_playwright() as pw:
     page.screenshot(path=str(out / 'zh-2-check.png'), full_page=True)
     ok('Check it in Chinese shows a signed message exactly as signed, never translated')
 
+    page.locator('#stamp-file').set_input_files({'name': 'Copy', 'mimeType': 'text/plain', 'buffer': b'hello'})
+    page.wait_for_timeout(800)
+    assert 'Copy' in page.locator('#stamp-file-name').text_content() and '复制' not in page.locator('#stamp-file-name').text_content()
+    ok('a file name shows exactly as it is, even when it is a word the page translates')
+
+    order = "() => [...document.querySelectorAll('#stamp-latest, #stamp-drand')].map((b) => [...b.querySelectorAll('*')].filter((e) => e.parentElement === b).map((e) => e.tagName + '.' + e.className).join(','))"
+    zh_order = page.evaluate(order)
+    page.click('[data-lang-toggle]'); page.wait_for_timeout(300)
+    en_order = page.evaluate(order)
+    page.click('[data-lang-toggle]'); page.wait_for_timeout(300)
+    assert zh_order == en_order, (zh_order, en_order)
+    ok('values and their Copy buttons keep their order in Chinese')
+
     page.reload(); page.wait_for_timeout(1500)
     expect(page.locator('[data-lang-toggle]')).to_have_text('EN')
     ok('the choice is remembered on this device after a reload')

@@ -14,4 +14,4 @@ done
 python3 build.py history.json --official $POST/build/giveaway-official.json --giveaway $POST/build/giveaway-drawn.json --releases $POST/build/giveaway-releases > /dev/null || exit 1; cp dist/brc-pulse.html build-test/gv-drawn-rel.html
 python3 tests/giveaway_page_test.py build-test/gv-open.html build-test/gv-drawn.html $POST/build/giveaway-chain.json $POST/build/giveaway-fixture.json $POST/build/seal-core.mjs build-test build-test/gv-drawn-nocommit.html build-test/gv-drawn-late.html build-test/gv-open-nolaunch.html build-test/gv-drawn-moved.html build-test/gv-drawn-rel.html
 python3 tests/i18n_page_test.py build-test/stamps.html build-test/gv-open.html $POST/build/seal-core.mjs build-test/i18n
-git checkout -q dist docs 2>/dev/null || true   # test builds never replace the published page
+git checkout -q dist   # test builds never replace the published page

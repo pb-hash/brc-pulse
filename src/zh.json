@@ -87,8 +87,6 @@
 "Your address": "你的地址",
 "Your mailbox": "你的信箱",
 "check code": "校验码",
-"lease-v3.txt: reading…": "lease-v3.txt：读取中…",
-"lease-v4.txt: reading…": "lease-v4.txt：读取中…",
 "locked key": "已加密的私钥",
 "strength settings": "强度设置",
 "{0} only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.": "{0}只有 BRC Vault 会向你索要存有币的私钥，而且只是为了在你的设备上备份它。如果有其他任何东西向你索要私钥，那就不是我们。",
@@ -103,7 +101,6 @@
 ". Anyone can download every sealed letter from the BRC Mailbox to check the count.": "。任何人都可以从 BRC 信箱下载所有密封信来核对数量。",
 ". The entry list is published below.": "。报名名单已在下方公布。",
 "21,000,000 BRC, ever. Every coin was mined; none were sold.": "总量永远只有 21,000,000 BRC。每一枚币都是挖出来的，没有一枚是卖出去的。",
-"23.11% mined": "已挖出 23.11%",
 "24 h estimate": "24 小时估算",
 "25 entries": "25 份报名",
 "30 days ago": "30 天前",
@@ -514,7 +511,6 @@
 "and the mailbox's own signature agrees": "且信箱自身的签名也一致",
 "around May 2027": "约 2027 年 5 月",
 "blocks to go, {0}": "个区块，{0}",
-"brc-vault.html: reading…": "brc-vault.html：正在读取…",
 "checked here": "在此验证",
 "couldn't read": "无法读取",
 "developer benchmark": "开发者基准测试",
@@ -524,7 +520,6 @@
 "drand, a public randomness beacon run by independent organisations, publishes round": "drand 是由多个独立机构运营的公共随机信标，它会公布轮次",
 "everything in the prize pool when the winner is drawn, sent straight to the winning address. Nothing to claim.": "开奖时奖池里的全部内容，直接发送到中奖地址。无需领取。",
 "giveaway rules": "抽奖规则",
-"holiday-photo.jpg: reading…": "holiday-photo.jpg：正在读取…",
 "implausible tip": "链顶高度不可信",
 "in the prize pool": "在奖池中",
 "it isn't on the chain": "它不在链上",
@@ -909,12 +904,12 @@
 "距上一个区块 · 已超出预期 %1"
 ],
 [
-"%1: over 1 GB, too large to check here",
-"%1：超过 1 GB，太大，无法在这里检查"
-],
-[
 "found %N1 of the last %N2 blocks (%N3 hours).",
 "在最近 %N2 个区块（%N3 小时）中找到了 %N1 个。"
+],
+[
+"%R1: over 1 GB, too large to check here",
+"%R1：超过 1 GB，太大，无法在这里检查"
 ],
 [
 "The receipt's \"%1:\" line is missing.",
@@ -957,10 +952,6 @@
 "共 %1 个报名，指纹 {0} {1}"
 ],
 [
-"#%1 · waited %2 · %3 · %4 transaction%5",
-"#%1 · 等待 %2 · %3 · %4 笔交易"
-],
-[
 "Not BRC Works. It imitates %1.",
 "不是 BRC Works。它在冒充 %1。"
 ],
@@ -991,10 +982,6 @@
 [
 "#%1 by balance of %2 holders ·",
 "在 %2 个持有者中余额排名第 %1 ·"
-],
-[
-"#%1 by balance of %2 holders ·",
-"余额排名 #%1（共 %2 个持币地址）·"
 ],
 [
 "Use at least %1 characters.",
@@ -1221,6 +1208,10 @@
 "已使用 %1 次"
 ],
 [
+"%R1: reading…",
+"%R1：读取中…"
+],
+[
 "in block %1",
 "在区块 %1 中"
 ],
@@ -1239,6 +1230,10 @@
 [
 "%N1 miners",
 "%N1 个矿工"
+],
+[
+"%N1% mined",
+"已挖出 %N1%"
 ],
 [
 "%N1m ago",
