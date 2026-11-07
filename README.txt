@@ -24,8 +24,10 @@ What it shows
   or pool past half could rewrite recent history, so this is the number to
   watch.
 - The last 144 blocks as a heartbeat strip, plus the 8 most recent blocks.
-- A mining calculator: your share, expected BRC per day, and solo odds at the
-  current network hashrate.
+- Estimated value: what one BRC costs to make, compared with Bitcoin, in sats
+  and dollars, with a daily chart since the Sandglass fork (see below).
+- A mining calculator: your share, expected BRC per day, its estimated value,
+  and solo odds at the current network hashrate.
 - The pools, with fees and payouts, and each pool's 24 h share where its
   payout address is confirmed from the pool's own public stats.
 - Helper server status, including the likely cause of the app's
@@ -59,6 +61,23 @@ and its recent transfers. Click any miner name on the dashboard to look it up.
   yours on your device. It is remembered on your device only, until you click
   Forget.
 
+Estimated value
+---------------
+BRC has no exchange, so Pulse estimates its value from what it costs to make:
+- Every block's difficulty gives the hashes it took, on average. Over the
+  last 24 hours that is about 1.7 million hashes per new BRC (Nov 7, 2026).
+- A Sandglass hash takes about 0.05 joules on today's mining hardware: about
+  0.03 on server processors, up to 0.10 on graphics cards (Sandglass
+  benchmarks: RTX 5090 2,464 H/s at 262 W, H100 2,097 H/s at 157 W).
+- Bitcoin's difficulty gives the hashes per new bitcoin, at about 20 joules
+  per trillion hashes across its mining machines (18 to 25).
+- Energy per BRC divided by energy per bitcoin is the value in bitcoin; times
+  Bitcoin's price, in dollars. The range uses the low and high ends of both
+  energy figures. Only the newly minted reward counts, not fees.
+The constants are E_BRC and E_BTC in src/template.html. The chart starts at
+the Sandglass fork (Jul 22, 2026); the hash before it isn't described by these
+figures.
+
 How it gets its data
 --------------------
 - Live: every 6 seconds the page asks the fastest synced helper server
@@ -70,8 +89,13 @@ How it gets its data
   from the chain archive (github.com/swompythesecond/browsercoin-archive), so
   the page shows real data before it connects. If it can't reach the network
   at all, it replays the last 20 real blocks at 20x speed and says so.
+- Bitcoin figures: Bitcoin's price, difficulty and block reward, and a daily
+  history since Jul 22, from mempool.space's public API, fetched by the build
+  (tools/btc.py) and built into the page. Your browser never contacts
+  mempool.space. If it can't be reached, the build uses data/btc.json and the
+  page says how old the figures are.
 - A GitHub Action (.github/workflows/pages.yml) rebuilds and publishes the
-  site every hour: snapshot, history and the My BRC index. Nothing is
+  site every hour: snapshot, history, Bitcoin figures and the My BRC index. Nothing is
   committed; GitHub Pages serves the workflow's output.
 
 Privacy
@@ -95,6 +119,7 @@ Python 3, no packages needed.
     python3 tools/fetch_archive.py archive          # chain archive, cached
     python3 tools/history.py archive history.json   # daily history
     python3 tools/accounts.py archive _site/a       # My BRC address index
+    python3 tools/btc.py btc.json                   # Bitcoin figures (estimated value)
     python3 build.py history.json --site _site      # the site, plus dist/
 
 Pool labels

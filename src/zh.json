@@ -584,9 +584,76 @@
 "Your BrowserCoin address": "你的 BrowserCoin 地址",
 "Your hashrate in hashes per second": "你的算力（每秒哈希数）",
 "24 hours": "24 小时",
-"6 hours": "6 小时"
+"6 hours": "6 小时",
+"Estimated value": "估算价值",
+"Based on what it costs to make: the energy it takes to mine one BRC, compared with the energy it takes to mine Bitcoin.": "按生产成本估算：挖出一枚 BRC 所需的能源，与挖出比特币所需的能源相比较。",
+"Sats": "聪",
+"sats": "聪",
+"Dollars": "美元",
+"Show the value in": "价值的显示单位",
+"One BRC": "一枚 BRC",
+"One block (50 BRC)": "一个区块（50 BRC）",
+"All BRC in circulation": "流通中的全部 BRC",
+"Energy to mine one BRC": "挖出一枚 BRC 的能耗",
+"Energy to mine one bitcoin": "挖出一枚比特币的能耗",
+"Bitcoin price": "比特币价格",
+"How it's worked out": "计算方法",
+"In dollars": "折合美元",
+"Estimated value of one BRC per day since the Sandglass fork": "自 Sandglass 分叉以来，每天一枚 BRC 的估算价值"
 },
 "p": [
+[
+"%N1 sats",
+"%N1 聪"
+],
+[
+"≈ %N1 sats",
+"≈ %N1 聪"
+],
+[
+"%N1 sats · %R2",
+"%N1 聪 · %R2"
+],
+[
+"%R1 · %N2 BTC",
+"%R1 · %N2 BTC"
+],
+[
+"Likely between %N1 and %N2 sats",
+"大约在 %N1 到 %N2 聪之间"
+],
+[
+"Likely between %R1 and %R2",
+"大约在 %R1 到 %R2 之间"
+],
+[
+"Estimated value %R1 · %N2 sats",
+"估算价值 %R1 · %N2 聪"
+],
+[
+"Every block's difficulty says how much work it took to find. Over the last 24 hours, one new BRC took about %N1 hashes.",
+"每个区块的难度说明了找到它需要多少工作量。过去 24 小时里，每产出一枚新的 BRC 平均需要约 %N1 次哈希。"
+],
+[
+"A Sandglass hash uses about 0.05 joules on today's mining hardware: about 0.03 on server processors, up to 0.10 on graphics cards (from the Sandglass benchmarks). So one BRC takes about %N1 watt-hours, about %N2 phone charges.",
+"在如今的挖矿硬件上，一次 Sandglass 哈希约耗电 0.05 焦耳：服务器处理器约 0.03，显卡最高约 0.10（数据来自 Sandglass 基准测试）。所以一枚 BRC 约需 %N1 瓦时，相当于给手机充电约 %N2 次。"
+],
+[
+"Bitcoin works the same way. At today's difficulty one new bitcoin takes about %R1 hashes, and Bitcoin's mining machines use about 20 joules per trillion hashes (18 to 25 across the fleet). So one bitcoin takes about %N2 gigawatt-hours, roughly what %N3 US homes use in a year.",
+"比特币也是同样的道理。按今天的难度，每产出一枚新的比特币约需 %R1 次哈希，而比特币矿机每万亿次哈希约耗电 20 焦耳（全网矿机在 18 到 25 之间）。所以一枚比特币约需 %N2 吉瓦时，大致相当于 %N3 户美国家庭一年的用电量。"
+],
+[
+"Divide one by the other: one BRC takes as much energy to make as %N1 sats of Bitcoin. At %R2 a bitcoin, that's about %R3.",
+"两者相除：生产一枚 BRC 所需的能源，相当于生产 %N1 聪比特币所需的能源。按每枚比特币 %R2 计算，约合 %R3。"
+],
+[
+"This is what a BRC costs to make, not a quote: BRC has no exchange, and trades happen person to person. It goes up when more mining power joins, because every coin then takes more work. The range comes from the energy per hash, which is estimated, not measured. Bitcoin's price, difficulty and reward come from mempool.space, fetched when this page was built (%R1, more than two days ago). Your browser never contacts it. The chart starts at the Sandglass fork: before it, BrowserCoin used a different hash, which these energy figures don't describe.",
+"这是生产一枚 BRC 的成本，而不是报价：BRC 没有交易所，交易都是个人之间进行的。挖矿算力增加时它会上涨，因为每枚币都需要更多工作量。范围来自每次哈希的耗能，这是估计值，而非实测。比特币的价格、难度和区块奖励来自 mempool.space，在构建本页面时获取（%R1，已超过两天）。你的浏览器从不连接它。图表从 Sandglass 分叉开始：在此之前 BrowserCoin 使用的是另一种哈希，这些能耗数据并不适用。"
+],
+[
+"This is what a BRC costs to make, not a quote: BRC has no exchange, and trades happen person to person. It goes up when more mining power joins, because every coin then takes more work. The range comes from the energy per hash, which is estimated, not measured. Bitcoin's price, difficulty and reward come from mempool.space, fetched when this page was built (%R1). Your browser never contacts it. The chart starts at the Sandglass fork: before it, BrowserCoin used a different hash, which these energy figures don't describe.",
+"这是生产一枚 BRC 的成本，而不是报价：BRC 没有交易所，交易都是个人之间进行的。挖矿算力增加时它会上涨，因为每枚币都需要更多工作量。范围来自每次哈希的耗能，这是估计值，而非实测。比特币的价格、难度和区块奖励来自 mempool.space，在构建本页面时获取（%R1）。你的浏览器从不连接它。图表从 Sandglass 分叉开始：在此之前 BrowserCoin 使用的是另一种哈希，这些能耗数据并不适用。"
+],
 [
 "{0} these rules and the draw round were signed by the BRC Works release address%1. The entry list is signed the same way at least 6 hours before the draw, and until the draw the release address signs nothing else except release postmarks published on this page (each provably a BRC Works release, never a list), so the list can't be swapped afterwards. Its whole history is public%2. Apart from release postmarks, it should only ever hold this giveaway's launch and list; if it shows anything else, such as an earlier launch that was dropped, ask the organizer why.",
 "{0}这些规则和开奖轮次已由 BRC Works 发布地址签名%1。参与名单也会在开奖前至少 6 小时以同样方式签名；在开奖之前，除了本页面公布的发布版本邮戳（每一个都可证明是 BRC Works 发布版本，绝不是名单）之外，发布地址不会签名任何其他内容，所以名单事后无法被调换。它的全部历史都是公开的%2。除发布版本邮戳外，它应该只包含本次抽奖的启动和名单；如果它显示了其他任何内容，例如一次被放弃的早期启动，请询问组织者原因。"

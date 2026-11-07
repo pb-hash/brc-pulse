@@ -521,6 +521,20 @@ tr.fresh td { animation: fresh 2.4s var(--ease); }
 .kv dt, .kv dd { padding: 9px 0; border-top: 1px solid var(--hairline); font-size: .9rem; }
 .kv dt { color: var(--muted); } .kv dd { margin: 0; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
 
+/* estimated value */
+.val-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 12px 40px; align-items: end; margin-top: 22px; }
+.val-main .big { margin-top: 10px; }
+.val-main .big small { font-size: .42em; font-weight: 600; letter-spacing: -0.01em; color: var(--muted); margin-left: 4px; }
+.val-alt { margin-top: 10px; font-size: 1.05rem; font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.val-range { margin-top: 4px; font-size: .86rem; color: var(--muted); }
+.val-grid .kv { margin: 0; }
+.val-how { margin-top: 18px; border-top: 1px solid var(--hairline); padding-top: 12px; }
+.val-how > summary { cursor: pointer; color: var(--muted); font-size: .9rem; font-weight: 600; }
+.val-how[open] > summary { margin-bottom: 8px; }
+.val-how ol { margin: 0; padding-left: 1.3em; display: grid; gap: 8px; font-size: .88rem; color: var(--ink-2); max-width: 72ch; }
+.val-how p { font-size: .84rem; color: var(--muted); margin-top: 10px; max-width: 72ch; }
+@media (max-width: 760px) { .val-grid { grid-template-columns: 1fr; gap: 18px; } }
+
 /* how it works, as in BRC Vault */
 .facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; padding: 40px 6px 8px; }
 .fact { display: grid; gap: 6px; align-content: start; }
@@ -548,6 +562,8 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 .fine-print p { max-width: 90ch; }
 
 /* Narrow screens: the sections become a scrolling strip under the logo, so Stamps and Giveaway stay one tap away. */
+/* The status pill's detail (which helper, replay speed) ran past the right edge on laptop widths: shown only where it fits. */
+@media (max-width: 1720px) { .pill .pt { display: none; } }
 @media (max-width: 1200px) {
   .topbar .wrap { flex-wrap: wrap; height: auto; padding-top: 12px; row-gap: 6px; }
   .nav { order: 10; flex: 0 0 100%; overflow-x: auto; gap: 18px; padding: 2px 0 10px; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; align-items: center; }
@@ -593,6 +609,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 <symbol id="i-ok" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10" fill="currentColor" opacity=".14"/><path d="M6.5 11.3l3 3 6-6.6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-go" viewBox="0 0 16 16"><path d="M6 3.5l4.5 4.5L6 12.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
 <symbol id="i-coin" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M10 24.5h16M10 19h12M10 13.5h7" stroke="currentColor" stroke-width="2.6"/><circle cx="24" cy="13.5" r="2.9" fill="var(--brand)"/></symbol>
+  <symbol id="i-value" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M9.5 25.5l5.5-6 4 3.5 5.5-8" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/><path d="M9.5 10.5h7" stroke="currentColor" stroke-width="2.6"/><circle cx="25.5" cy="12" r="2.9" fill="var(--brand)"/></symbol>
   <symbol id="i-halving" viewBox="0 0 36 36"><rect x="2.5" y="2.5" width="31" height="31" rx="8" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M11.5 10h13M11.5 26h13M13 10c0 5 10 5 10 8s-10 3-10 8M23 10c0 5-10 5-10 8s10 3 10 8" fill="none" stroke="currentColor" stroke-width="2.3"/><circle cx="18" cy="23.5" r="2.6" fill="var(--brand)"/></symbol>
 </svg>
 
@@ -881,6 +898,30 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     </section>
   </div>
 
+  <section class="card pad" id="value" aria-labelledby="val-h">
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-value"/></svg>
+      <h2 id="val-h">Estimated value</h2>
+      <div class="tools"><div class="seg" role="group" aria-label="Show the value in"><button type="button" data-v="sats" aria-pressed="true">Sats</button><button type="button" data-v="usd" aria-pressed="false">Dollars</button></div></div>
+      <p>Based on what it costs to make: the energy it takes to mine one BRC, compared with the energy it takes to mine Bitcoin.</p>
+    </div>
+    <div class="val-grid">
+      <div class="val-main">
+        <span class="label">One BRC</span>
+        <div class="big" id="v-big">–</div>
+        <p class="val-alt" id="v-alt"></p>
+        <p class="val-range" id="v-range"></p>
+      </div>
+      <dl class="kv" id="v-kv"></dl>
+    </div>
+    <div class="chart" id="v-hist"></div>
+    <details class="val-how" id="v-how">
+      <summary>How it's worked out</summary>
+      <ol id="v-steps"></ol>
+      <p id="v-notes"></p>
+    </details>
+  </section>
+
   <div class="row">
     <section class="card pad" id="calc" aria-labelledby="calc-h">
       <div class="sh">
@@ -892,7 +933,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div class="presets" id="presets"></div>
       <div class="calc-out">
         <div><span class="label">Share of the network</span><b id="c-share">–</b></div>
-        <div><span class="label">Expected per day</span><b id="c-brc">–</b><span class="label" id="c-blocks"></span></div>
+        <div><span class="label">Expected per day</span><b id="c-brc">–</b><span class="label" id="c-blocks"></span><span class="label" id="c-val"></span></div>
         <div><span class="label">Mining solo, a block every</span><b id="c-solo">–</b></div>
         <div><span class="label">Solo odds in the next 24 h</span><b id="c-odds">–</b></div>
       </div>
@@ -1006,6 +1047,8 @@ const GIVE = /*__GIVEAWAY__*/null;
 const OFFICIAL = /*__OFFICIAL__*/null || BRCKit.known.OFFICIAL;
 const RELEASES = /*__RELEASES__*/[];
 const SNAP = /*__SNAPSHOT__*/null;
+// Bitcoin's price, difficulty and block reward, fetched when the page was built (tools/btc.py, from mempool.space).
+const BTC = /*__BTC__*/null;
 const REWARD = 50, TARGET = 150, HALVING = 210000, CAP = 21e6, HOUR = 3600, DAY = 86400, TRACE_WIN = 45 * 60;
 const SEEDS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'];
 const LABELS = {
@@ -1029,7 +1072,7 @@ const $ = (id) => document.getElementById(id);
 const NS = 'http://www.w3.org/2000/svg';
 
 const S = {
-  mode: 'snapshot', source: SNAP.source, at: SNAP.at, win: DAY, hist: 'top', netHr: 0,
+  mode: 'snapshot', source: SNAP.source, at: SNAP.at, win: DAY, hist: 'top', val: 'sats', netHr: 0,
   blocks: SNAP.rows.map(([h, ts, bits, mi, ntx]) => ({ h, ts, bits, miner: SNAP.miners[mi], ntx })),
   helpers: SNAP.helpers, peers: SNAP.stats.peerCount, freshFrom: Infinity, seen: {},
 };
@@ -1111,7 +1154,8 @@ function render() {
   $('k-gap').textContent = mmss(median(gaps));
   const hrs = hourly();
   spark('sp-hr', hrs.map((h) => h.hr)); spark('sp-blocks', hrs.map((h) => h.n), 24); spark('sp-miners', hrs.map((h) => h.miners)); spark('sp-gap', hrs.map((h) => h.gap), TARGET);
-  renderConc(); renderStrip(); renderRecent(); renderHelpers(); renderCoin(); renderCalc(); renderPools(day); tick();
+  renderConc(); renderStrip(); renderRecent(); renderHelpers(); renderCoin(); renderValue(); renderCalc(); renderPools(day); tick();
+  if (S.valTip !== L.h && S.valReady) { S.valTip = L.h; drawValue(); }
   const when = new Date(S.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
   if (S.mode === 'live') {
     $('mode').className = 'pill live'; $('mode-text').innerHTML = `Live<span class="pt"> · ${S.source}</span>`;
@@ -1273,6 +1317,8 @@ function renderCalc() {
   $('c-share').textContent = hs ? `${(share * 100).toFixed(share < 0.001 ? 3 : 2)}%` : '–';
   $('c-brc').textContent = hs ? `${brc >= 10 ? fmt(brc) : brc.toFixed(2)} BRC` : '–';
   $('c-blocks').textContent = hs ? `${blocks.toFixed(blocks < 1 ? 2 : 1)} blocks, before pool fees` : '';
+  const V = typeof valueNow === 'function' ? valueNow() : null;
+  $('c-val').textContent = hs && V ? `Estimated value ${fmtUsd(brc * V.btc * V.usd)} · ${satsLabel(brc * V.btc * 1e8)}` : '';
   $('c-solo').textContent = hs ? duration(TARGET / share) : '–';
   $('c-odds').textContent = hs ? `${Math.min(99.9, (1 - Math.exp(-blocks)) * 100).toFixed(blocks > 4.6 ? 1 : 0)}%` : '–';
   const p = PRESETS.find((x) => x.hs === hs);
@@ -1433,6 +1479,112 @@ $('presets').innerHTML = PRESETS.map((p) => `<button type="button" data-hs="${p.
 $('presets').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; $('calc-hs').value = fmt(Number(b.dataset.hs)); renderCalc(); });
 $('calc-hs').addEventListener('input', renderCalc);
 addEventListener('scroll', () => $('topbar').classList.toggle('scrolled', scrollY > 4), { passive: true });
+
+/* ---------- estimated value ----------
+   What a BRC costs to make, in Bitcoin: the energy behind one BRC divided by the energy behind one bitcoin.
+   Hashes per coin come from difficulty (exact on average); joules per hash are estimates, so the page shows a range.
+   BrowserCoin (Sandglass): ~0.05 J a hash on today's mining hardware, 0.03 on server processors to 0.10 on graphics
+   cards (Sandglass benchmarks: RTX 5090 2,464 H/s at 262 W, H100 2,097 H/s at 157 W). Bitcoin: ~20 J per trillion
+   hashes across its fleet of mining machines (18 to 25). */
+const E_BRC = { lo: 0.03, mid: 0.05, hi: 0.10 }, E_BTC = { lo: 18e-12, mid: 20e-12, hi: 25e-12 };
+const VRATIO = { lo: E_BRC.lo / E_BTC.hi, mid: E_BRC.mid / E_BTC.mid, hi: E_BRC.hi / E_BTC.lo };
+const SANDGLASS_DAY = '2026-07-23';   // first full day of Sandglass hashes (the fork was at 14:00 CEST on Jul 22)
+const btcHashesPerCoin = (diff, subsidy) => (diff * 4294967296) / subsidy;
+const valueOf = (brcHashesPerCoin, diff, subsidy, k = 'mid') => (brcHashesPerCoin * VRATIO[k]) / btcHashesPerCoin(diff, subsidy);   // in BTC
+const sig2 = (n) => { if (!(n > 0)) return 0; const p = 10 ** (Math.floor(Math.log10(n)) - 1); return Math.round(n / p) * p; };
+const fmtSats = (v) => (v >= 100 ? fmt(sig2(v)) : v >= 10 ? v.toFixed(0) : v.toFixed(1));
+const fmtUsd = (v) => (v >= 1000 ? `$${fmt(sig2(v))}` : v >= 1 ? `$${v.toFixed(2)}` : `$${v.toPrecision(2)}`);
+const usdWhole = (v) => `$${fmt(v)}`;
+const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹', sup = (n) => String(n).replace(/\d/g, (d) => SUP[d]);
+function niceStep(max, n = 4) { const raw = max / n, p = 10 ** Math.floor(Math.log10(raw)), f = raw / p; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * p; }
+const satsLabel = (v) => `${fmtSats(v)} sats`;
+const VDAYS = BTC ? (() => {
+  const b = new Map(BTC.days.map(([d, usd, diff, sub]) => [d, { usd, diff, sub }]));
+  return DAYS.filter((d) => d.d >= SANDGLASS_DAY && d.blocks > 0 && d.hr > 0 && b.has(d.d)).map((d) => {
+    const x = b.get(d.d), hpc = (d.hr * DAY) / d.blocks / REWARD, btc = valueOf(hpc, x.diff, x.sub);
+    return { d: d.d, hr: d.hr, sats: btc * 1e8, usd: btc * x.usd, btcUsd: x.usd };
+  });
+})() : [];
+function valueNow() {
+  // The last 24 hours of blocks: average hashes behind one new BRC, at the current reward.
+  const day = windowOf(DAY); if (!BTC || day.total < 2) return null;
+  const hpc = day.win.reduce((s, b) => s + work(b.bits), 0) / day.total / REWARD;
+  const v = (k) => valueOf(hpc, BTC.diff, BTC.subsidy, k);
+  return { hpc, btc: v('mid'), lo: v('lo'), hi: v('hi'), usd: BTC.usd };
+}
+function renderValue() {
+  const V = valueNow(), card = $('value'); card.hidden = !V; if (!V) return;
+  const usd = (b) => b * V.usd, sats = (b) => b * 1e8, inSats = S.val !== 'usd';
+  const mined = last().h * REWARD, burned = Number(BigInt(SNAP.history.burnedWei)) / 1e8, circ = mined - burned;
+  $('v-big').innerHTML = inSats ? `${fmtSats(sats(V.btc))}<small>sats</small>` : fmtUsd(usd(V.btc));
+  $('v-alt').textContent = inSats ? `≈ ${fmtUsd(usd(V.btc))}` : `≈ ${satsLabel(sats(V.btc))}`;
+  $('v-range').textContent = inSats ? `Likely between ${fmtSats(sats(V.lo))} and ${fmtSats(sats(V.hi))} sats` : `Likely between ${fmtUsd(usd(V.lo))} and ${fmtUsd(usd(V.hi))}`;
+  const whBrc = (V.hpc * E_BRC.mid) / 3600, gwhBtc = (btcHashesPerCoin(BTC.diff, BTC.subsidy) * E_BTC.mid) / 3.6e12;
+  $('v-kv').innerHTML = [
+    ['One block (50 BRC)', `${satsLabel(sats(V.btc * REWARD))} · ${fmtUsd(usd(V.btc * REWARD))}`],
+    ['All BRC in circulation', `${fmtUsd(usd(V.btc * circ))} · ${(V.btc * circ).toFixed(2)} BTC`],
+    ['Energy to mine one BRC', `${whBrc >= 10 ? fmt(whBrc) : whBrc.toFixed(1)} Wh`],
+    ['Energy to mine one bitcoin', `${(gwhBtc).toFixed(2)} GWh`],
+    ['Bitcoin price', usdWhole(V.usd)],
+  ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  const when = new Date(BTC.at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
+  const homes = (gwhBtc * 1e6) / 10500, btcHashes = btcHashesPerCoin(BTC.diff, BTC.subsidy), e = Math.floor(Math.log10(btcHashes));
+  $('v-steps').innerHTML = [
+    `Every block's difficulty says how much work it took to find. Over the last 24 hours, one new BRC took about ${fmt(sig2(V.hpc))} hashes.`,
+    `A Sandglass hash uses about 0.05 joules on today's mining hardware: about 0.03 on server processors, up to 0.10 on graphics cards (from the Sandglass benchmarks). So one BRC takes about ${whBrc >= 10 ? fmt(whBrc) : whBrc.toFixed(1)} watt-hours, about ${Math.max(1, Math.round(whBrc / 12))} phone charges.`,
+    `Bitcoin works the same way. At today's difficulty one new bitcoin takes about ${(btcHashes / 10 ** e).toFixed(1)} × 10${sup(e)} hashes, and Bitcoin's mining machines use about 20 joules per trillion hashes (18 to 25 across the fleet). So one bitcoin takes about ${gwhBtc.toFixed(2)} gigawatt-hours, roughly what ${fmt(sig2(homes))} US homes use in a year.`,
+    `Divide one by the other: one BRC takes as much energy to make as ${satsLabel(sats(V.btc))} of Bitcoin. At ${usdWhole(V.usd)} a bitcoin, that's about ${fmtUsd(usd(V.btc))}.`,
+  ].map((t) => `<li>${t}</li>`).join('');
+  const stale = Date.now() - BTC.at > 2 * DAY * 1000;
+  $('v-notes').textContent = `This is what a BRC costs to make, not a quote: BRC has no exchange, and trades happen person to person. It goes up when more mining power joins, because every coin then takes more work. The range comes from the energy per hash, which is estimated, not measured. Bitcoin's price, difficulty and reward come from mempool.space, fetched when this page was built (${when}${stale ? ', more than two days ago' : ''}). Your browser never contacts it. The chart starts at the Sandglass fork: before it, BrowserCoin used a different hash, which these energy figures don't describe.`;
+}
+function drawValue() {
+  const host = $('v-hist'); host.textContent = '';
+  const V = valueNow(); if (!V || VDAYS.length < 2) return;
+  const inSats = S.val !== 'usd', pts = [...VDAYS, { d: 'now', sats: V.btc * 1e8, usd: V.btc * V.usd, btcUsd: V.usd, hr: S.netHr }];
+  const val = (p) => (inSats ? p.sats : p.usd), fmtV = (v) => (inSats ? satsLabel(v) : fmtUsd(v));
+  const Wd = Math.max(300, host.clientWidth), narrow = Wd < 640, H = narrow ? 200 : 230;
+  const pad = { l: 46, r: 8, t: 14, b: 22 }, iw = Wd - pad.l - pad.r, yt = pad.t, yb = H - pad.b;
+  const x = (i) => pad.l + (iw * i) / (pts.length - 1);
+  const step = niceStep(Math.max(...pts.map(val))), top = Math.ceil(Math.max(...pts.map(val)) / step) * step, y = (v) => yb - ((yb - yt) * v) / top;
+  const svg = document.createElementNS(NS, 'svg'); svg.setAttribute('viewBox', `0 0 ${Wd} ${H}`); svg.setAttribute('height', H); svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', 'Estimated value of one BRC per day since the Sandglass fork');
+  const el = (t, a, p = svg) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); p.append(e); return e; };
+  const text = (s, a) => { const e = el('text', a); e.textContent = s; return e; };
+  el('defs', {}).innerHTML = '<linearGradient id="vg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--brand)" stop-opacity=".2"/><stop offset="1" stop-color="var(--brand)" stop-opacity="0"/></linearGradient>';
+  for (let v = 0; v <= top + step / 2; v += step) {
+    el('line', { x1: pad.l, x2: Wd - pad.r, y1: y(v), y2: y(v), stroke: 'var(--hairline)' });
+    text(inSats ? (Number.isInteger(step) ? fmt(v) : String(Number(v.toPrecision(3)))) : v === 0 ? '$0' : `$${Number(v.toPrecision(3))}`, { x: pad.l - 8, y: y(v) + 3.5, 'text-anchor': 'end' });
+  }
+  const line = pts.map((p, i) => `${x(i)},${y(val(p))}`).join(' ');
+  el('polygon', { points: `${x(0)},${yb} ${line} ${x(pts.length - 1)},${yb}`, fill: 'url(#vg)' });
+  el('polyline', { points: line, fill: 'none', stroke: 'var(--brand)', 'stroke-width': 1.8, 'stroke-linejoin': 'round' });
+  el('circle', { cx: x(pts.length - 1), cy: y(val(pts[pts.length - 1])), r: 4.5, fill: 'var(--brand)', stroke: 'var(--surface)', 'stroke-width': 2 });
+  el('line', { x1: pad.l, x2: Wd - pad.r, y1: yb, y2: yb, stroke: 'var(--hairline-strong)' });
+  pts.forEach((p, i) => { if (p.d.endsWith('-01')) text(new Date(p.d + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' }), { x: x(i), y: H - 4, 'text-anchor': 'middle' }); });
+  const cross = el('line', { y1: yt, y2: yb, stroke: 'var(--ink)', 'stroke-opacity': 0, 'stroke-width': 1 });
+  const dot = el('circle', { r: 4.5, fill: 'var(--brand)', stroke: 'var(--surface)', 'stroke-width': 2, opacity: 0 });
+  const hit = el('rect', { x: pad.l, y: 0, width: iw, height: H, fill: 'transparent' });
+  const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; host.append(svg, tip);
+  const show = (e) => {
+    const r = svg.getBoundingClientRect(), px = ((e.clientX - r.left) / r.width) * Wd;
+    const i = Math.max(0, Math.min(pts.length - 1, Math.round(((px - pad.l) / iw) * (pts.length - 1)))), p = pts[i];
+    cross.setAttribute('x1', x(i)); cross.setAttribute('x2', x(i)); cross.setAttribute('stroke-opacity', 0.2);
+    dot.setAttribute('cx', x(i)); dot.setAttribute('cy', y(val(p))); dot.setAttribute('opacity', 1);
+    const day = p.d === 'now' ? 'Last 24 hours' : new Date(p.d + 'T00:00:00Z').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+    tip.innerHTML = `<b>${day}</b><div><span>One BRC</span><span>${satsLabel(p.sats)}</span></div><div><span>In dollars</span><span>${fmtUsd(p.usd)}</span></div>`
+      + `<div><span>Hashrate</span><span>${rate(p.hr, true)}</span></div><div><span>Bitcoin price</span><span>${usdWhole(Math.round(p.btcUsd))}</span></div>`;
+    tip.hidden = false;
+    const hx = (x(i) / Wd) * r.width, tw = tip.offsetWidth;
+    tip.style.left = `${hx + 14 + tw > r.width ? hx - tw - 14 : hx + 14}px`; tip.style.top = `${yt}px`;
+  };
+  hit.addEventListener('pointermove', show); hit.addEventListener('pointerdown', show);
+  hit.addEventListener('pointerleave', () => { tip.hidden = true; cross.setAttribute('stroke-opacity', 0); dot.setAttribute('opacity', 0); });
+}
+for (const b of document.querySelectorAll('[data-v]')) b.addEventListener('click', () => {
+  S.val = b.dataset.v; for (const o of document.querySelectorAll('[data-v]')) o.setAttribute('aria-pressed', String(o === b));
+  renderValue(); drawValue();
+});
 
 /* ---------- My BRC ----------
    Each address record comes from the daily-to-hourly index (tools/accounts.py), which replays the whole
@@ -2717,9 +2869,9 @@ function startReplay() {
   }, 100);
 }
 
-render(); drawHistory(); ringFrame(); setInterval(ringFrame, 100); route();
+render(); drawHistory(); S.valReady = true; S.valTip = last().h; drawValue(); ringFrame(); setInterval(ringFrame, 100); route();
 setInterval(() => { if (S.mode === 'live') tick(); }, 1000);
-let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawTrace(); if (M.addr && M.acc) drawBalance(M.per); }, 120); }).observe(document.body);
+let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawValue(); drawTrace(); if (M.addr && M.acc) drawBalance(M.per); }, 120); }).observe(document.body);
 goLive().then((ok) => { if (!ok) startReplay(); });
 // English / 中文 switch (top bar). Changes only the words on the page, never addresses, signed text or files.
 BRCI18n.start();

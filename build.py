@@ -3,6 +3,7 @@
 
     python3 tools/fetch_archive.py archive          # download the chain archive (cached)
     python3 tools/history.py archive history.json   # daily history since launch
+    python3 tools/btc.py btc.json                   # Bitcoin figures for the estimated value
     python3 build.py history.json                   # writes dist/ and docs/
 
 The page embeds a fresh snapshot of the last 800 blocks and the daily history, so it shows real data
@@ -79,6 +80,22 @@ def snapshot(hist):
                      locks=hist['locks'], redeems=hist['redeems'], minersEver=hist['minersEver'])), probes
 
 
+def load_btc(path):
+    """Bitcoin figures for the estimated value (tools/btc.py). The hourly build fetches fresh ones into
+    btc.json; without them (mempool.space unreachable, or a local build) the copy in data/btc.json is used,
+    and the page shows how old it is."""
+    for p in [path, os.path.join(HERE, 'btc.json'), os.path.join(HERE, 'data', 'btc.json')]:
+        if not p or not os.path.exists(p):
+            continue
+        b = json.load(open(p))
+        ok = (b.get('usd', 0) > 1000 and b.get('diff', 0) > 1e12 and b.get('subsidy', 0) > 0 and b.get('days')
+              and all(len(r) == 4 and r[1] > 0 and r[2] > 0 and r[3] > 0 for r in b['days']))
+        if ok:
+            return b
+        print('ignoring', p, '(Bitcoin figures look wrong)')
+    sys.exit('no Bitcoin figures: run python3 tools/btc.py btc.json')
+
+
 def font_face(family, path, weights):
     b64 = base64.b64encode(open(os.path.join(HERE, path), 'rb').read()).decode()
     return (f'@font-face {{ font-family: "{family}"; font-style: normal; font-weight: {weights}; font-display: swap; '
@@ -96,6 +113,7 @@ def main():
     official_path, releases_dir = opt('--official'), opt('--releases') or os.path.join(HERE, 'releases')
     give_path = opt('--giveaway') or os.path.join(HERE, 'giveaway', 'config.json')
     give = json.load(open(give_path)) if os.path.exists(give_path) else None
+    btc = load_btc(opt('--btc'))
     hist = json.load(open(args[0] if args else 'history.json'))
     snap, probes = snapshot(hist)
     tpl = open(os.path.join(HERE, 'src', 'template.html')).read()
@@ -125,6 +143,7 @@ def main():
     tpl = tpl.replace('<!--__VERSION__-->', version).replace('<!--__BUILD__-->', build_id)
     # The giveaway's settings (giveaway/config.json): addresses, times, published list fingerprints.
     tpl = tpl.replace('/*__GIVEAWAY__*/null', json.dumps(give, separators=(',', ':')))
+    tpl = tpl.replace('/*__BTC__*/null', json.dumps(btc, separators=(',', ':')).replace('</', '<\\/'))
     html = tpl.replace('/*__SNAPSHOT__*/null', json.dumps(snap, separators=(',', ':')))
 
     if preview and accounts:

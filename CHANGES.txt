@@ -5,6 +5,23 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.0.0 (Nov 7, 2026)
+  - Estimated value: what one BRC costs to make, compared with Bitcoin. The
+    energy behind one new BRC (from the last 24 hours of difficulty, at about
+    0.05 joules a Sandglass hash) divided by the energy behind one new bitcoin
+    (today's difficulty, at about 20 joules per trillion hashes), shown in
+    sats and dollars, with the likely range, the value of one block and of all
+    BRC in circulation, a daily chart since the Sandglass fork, and the whole
+    method under "How it's worked out". The mining calculator shows the
+    estimated value of a day's mining.
+  - New data source (hence 2.0): Bitcoin's price, difficulty and block reward
+    from mempool.space, fetched by the hourly build (tools/btc.py) and built
+    into the page. The page itself still connects only to the same servers as
+    before; visitors' browsers never contact mempool.space. If it can't be
+    reached, the build uses data/btc.json and the page shows how old it is.
+  - The top bar no longer runs past the right edge on laptop screens: the
+    status pill's detail (which helper) shows only where it fits.
+
 1.2.0 (Nov 7, 2026)
   - 中文: an English / 中文 button in the top bar shows Pulse in Simplified
     Chinese: the dashboard, My BRC, Check it and the giveaway page. A browser

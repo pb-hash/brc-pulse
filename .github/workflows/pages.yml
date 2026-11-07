@@ -39,6 +39,9 @@ jobs:
         run: python3 tools/fetch_archive.py archive
       - name: Daily history
         run: python3 tools/history.py archive history.json
+      - name: Bitcoin figures (estimated value)
+        # If mempool.space can't be reached, the build uses data/btc.json and the page says how old it is.
+        run: python3 tools/btc.py btc.json || echo "mempool.space unreachable, using data/btc.json"
       - name: My BRC address index
         run: python3 tools/accounts.py archive _site/a
       - name: Build page
