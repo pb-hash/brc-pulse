@@ -102,6 +102,10 @@ def main():
     # drand checking and the giveaway code, built from BRC Post's src/drand-core.js and src/giveaway-core.js
     # (see vendor/README.txt).
     kit = open(os.path.join(HERE, 'vendor', 'brc-kit.js')).read().strip()
+    # English / 中文 switch: src/i18n.js (the same file as in BRC Vault and BRC Post) and its phrases, src/zh.json.
+    i18n = open(os.path.join(HERE, 'src', 'i18n.js')).read().replace('export function createI18n', 'function createI18n')
+    zh = json.dumps(json.load(open(os.path.join(HERE, 'src', 'zh.json'))), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    tpl = tpl.replace('/*__I18N__*/', i18n + '\nconst BRCI18n = createI18n({ dict: ' + zh + ' });')
     tpl = tpl.replace('/*__DRAND__*/', kit + '\nvar BRCDrand = BRCKit.drand, BRCGiveaway = BRCKit.giveaway, BRCChain = BRCKit.chain;')
     # Version (VERSION file) and a build code from the page's code alone, so it changes
     # whenever the code does and never because of the hourly data.

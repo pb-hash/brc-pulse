@@ -5,6 +5,16 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+1.2.0 (Nov 7, 2026)
+  - 中文: an English / 中文 button in the top bar shows Pulse in Simplified
+    Chinese: the dashboard, My BRC, Check it and the giveaway page. A browser
+    set to Chinese opens in Chinese; the choice is remembered on this device.
+  - The giveaway's data and rules are unchanged (giveaway/config.json and
+    eligible.json are untouched). In Chinese, the rules carry a note that the
+    English text governs if the two ever differ.
+  - It only changes words: addresses, fingerprints, signed messages and
+    anything you paste are shown exactly as they are.
+
 1.1.8 (Nov 1, 2026)
   - Giveaway prize pool: the total refreshes the moment the page connects
     to the network, instead of showing the hourly index's older balance for

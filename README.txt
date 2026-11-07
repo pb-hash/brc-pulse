@@ -10,6 +10,8 @@ ours, no account, no cookies and no analytics.
 Use it online:  https://pb-hash.github.io/brc-pulse/
 Or download it: dist/brc-pulse.html, save it, and open the saved file. It
                 connects and runs live from your desktop too.
+English / 中文: the button in the top bar switches the page to Simplified Chinese.
+It changes only the words shown, never keys, addresses, codes or what you type.
 
 BRC Works: Vault (https://pb-hash.github.io/brc-vault/) · Pulse.
 Independent tools by pb-hash. Not part of the official BrowserCoin project.

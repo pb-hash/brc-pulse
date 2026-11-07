@@ -1,0 +1,1272 @@
+{
+"t": {
+"A BrowserCoin private key is exactly 32 bytes (64 hex characters).": "BrowserCoin 私钥正好是 32 字节（64 个十六进制字符）。",
+"Address": "地址",
+"Anyone with the private key controls the wallet. Keep this safe.": "任何拿到私钥的人都能控制这个钱包。请妥善保管。",
+"Block": "区块",
+"Cancel": "取消",
+"Careful": "注意",
+"Check": "检查",
+"Choose a password": "设置密码",
+"Close": "关闭",
+"Copied": "已复制",
+"Copy": "复制",
+"Copy address": "复制地址",
+"Copy both": "全部复制",
+"Could not recognise this. Use a BrowserCoin wallet file, a BRC Vault backup, a private key, or 24 recovery words.": "无法识别。请使用 BrowserCoin 钱包文件、BRC Vault 备份、私钥或 24 个助记词。",
+"Enter": "参与",
+"File": "文件",
+"Fingerprint": "指纹",
+"I already have a mailbox": "我已经有信箱了",
+"Independent tools by {0}. Not part of the official BrowserCoin project. · {1}": "{0} 制作的独立工具。不属于 BrowserCoin 官方项目。 · {1}",
+"Lock ID": "锁定 ID",
+"Locked BRC Vault backup. The private key is encrypted inside \"ciphertext\" and can only be unlocked with your password in BRC Vault. The address is public and safe to share.": "已用密码加密的 BRC Vault 备份。私钥加密保存在 \"ciphertext\" 中，只能在 BRC Vault 里用你的密码解锁。地址是公开的，可以放心分享。",
+"Locked BRC mailbox key. It opens sealed letters and signs in BRC Post; it is not for holding coins. The key is encrypted inside \"ciphertext\" and only your password unlocks it, in BRC Post or BRC Vault. The address is public and safe to share.": "已用密码加密的 BRC 信箱密钥。它用于在 BRC Post 中打开密封信和签名，不用于存放币。密钥加密保存在 \"ciphertext\" 中，只有你的密码能在 BRC Post 或 BRC Vault 中解锁它。地址是公开的，可以放心分享。",
+"Message": "消息",
+"Not valid hex.": "不是有效的十六进制。",
+"Nothing to read yet.": "还没有可读取的内容。",
+"Open BRC Post": "打开 BRC Post",
+"Open BRC Pulse, the live network dashboard": "打开 BRC Pulse 实时网络面板",
+"Owner": "所有者",
+"Part of the code is missing its check in brackets. Copy every line, including the [XXXX] at the end.": "代码有一部分缺少方括号里的校验。请复制每一行，包括末尾的 [XXXX]。",
+"Password": "密码",
+"Passwords match.": "两次密码一致。",
+"Post seals it": "Post 负责密封",
+"Private:": "隐私：",
+"Pulse checks it": "Pulse 负责验证",
+"Scripts": "脚本",
+"Sealed letter": "密封信",
+"Signature": "签名",
+"Signed by": "签名者",
+"Signed message": "签名消息",
+"Signed on the chain": "已在链上签名",
+"Some words are numbered and some aren't, or a number is missing or used twice. Number every word 1 to 24, or leave all the numbers out and type the words in order.": "有些词带编号、有些没有，或者某个编号缺失或重复。请给每个词标上 1 到 24 的编号，或者全部不写编号、按顺序输入。",
+"Source": "来源",
+"That is 12 words. BrowserCoin wallets use 24 recovery words.": "这是 12 个词。BrowserCoin 钱包使用 24 个助记词。",
+"That password is too repetitive. Use a mix of words or characters.": "这个密码重复太多。请混合使用不同的词或字符。",
+"The BRC Works rule:": "BRC Works 的规则：",
+"The address written in this file does not match its private key. The file may be damaged.": "此文件中写的地址与它的私钥不匹配。文件可能已损坏。",
+"The decrypted key does not match the address in the backup.": "解密出的私钥与备份中的地址不匹配。",
+"The last line of the code, the address check after the final colon, is missing.": "代码的最后一行（最后一个冒号之后的地址校验）缺失了。",
+"The last line, -----END BRC STAMP RECEIPT-----, is missing. Copy the whole receipt.": "缺少最后一行 -----END BRC STAMP RECEIPT-----。请复制完整的回执。",
+"The mailbox's own signature doesn't match, so the mailbox never agreed to this link.": "信箱自己的签名不匹配，说明这个信箱从未认可过这个链接。",
+"The receipt's \"After:\" line should be a block number and a block ID.": "回执中的 \"After:\" 行应为一个区块编号和一个区块 ID。",
+"The receipt's \"Block:\" line should be a block number.": "回执中的 \"Block:\" 行应为一个区块编号。",
+"The receipt's \"Drand:\" line should be a round number and a 96-character signature.": "回执中的 \"Drand:\" 行应为一个轮次编号和一个 96 个字符的签名。",
+"The signature does not match. Either the message was changed after it was signed, or this address did not sign it.": "签名不匹配。要么消息在签名后被改动过，要么这个地址并没有签过它。",
+"The two passwords do not match.": "两次输入的密码不一致。",
+"The unlocked key does not match the address in the wallet file.": "解锁出的私钥与钱包文件中的地址不匹配。",
+"The wallet file has no private key in it.": "这个钱包文件里没有私钥。",
+"These words don't pass their built-in check, so one of them is wrong or two are swapped. Compare them with the paper, word by word.": "这些词没有通过内置校验，说明其中有一个词写错了，或有两个词顺序颠倒。请逐词和纸上的内容对照。",
+"This backup code has the wrong number of parts. Check that every line, including the colons, was copied.": "这个备份码的段数不对。请确认每一行（包括冒号）都已复制。",
+"This backup has invalid or unsafe key-stretching settings.": "这个备份的密钥拉伸设置无效或不安全。",
+"This block contains a transaction type this page does not know.": "这个区块包含本页面无法识别的交易类型。",
+"This contains more than one different wallet or backup. Use just one.": "这里包含不止一个不同的钱包或备份。请只使用一个。",
+"This file is incomplete or was changed by another app, so it can't be read. Use the original file BrowserCoin downloaded (named browsercoin-wallet-…json), not a copy opened and saved in a text editor.": "这个文件不完整或已被其他应用改动，无法读取。请使用 BrowserCoin 下载的原始文件（文件名为 browsercoin-wallet-…json），而不是在文本编辑器里打开并保存过的副本。",
+"This file is neither a BrowserCoin wallet nor a BRC Vault backup.": "这个文件既不是 BrowserCoin 钱包，也不是 BRC Vault 备份。",
+"This file is not valid JSON.": "这个文件不是有效的 JSON。",
+"This file was re-saved by a word processor such as TextEdit, which changed its format, and the key could not be recovered from it. Use the original file BrowserCoin downloaded.": "这个文件被 TextEdit 之类的文字处理软件重新保存过，格式已被改变，无法从中恢复私钥。请使用 BrowserCoin 下载的原始文件。",
+"This is a well-known example key that is published online, so anyone can take coins sent to it. Use your own wallet's key or words.": "这是一个在网上公开的知名示例私钥，任何人都能拿走发到它上面的币。请使用你自己钱包的私钥或助记词。",
+"This is far too long to be a wallet, a backup or a key.": "这段内容太长了，不可能是钱包、备份或私钥。",
+"This is not a BRC Vault backup code.": "这不是 BRC Vault 备份码。",
+"This is not a BRC Vault backup.": "这不是 BRC Vault 备份。",
+"This is not a BrowserCoin wallet file (it should come from BrowserCoin Settings → Export key).": "这不是 BrowserCoin 钱包文件（它应该来自 BrowserCoin 的 Settings → Export key）。",
+"This is not a password-protected BRC Wallet file.": "这不是已用密码加密的 BRC Wallet 文件。",
+"This password-protected BRC Wallet file was changed by another app, such as a text editor, and can't be read. Use the original file the BRC Wallet desktop app saved.": "这个已用密码加密的 BRC Wallet 文件被其他应用（例如文本编辑器）改动过，无法读取。请使用 BRC Wallet 桌面应用保存的原始文件。",
+"This private key code is damaged. It should have 64 characters after BRCKEY1:.": "这个私钥代码已损坏。BRCKEY1: 后面应有 64 个字符。",
+"This private key has a typo: it doesn't match the address check at the end of the code. Compare it with the paper, watching for 0/D and 8/B.": "这个私钥有输入错误：与代码末尾的地址校验不符。请和纸上的内容对照，留意 0/D 和 8/B。",
+"This wallet file is password-protected by the BRC Wallet desktop app. Open it in Restore.": "这个钱包文件已由 BRC Wallet 桌面应用用密码加密。请在「恢复」中打开它。",
+"This wallet file uses an encryption method BRC Vault does not know.": "这个钱包文件使用了 BRC Vault 无法识别的加密方式。",
+"Unsupported encryption method in this backup.": "这个备份使用了不支持的加密方式。",
+"Unsupported key-stretching method in this backup.": "这个备份使用了不支持的密钥拉伸方式。",
+"Vault keeps it": "Vault 负责保管",
+"What do you want to do?": "你想做什么？",
+"Works offline": "可离线使用",
+"Wrong password, or the backup has been changed or damaged.": "密码错误，或者备份已被改动或损坏。",
+"Wrong password, or the wallet file has been changed or damaged.": "密码错误，或者钱包文件已被改动或损坏。",
+"Your address": "你的地址",
+"Your mailbox": "你的信箱",
+"check code": "校验码",
+"lease-v3.txt: reading…": "lease-v3.txt：读取中…",
+"lease-v4.txt: reading…": "lease-v4.txt：读取中…",
+"locked key": "已加密的私钥",
+"strength settings": "强度设置",
+"{0} only BRC Vault ever asks for a key that holds coins, and only to back it up on your device. If anything else asks for your key, it isn't us.": "{0}只有 BRC Vault 会向你索要存有币的私钥，而且只是为了在你的设备上备份它。如果有其他任何东西向你索要私钥，那就不是我们。",
+"(final after 6)": "（6 个确认后最终确定）",
+"(not an address)": "（不是地址）",
+"(not cross-checked)": "（未交叉核对）",
+"(not yet opened: repeats and non-entries are only set aside when the letters are opened)": "（尚未打开：重复报名和非报名信件要等信件打开后才会被剔除）",
+"(the receipt's Owner line was wrong; corrected below)": "（回执中的 Owner 行有误；已在下方更正）",
+", and fixed it on the chain with the BRC Works release address, together with the draw round. This page checks that happened at least 6 hours before the draw.": "，并用 BRC Works 发布地址把它和开奖轮次一起固定在链上。本页会检查这一步是否在开奖前至少 6 小时完成。",
+", none in the last few hours.": "，最近几小时内没有。",
+", the latest": "，最新",
+". Anyone can download every sealed letter from the BRC Mailbox to check the count.": "。任何人都可以从 BRC 信箱下载所有密封信来核对数量。",
+". The entry list is published below.": "。报名名单已在下方公布。",
+"21,000,000 BRC, ever. Every coin was mined; none were sold.": "总量永远只有 21,000,000 BRC。每一枚币都是挖出来的，没有一枚是卖出去的。",
+"23.11% mined": "已挖出 23.11%",
+"24 h estimate": "24 小时估算",
+"25 entries": "25 份报名",
+"30 days ago": "30 天前",
+"33,522,523, published Oct 30, 2026, 2:35:33 PM UTC {0}": "33,522,523，发布于 2026 年 10 月 30 日 下午 2:35:33 UTC {0}",
+"6+ hours before the draw, and its only lock since the launch": "比开奖早 6 小时以上，且是启动以来唯一一次锁定",
+": no private key, no wallet file, nothing to sign.": "：不需要私钥，不需要钱包文件，也不用签名任何东西。",
+"A BrowserCoin address is 64 characters, using only 0–9 and a–f.": "BrowserCoin 地址共 64 个字符，只包含 0–9 和 a–f。",
+"A BrowserCoin address is 64 characters, using only 0–9 and a–f. Check that the whole address was pasted.": "BrowserCoin 地址共 64 个字符，只包含 0–9 和 a–f。请检查是否粘贴了完整地址。",
+"A BrowserCoin address is 64 characters, using only 0–9 and a–f. Check the whole address was pasted.": "BrowserCoin 地址共 64 个字符，只包含 0–9 和 a–f。请检查是否粘贴了完整地址。",
+"A block from the helper server doesn't match its own header, so it can't be trusted.": "辅助服务器返回的某个区块与它自己的区块头不一致，因此不可信。",
+"A block from the helper server holds a lock with a wrong signature, so it can't be trusted.": "辅助服务器返回的某个区块包含签名错误的锁定，因此不可信。",
+"A different file, or it changed after it was postmarked": "是另一个文件，或者它在盖上邮戳后被改动过",
+"A file on its own can only be checked against BRC Works releases, and it isn't one. If someone postmarked it, paste the receipt they gave you above: the file is then checked against it.": "单独一个文件只能和 BRC Works 的发布版本比对，而它不是其中之一。如果有人给它盖过邮戳，请把对方给你的回执粘贴到上方，文件就会和回执进行比对。",
+"A file on its own can only be checked against BRC Works releases, and none are on the chain yet. If someone postmarked it, paste the receipt they gave you above: the file is then checked against it.": "单独一个文件只能和 BRC Works 的发布版本比对，而链上还没有任何发布版本。如果有人给它盖过邮戳，请把对方给你的回执粘贴到上方，文件就会和回执进行比对。",
+"A miner or pool past 50% could rewrite recent history. This is the number to watch.": "超过 50% 的矿工或矿池可以改写最近的历史。这是需要重点关注的数字。",
+"A postmark is on the chain at that spot, but for something else: the fingerprint, salt or time on this receipt don't match it.": "链上那个位置确实有一个邮戳，但属于别的内容：这张回执上的指纹、盐值或时间与它不符。",
+"A recent, settled block:": "一个最近且已稳定的区块：",
+"About": "关于",
+"Active miners, 24 h": "活跃矿工，24 小时",
+"Activity": "动态",
+"Add the file to check it is this exact release.": "添加文件，验证它是否正是这个发布版本。",
+"Add the file to check it's the same one.": "添加文件，验证它是否是同一个文件。",
+"Adding doesn't enter you or change anyone's chances.": "注入奖池不会让你参与抽奖，也不会改变任何人的中奖机会。",
+"Adding to the prize pool": "为奖池注入",
+"Addresses that found a block": "找到过区块的地址",
+"Addresses that have mined": "挖过矿的地址",
+"After entries close, the organizer opens the letters, publishes the entry list and its fingerprint here, and fixes both the list and the draw round on the chain at least 6 hours before the draw. Nobody can change either after that.": "截止报名后，组织者会打开信件，在这里公布参与名单及其指纹，并在开奖前至少 6 小时把名单和开奖轮次都固定在链上。此后任何人都无法更改。",
+"Ahead of target pace": "快于目标进度",
+"All helpers up": "所有辅助服务器均在线",
+"Amount": "金额",
+"Approaching half": "接近一半",
+"Argon2id hashes": "Argon2id 哈希",
+"At a glance it looks like a BRC Works address, but it isn't one. Don't send it anything.": "乍一看像是 BRC Works 的地址，但其实不是。不要向它发送任何东西。",
+"At block 210,000 the reward drops from 50 BRC to 25 BRC per block.": "在区块 210,000，每个区块的奖励将从 50 BRC 降到 25 BRC。",
+"Aug": "8月",
+"BRC Post adds the time by itself. These are only for its \"Advanced\" options.": "BRC Post 会自动加上时间。这些仅用于它的「高级」选项。",
+"BRC Pulse {0}, build {1}": "BRC Pulse {0}，构建 {1}",
+"BRC Works giveaway mailbox": "BRC Works 抽奖信箱",
+"BRC Works never released this exact file, so it may have been changed. Never type a key into it. Get BRC Vault only from pb-hash.github.io/brc-vault.": "BRC Works 从未发布过这个文件，它可能已被篡改。切勿在其中输入任何私钥。请只从 pb-hash.github.io/brc-vault 获取 BRC Vault。",
+"BRC Works only ever uses these three addresses. Paste any address above to check it. Look-alikes are marked everywhere on Pulse.": "BRC Works 只会使用这三个地址。把任意地址粘贴到上方即可验证。在 Pulse 上，所有仿冒的相似地址都会被标出。",
+"BRC Works prize pool": "BRC Works 奖池",
+"BRC Works release": "BRC Works 发布版本",
+"BRC Works release address": "BRC Works 发布地址",
+"BRC Works · Block 100,000": "BRC Works · 区块 100,000",
+"BRC Works · Check it": "BRC Works · 验证一下",
+"Balance over time": "余额变化",
+"Behind target pace": "慢于目标进度",
+"Block 100,000": "区块 100,000",
+"Block 100,000 giveaway": "区块 100,000 抽奖",
+"Block 210,000": "区块 210,000",
+"Block 92,500, Oct 30, 2026, 2:15 PM UTC": "区块 92,500，2026年10月30日 14:15 UTC",
+"Block 92,524": "区块 92,524",
+"Blocks": "区块",
+"Blocks found": "找到的区块",
+"Blocks on pace": "区块进度正常",
+"Blocks this address found itself. Pool miners are paid by their pool instead; see who pays you.": "这个地址自己找到的区块。矿池矿工则由矿池支付；看看是谁在给你付款。",
+"Blocks, 24 h": "区块，24 小时",
+"Browser or Windows app": "浏览器或 Windows 应用",
+"Browser or Windows app · 1% fee · pays out at 1 BRC": "浏览器或 Windows 应用 · 1% 费率 · 满 1 BRC 支付",
+"Browser tab": "浏览器标签页",
+"Browser tab · 2% fee · pays out at 1 BRC": "浏览器标签页 · 2% 费率 · 满 1 BRC 支付",
+"BrowserCoin, beat by beat.": "BrowserCoin 的每一次心跳。",
+"Burn address": "销毁地址",
+"Burned": "已销毁",
+"Burned to the …dead address": "已销毁到 …dead 地址",
+"Can't reach the mailbox right now. The count will update when it's back.": "暂时无法连接信箱。恢复后数量会自动更新。",
+"Careful: it has hidden characters, so it may not read the way it looks (see Details).": "注意：其中含有隐藏字符，实际内容可能和看上去不一样（见详情）。",
+"Check it": "验证一下",
+"Check it · here on Pulse": "验证一下 · 就在 Pulse 上",
+"Check my entry": "查看我的报名",
+"Checking the eligible list…": "正在检查有资格名单…",
+"Checking the giveaway's rules on the chain…": "正在检查链上的抽奖规则…",
+"Coin transfers and script transactions in the block. The 50 BRC reward is not counted.": "该区块中的转账和脚本交易。不包括 50 BRC 的出块奖励。",
+"Coins go back to": "币将退回到",
+"Coins in and out, and blocks found, newest first.": "币的转入转出以及找到的区块，最新的在前。",
+"Community": "社区",
+"Concentrated": "高度集中",
+"Concentration": "集中度",
+"Confirmations": "确认数",
+"Confirming the giveaway's rules on the chain… This can take a few minutes after a new block; entering opens by itself.": "正在确认链上的抽奖规则… 出现新区块后可能需要几分钟；报名会自动开放。",
+"Could not read every block since the launch at two independent helper operators. Try again later.": "无法从两个独立的辅助服务器运营者那里读取自上线以来的所有区块。请稍后再试。",
+"Couldn't check the giveaway's rules on the chain yet. It will retry.": "暂时无法检查链上的抽奖规则。稍后会自动重试。",
+"Couldn't check where the list was fixed on the chain yet. It will retry.": "暂时无法检查名单在链上固定的位置。稍后会自动重试。",
+"Couldn't download. Try again": "下载失败。再试一次",
+"Couldn't fetch drand's beacon for the draw round yet. It will retry.": "暂时无法获取 drand 在开奖轮次的信标。稍后会自动重试。",
+"Couldn't load the address index. Check your connection and try again.": "无法加载地址索引。请检查网络连接后重试。",
+"Couldn't reach any BrowserCoin helper server. Check your connection and try again.": "无法连接任何 BrowserCoin 辅助服务器。请检查网络连接后重试。",
+"Couldn't reach the mailbox. Check your connection and try again.": "无法连接信箱。请检查网络连接后重试。",
+"Couldn't read the pool's balance just now.": "刚才无法读取矿池余额。",
+"Daily network hashrate since launch, log scale": "上线以来每日全网算力，对数刻度",
+"Daily share of blocks found by the largest single miner since launch": "上线以来最大单一矿工每日找到区块的占比",
+"Desktop browser tab": "桌面浏览器标签页",
+"Desktop browser tab · 2,232": "桌面浏览器标签页 · 2,232",
+"Details": "详情",
+"Dev testing": "开发测试",
+"Direct to you": "直接给你",
+"Don't rely on it until they agree. Try again later.": "在它们一致之前不要依赖这个结果。请稍后再试。",
+"Down": "离线",
+"Download every letter": "下载所有信件",
+"Downloading…": "正在下载…",
+"Dropping it in…": "正在投入…",
+"Each beat is a block · last 45 minutes": "每一次跳动就是一个区块 · 过去 45 分钟",
+"Eligible.": "有资格。",
+"Eligible. You entered this address on Nov 7; entering again doesn't add a chance.": "有资格。你已在 11 月 7 日用这个地址报名参与；再次报名不会增加中奖机会。",
+"Enter with just your address": "只需你的地址即可报名参与",
+"Enter with just your address. No key, nothing to sign.": "只需你的地址即可报名参与。不需要私钥，也不用签名。",
+"Entering again doesn't add a chance.": "再次报名不会增加中奖机会。",
+"Entering is free and needs only your address.": "报名参与免费，只需要你的地址。",
+"Entering is free and needs only your address: paste it below to see if it can enter.": "报名参与免费，只需要你的地址：把它粘贴到下面，看看能否报名。",
+"Entering is free.": "报名参与免费。",
+"Entries close": "截止报名",
+"Entries close {0}.": "{0}截止报名。",
+"Entries closed": "报名已截止",
+"Entries open": "报名进行中",
+"Entry list": "参与名单",
+"Every block, every miner and every helper server, read straight from the network. {0}": "每个区块、每位矿工、每台辅助服务器，都直接从网络读取。{0}",
+"Every entry, as it arrives. Each envelope is one sealed letter; only the mailbox key can open them.": "每一份报名，收到即显示。每个信封都是一封密封信；只有信箱密钥才能打开。",
+"Every known helper is answering.": "所有已知的辅助服务器都在响应。",
+"Everyone else": "其他所有人",
+"Everyone else{0}": "其他所有人{0}",
+"Everything else needs only public things:": "其他一切只需要公开信息：",
+"Expected per day": "预计每天",
+"Fees and payout minimums as listed on each pool's site, October 2026. Share appears only where the pool's payout address is confirmed from its own public stats. Pools whose sites stopped working are taken off the list; know a pool that's missing? Say so in the BrowserCoin Discord.": "费率和最低支付额取自各矿池网站，2026 年 10 月。只有当矿池的支付地址已通过其自身公开统计确认时，才会显示占比。网站已无法使用的矿池会从列表中移除；知道有遗漏的矿池？请在 BrowserCoin Discord 里告诉我们。",
+"First halving": "首次减半",
+"First seen": "首次出现",
+"Fixed on the chain:": "已在链上固定：",
+"Forget it": "不再记住",
+"Found": "已找到",
+"Found a block": "找到了区块",
+"Free and open source under the MIT License. Data from the {0} helper API and the {1}.": "免费开源，采用 MIT 许可证。数据来自 {0} 辅助服务器 API 和{1}。",
+"Genuine: BRC Vault 1.1.0.": "正版：BRC Vault 1.1.0。",
+"Giveaway": "抽奖",
+"Hashrate": "算力",
+"Hashrate is the expected work behind each block's difficulty divided by elapsed time. Pool names come from each pool's own public stats. An unlabeled address that wins many blocks but sends no payouts is most likely one private operation. Pools can add their payout address through the BrowserCoin Discord.": "算力 = 每个区块难度对应的预期工作量 ÷ 经过的时间。矿池名称来自各矿池自己的公开统计。一个没有标注、赢得很多区块却从不发出支付的地址，很可能是某个私人挖矿团队。矿池可以通过 BrowserCoin Discord 添加自己的支付地址。",
+"Healthy spread": "分布健康",
+"Heartbeat": "心跳",
+"Helper servers": "辅助服务器",
+"Helper servers disagree about this block.": "辅助服务器对这个区块的数据不一致。",
+"Helpers": "辅助服务器",
+"Helpers introduce new browser tabs to each other and keep a copy of the chain. They have no authority over blocks.": "辅助服务器负责让新的浏览器标签页互相认识，并保存一份区块链副本。它们对区块没有任何决定权。",
+"History": "历史",
+"History chart": "历史图表",
+"Holds 0": "持有 0",
+"Holds 0{0} {1}": "持有 0{0} {1}",
+"How it's fair (details)": "为什么公平（详情）",
+"How the winner is picked": "中奖者如何选出",
+"If any other page, person or message asks for your key, it isn't us. Never paste it.": "如果有任何其他页面、个人或消息向你索要私钥，那不是我们。切勿粘贴。",
+"If it was postmarked in the last few minutes, it will show up soon: this page looks again at every new block. If it is older, check that Lock coins was pressed in the BrowserCoin app.": "如果是在最近几分钟内加盖的邮戳，很快就会出现：每出一个新区块，这个页面都会重新查找。如果时间更早，请确认在 BrowserCoin 应用里按下了「Lock coins」。",
+"If it was signed in the last few minutes, it will show up soon: this page looks again at every new block. If it is older, it may never have been locked in the BrowserCoin app.": "如果是在最近几分钟内签名的，很快就会出现：每出一个新区块，这个页面都会重新查找。如果时间更早，它可能从未在 BrowserCoin 应用里锁定过。",
+"In circulation": "流通中",
+"In sync": "已同步",
+"Is an address on the published entry list?": "某个地址在已公布的参与名单上吗？",
+"Is it real? Check it.": "是真的吗？验证一下。",
+"Is it real? Paste it or add the file": "是真的吗？粘贴内容或添加文件",
+"Is it real? Postmarks, signatures, mailboxes and BRC Works files, checked against the chain.": "是真的吗？邮戳、签名、信箱和 BRC Works 文件，都在链上核对。",
+"Is it really BRC Works?": "真的是 BRC Works 吗？",
+"It isn't a BRC Works address. Addresses are public: open it in MY BRC to see its balance and payments. (A private key looks exactly the same: if that's what this is, don't paste it anywhere.)": "这不是 BRC Works 的地址。地址是公开的：在 MY BRC 中打开即可查看它的余额和收付记录。（私钥看起来一模一样：如果这其实是私钥，不要粘贴到任何地方。）",
+"It's remembered on this device.": "已记在这台设备上。",
+"Its timestamp is outside what BrowserCoin allows, so the helper server's data can't be trusted.": "它的时间戳超出了 BrowserCoin 允许的范围，所以这台辅助服务器的数据不可信。",
+"Jul": "7月",
+"Jun": "6月",
+"Keep it · BRC Vault": "妥善保存 · BRC Vault",
+"Keep this version of the receipt, so future checks are instant:": "保存这个版本的回执，以后验证就能立刻完成：",
+"Largest miner": "最大矿工",
+"Largest single miner": "最大单一矿工",
+"Last 24 hours": "过去 24 小时",
+"Latest block": "最新区块",
+"Launch": "发起",
+"Letters sealed to it can only be opened by BRC Works.": "密封给它的信件只有 BRC Works 能打开。",
+"Letters sealed to it can only be opened by whoever holds its key. A link on its own doesn't say whose it is, or prove it's a mailbox: if they also sent their mailbox link signed on the chain, paste that here to check.": "密封给它的信件只有持有其密钥的人才能打开。单凭一个链接看不出它属于谁，也无法证明它是信箱：如果对方还发来了在链上签名的信箱链接，把它粘贴到这里验证。",
+"List fixed": "名单已固定",
+"Live": "实时",
+"Live{0}": "实时{0}",
+"Locked in a script": "已锁定在脚本中",
+"Look further back (a few minutes)": "再往前查找（需要几分钟）",
+"Look up": "查询",
+"Look up in My BRC": "在我的 BRC 中查询",
+"Looked in": "已查找",
+"Looks like a named address, but isn't": "看起来像已命名的地址，但其实不是",
+"Made after (drand time beacon)": "制作时间晚于（drand 时间信标）",
+"Made after block": "制作时间晚于区块",
+"Mailbox address": "信箱地址",
+"Mailbox busy, trying again…": "信箱繁忙，正在重试…",
+"Mailbox link": "信箱链接",
+"Mailbox link, signed on the chain": "信箱链接，已在链上签名",
+"Majority line": "半数线",
+"Majority risk": "过半算力风险",
+"Making a postmark by hand? The latest time beacon and a recent block": "要手动制作邮戳？最新的时间信标和一个最近的区块",
+"Matches the receipt's fingerprint (the postmark itself isn't on the chain yet)": "与回执的指纹一致（邮戳本身还不在链上）",
+"Median, target 2:30": "中位数，目标 2:30",
+"Message signed on the chain": "在链上签名的消息",
+"Mined": "已挖出",
+"Miner": "矿工",
+"Miners": "矿工",
+"Miners set block times, so allow about half an hour either way. The file may be older than this.": "区块时间由矿工设定，所以前后可能相差约半小时。文件可能比这更早。",
+"Mining": "挖矿",
+"Mining calculator": "挖矿计算器",
+"Mining solo, a block every": "独自挖矿时，找到一个区块平均需要",
+"Mining well spread": "挖矿分布良好",
+"Network at risk": "网络有风险",
+"Network hashrate": "全网算力",
+"Network healthy": "网络健康",
+"Never active": "从未活跃",
+"Never paste your private key.": "切勿粘贴你的私钥。",
+"No account, nothing tracked": "无需账户，不做任何跟踪",
+"No coins received yet.": "还没有收到任何币。",
+"No private key, no wallet file, nothing to sign.": "不需要私钥，不需要钱包文件，也不用签名。",
+"No purchase, no fee, no wallet: you only paste an address.": "无需购买，没有费用，不需要钱包：只需粘贴一个地址。",
+"No response": "无响应",
+"No sign-up, no cookies and no analytics. The page asks the network about blocks and nothing about you.": "无需注册，没有 cookie，也没有分析统计。这个页面只向网络查询区块，不会查询任何关于你的信息。",
+"Nobody chooses the winner, not the organizer and not the miners. A public random number does, and anyone can check the result.": "中奖者不由任何人挑选，组织者不能，矿工也不能。由一个公开的随机数决定，任何人都可以核对结果。",
+"Nobody else could have written this exact text. It proves which address signed it, not whose address that is: if they also sent their mailbox link signed on the chain, paste that here to check.": "没有其他人能写出这段完全相同的文字。它证明的是哪个地址签了名，而不是这个地址属于谁：如果对方也发来了在链上签名的信箱链接，把它粘贴到这里核对。",
+"None yet": "暂无",
+"Not BRC Works. It imitates BRC Works release address.": "不是 BRC Works。它在冒充 BRC Works 发布地址。",
+"Not a genuine BRC Works release.": "不是 BRC Works 的正版发布。",
+"Not added. Add the file to check it's the same one.": "未添加。添加文件，核对它是否是同一个。",
+"Not on the chain yet.": "还不在链上。",
+"Not on the chain.": "不在链上。",
+"Not on the entry list.": "不在参与名单上。",
+"Not signed by this address.": "不是由这个地址签名的。",
+"Not yet mined": "尚未挖出",
+"Nothing is uploaded.": "不会上传任何内容。",
+"Nothing to install, no account, nothing tracked.": "无需安装，无需账户，不做任何跟踪。",
+"Nothing yet.": "暂时还没有。",
+"Nov": "11月",
+"Now": "现在",
+"Number of addresses that found a block, per day": "每天找到区块的地址数量",
+"NurseryPool benchmark": "NurseryPool 基准测试",
+"Oct": "10月",
+"Official seed": "官方种子",
+"Official: BRC Works release address.": "官方：BRC Works 发布地址。",
+"On target pace": "符合目标节奏",
+"One entry per address.": "每个地址只能参与一次。",
+"One file": "一个文件",
+"One of the three addresses BRC Works uses. Anything else claiming to be BRC Works isn't.": "BRC Works 使用的三个地址之一。其他任何自称 BRC Works 的都不是。",
+"One winner takes the whole prize pool.": "一位中奖者独得整个奖池。",
+"One winner takes the whole prize pool. {0} Entering is free and needs only your address: paste it below to see if it can enter.": "一位中奖者独得整个奖池。{0}参与免费，只需要你的地址：把它粘贴到下方，看看能否参与。",
+"One winner takes the whole prize pool. {0} Your entry goes in as a sealed letter: nobody can see which address you entered except the organizer's mailbox.": "一位中奖者独得整个奖池。{0}你的报名会以密封信的形式投递：除了组织者的信箱，没有人能看到你用哪个地址参与。",
+"Only BRC Vault ever asks for a key that holds coins,": "只有 BRC Vault 才会要求输入持有币的私钥，",
+"Only one operator's helper servers could be checked, so this can't be confirmed yet": "只能检查到同一个运营者的辅助服务器，所以暂时还无法确认",
+"Only that mailbox can open it, in BRC Post. Nobody else can read it, not even this page, and it doesn't show who sent it until it's opened.": "只有那个信箱能在 BRC Post 中打开它。其他人都无法阅读，连这个页面也不能；在打开之前，也不会显示是谁寄出的。",
+"Only the \"To:\" line is readable: the giveaway mailbox. Your address is inside the sealed part.": "只有「To:」这一行可以看到：抽奖信箱。你的地址在密封的部分里。",
+"Open BRC Vault": "打开 BRC Vault",
+"Open it in BRC Post": "在 BRC Post 中打开",
+"Open it in MY BRC": "在 MY BRC 中打开",
+"Opening the letters:": "打开信件：",
+"Or look at": "或者查看",
+"Paste its postmark receipt to check it.": "粘贴它的邮戳回执来核对。",
+"Paste something to check, or add a file.": "粘贴要验证的内容，或添加一个文件。",
+"Paste what you were sent, or add a file. It's checked against the BrowserCoin chain, right here in your browser. {0}": "粘贴别人发给你的内容，或添加一个文件。它会直接在你的浏览器里对照 BrowserCoin 区块链进行验证。{0}",
+"Paste your BrowserCoin {0}. It's sealed in your browser so only the giveaway mailbox can read it, then dropped in. {1}": "粘贴你的 BrowserCoin {0}。它会在你的浏览器里密封，只有抽奖信箱能读取，然后再投递进去。{1}",
+"Payout address →": "支付地址 →",
+"Period": "时段",
+"Pool": "矿池",
+"Pools pay a steady share instead of all-or-nothing blocks. Ranked by their share of the blocks found in the last 24 hours. The dashed line is half the network: picking a smaller pool keeps everyone safely below it.": "矿池按稳定份额支付，而不是要么全有、要么全无的区块奖励。按过去 24 小时内找到区块的占比排名。虚线代表全网的一半：选择较小的矿池，能让大家都安全地保持在它下方。",
+"Position": "名次",
+"Postmark receipt": "邮戳回执",
+"Postmarked by": "盖邮戳者",
+"Prize pool": "奖池",
+"Reached": "已达到",
+"Received": "已收到",
+"Release": "发布版本",
+"Rented H100 GPU": "租用的 H100 GPU",
+"Rented H100 GPU · 2,097": "租用的 H100 GPU · 2,097",
+"Replay": "回放",
+"Replaying real blocks at 20× speed": "正以 20 倍速回放真实区块",
+"Rewards go straight to each miner's own address, so there is no single pool address to count.": "奖励直接发到每个矿工自己的地址，所以没有单一的矿池地址可以统计。",
+"Run by pb-hash as part of BRC Works. Independent tools; not part of the official BrowserCoin project.": "由 pb-hash 运营，属于 BRC Works。独立工具；不属于 BrowserCoin 官方项目。",
+"Running, with warnings": "运行中，有警告",
+"Ryzen 9 7950X, tuned": "Ryzen 9 7950X，已调优",
+"Ryzen 9 7950X, tuned · 6,457": "Ryzen 9 7950X，已调优 · 6,457",
+"Sandglass fork": "Sandglass 分叉",
+"Sandglass hashes, a different unit": "Sandglass 哈希，单位不同",
+"Script locks / redeems": "脚本锁定 / 赎回",
+"Script payout": "脚本支付",
+"Scripts fork": "Scripts 分叉",
+"Seal and drop my entry": "密封并投递我的报名",
+"Seal it · BRC Post": "密封 · BRC Post",
+"Sealing…": "正在密封…",
+"Sections": "栏目",
+"See what everyone else sees": "看看其他人看到的内容",
+"Seed": "种子",
+"Sent": "已发送",
+"Sep": "9月",
+"Share of blocks by miner": "各矿工的区块占比",
+"Share of the network": "占全网比例",
+"Share this version from now on, so future checks are instant:": "以后请分享这个版本，之后的验证会立即完成：",
+"Sign messages, send sealed letters only one mailbox can open, and postmark files to prove when they existed.": "签名消息、发送只有一个信箱能打开的密封信，并给文件加盖邮戳，证明它们何时已经存在。",
+"Since launch": "自上线以来",
+"Small, independent tools for BrowserCoin, safe by design. Each one is a single web page that does all its work inside your browser.": "为 BrowserCoin 打造的小巧独立工具，从设计上就很安全。每个工具都只是一个网页，所有工作都在你的浏览器内完成。",
+"Snapshot": "快照",
+"Snapshot{0}": "快照{0}",
+"Solo odds in the next 24 h": "未来 24 小时独自挖到区块的概率",
+"Something is on the chain at that spot, but it isn't this message: the text, address or salt was changed after it was signed.": "链上那个位置确实有内容，但不是这条消息：签名之后，文本、地址或 salt 被改动过。",
+"Something went wrong reading the chain. Try again.": "读取区块链时出错了。请重试。",
+"Straight from the network": "直接来自网络",
+"Supply": "供应",
+"Supply mined out of 21 million": "已挖出的供应量（总量 2100 万）",
+"Terminal miner": "终端挖矿程序",
+"Terminal miner · 0% fee · pays you directly": "终端挖矿程序 · 0% 费率 · 直接付款给你",
+"That beacon and the list fingerprint pick one position on the sorted list. That address wins, and the whole pool is sent to it.": "这个信标和名单指纹会在排好序的名单上选出一个位置。那个地址中奖，整个奖池都会发送给它。",
+"That looks like a wallet file, private key or recovery words. Don't paste those anywhere. Entering needs only your address.": "这看起来像是钱包文件、私钥或助记词。不要把它们粘贴到任何地方。报名参与只需要你的地址。",
+"That's a wallet file or a backup: it holds a secret key. Don't paste it anywhere. This page cleared it and sent nothing.": "这是钱包文件或备份：里面有私钥。不要把它粘贴到任何地方。本页已将其清除，没有发送任何内容。",
+"That's a wallet file or backup, which holds a secret key. Don't paste it anywhere. This page only needs your address.": "这是钱包文件或备份，里面有私钥。不要把它粘贴到任何地方。本页只需要你的地址。",
+"That's one of the giveaway's own addresses. Paste your own address.": "这是抽奖活动自己的地址之一。请粘贴你自己的地址。",
+"That's what a giveaway entry looks like. Only BRC Works can open it, and nobody can tell from outside who sent it.": "抽奖报名就是这个样子。只有 BRC Works 能打开它，外人也看不出是谁发送的。",
+"The \"After\" block on the receipt isn't on the chain": "回执上的「After」区块不在链上",
+"The addresses that have sent this one the most BRC. Pool payouts show up here.": "向这个地址发送 BRC 最多的地址。矿池支付会显示在这里。",
+"The block 100,000 giveaway": "区块 100,000 抽奖",
+"The block 100,000 giveaway.": "区块 100,000 抽奖。",
+"The block is not settled at two independent helper operators yet.": "该区块在两个独立的辅助服务器运营者那里还未最终确定。",
+"The draw:": "开奖：",
+"The eligible list doesn't match its published fingerprint, so entries are paused. Please tell the organizer.": "有资格的名单与公布的指纹不一致，因此报名已暂停。请告知组织者。",
+"The eligible list:": "有资格的名单：",
+"The entry list hasn't been fixed on the chain before the draw, so no winner is shown. The organizer must sign the list on the chain, at least 6 hours before the draw, with the BRC Works release address.": "参与名单在开奖前没有在链上确定，因此不显示中奖者。组织者必须在开奖前至少 6 小时，用 BRC Works 发布地址在链上签名该名单。",
+"The entry list is published below.": "参与名单公布如下。",
+"The giveaway's own addresses can't enter:": "抽奖活动自己的地址不能参与：",
+"The giveaway's rules haven't been fixed on the chain yet, so entering is closed.": "抽奖规则还没有在链上确定，因此暂不开放报名。",
+"The last 144 blocks, about six hours. Bar height is the wait before each block; color is its miner.": "最近 144 个区块，大约 6 小时。柱子高度表示每个区块出块前的等待时间，颜色表示它的矿工。",
+"The last 8,000 blocks (about two weeks).": "最近 8,000 个区块（大约两周）。",
+"The latest drand time beacon:": "最新的 drand 时间信标：",
+"The list commitment is not a giveaway list message.": "该名单承诺不是抽奖名单消息。",
+"The list fixed on the chain is not the list published here, so no winner is shown.": "链上确定的名单与这里公布的名单不一致，因此不显示中奖者。",
+"The list was fixed on the chain before entries closed, so no winner is shown.": "名单在截止报名之前就已在链上确定，因此不显示中奖者。",
+"The list was fixed on the chain before the giveaway was launched, so no winner is shown.": "名单在抽奖上线之前就已在链上确定，因此不显示中奖者。",
+"The mailbox": "信箱",
+"The mailbox is busy just now. Trying again in 15 seconds; keep this page open.": "信箱现在有点忙。15 秒后重试，请保持本页打开。",
+"The message has invisible or direction-changing characters, so it may not read the way it looks": "这条消息包含不可见字符或改变文字方向的字符，实际内容可能和看起来不一样",
+"The organizer is opening the letters; the entry list will appear here before the draw.": "组织者正在打开信件，参与名单会在开奖前显示在这里。",
+"The organizer published the entry list:": "组织者公布了参与名单：",
+"The organizer published the entry list: {0}, fingerprint {1}, and fixed it on the chain with the BRC Works release address, together with the draw round. This page checks that happened at least 6 hours before the draw.": "组织者公布了参与名单：{0}，指纹 {1}，并用 BRC Works 发布地址将它和开奖轮次一起在链上确定。本页会验证这是否发生在开奖前至少 6 小时。",
+"The prize only ever goes to the winning address itself.": "奖品只会发送到中奖地址本身。",
+"The prize:": "奖品：",
+"The published entry list doesn't match its fingerprint. Don't trust this result; please tell the organizer.": "公布的参与名单与其指纹不一致。不要相信这个结果，请告知组织者。",
+"The receipt's drand beacon is not genuine: its signature doesn't check out.": "回执中的 drand 信标不是真实的：它的签名验证不通过。",
+"The release": "发布版本",
+"The release message is genuine, but the file you added is a different file: it may have been changed. Get BRC Vault only from its official page.": "发布消息是真实的，但你添加的文件不是同一个文件：它可能被改动过。只从官方页面获取 BRC Vault。",
+"The rules": "规则",
+"The rules signed on the chain are not a giveaway launch message.": "链上签名的规则不是抽奖发布消息。",
+"The rules were fixed on the chain after entries closed.": "规则是在截止报名之后才在链上固定的。",
+"The same file, byte for byte": "逐字节完全相同的文件",
+"The same picture appears for this address in BRC Vault and BRC Post": "这个地址在 BRC Vault 和 BRC Post 中显示的是同一张图案",
+"The whole dashboard is a single page. Save it, host it anywhere, or open it from your desktop, and it still runs live.": "整个仪表盘就是一个页面。保存下来、放到任何地方托管，或从桌面直接打开，它都能实时运行。",
+"The whole pool goes to the winner. Anyone can add to it: send any amount of BRC to the pool's address. {0}": "整个奖池都归中奖者。任何人都可以往里加：向奖池地址发送任意数量的 BRC 即可。{0}",
+"The winner": "中奖者",
+"The winner is picked by a public random number": "中奖者由一个公开的随机数选出",
+"This address hasn't found a block itself. If you mine through a pool, the pool finds the blocks and pays you out, so your earnings show under": "这个地址自己还没有找到过区块。如果你通过矿池挖矿，区块是由矿池找到的，再由矿池支付给你，所以你的收益显示在",
+"This address won!": "这个地址中奖了！",
+"This block's time is impossible.": "这个区块的时间不可能成立。",
+"This couldn't be recognised. Paste the whole block, from the -----BEGIN line to the -----END line, or add the file.": "无法识别这段内容。请粘贴完整的内容块，从 -----BEGIN 那一行到 -----END 那一行，或者添加文件。",
+"This file couldn't be read": "无法读取这个文件",
+"This is far too long to be a postmark receipt.": "这段内容太长了，不可能是邮戳回执。",
+"This is not a postmark receipt. It should start with -----BEGIN BRC STAMP RECEIPT-----.": "这不是邮戳回执。邮戳回执应以 -----BEGIN BRC STAMP RECEIPT----- 开头。",
+"This isn't a genuine BRC Works file. Don't open it.": "这不是正版的 BRC Works 文件。不要打开它。",
+"This isn't a mailbox.": "这不是信箱。",
+"This isn't the file that was postmarked.": "这不是加盖邮戳的那个文件。",
+"This letter can never be opened.": "这封信永远无法打开。",
+"This mailbox link isn't valid.": "这个信箱链接无效。",
+"This message was edited.": "这条消息被改动过。",
+"This page's giveaway settings are not the ones fixed on the chain, so they can't be trusted.": "本页面的抽奖设置与链上固定的设置不一致，所以不可信。",
+"This postmark's block time is impossible.": "这个邮戳的区块时间不可能成立。",
+"This preview only includes the sample addresses below. On pb-hash.github.io/brc-pulse, any address works.": "这个预览只包含下面的示例地址。在 pb-hash.github.io/brc-pulse 上，任何地址都可以查询。",
+"This receipt was edited.": "这张回执被改动过。",
+"This signature doesn't match.": "这个签名不匹配。",
+"Those look like recovery words, which open a wallet. Never paste them anywhere. This page cleared them and sent nothing.": "这些看起来像助记词，助记词可以打开钱包。切勿把它们粘贴到任何地方。本页面已清除它们，没有发送任何内容。",
+"Time since the last block": "距上一个区块的时间",
+"Time window": "时间范围",
+"Times": "时间",
+"Today": "今天",
+"Top = 10 min wait": "顶部 = 等待 10 分钟",
+"Transactions": "交易",
+"Typical block gap": "典型出块间隔",
+"Unlabeled": "未标记",
+"Unlabeled address": "未标记的地址",
+"Use this corrected receipt from now on:": "从现在起请使用这张修正后的回执：",
+"Wait": "等待",
+"Waiting for the first block after the draw round, to check the release address fixed only one list. Try again in a few minutes.": "正在等待开奖轮次之后的第一个区块，以确认发布地址只固定了一份名单。请过几分钟再试。",
+"What": "内容",
+"What changed, counting blocks found, coins received and coins sent (fees included). Pick a period.": "变化情况，包括找到的区块、收到的币和发出的币（含手续费）。选择一个时间段。",
+"What to check": "要检查什么",
+"What your hardware can expect at today's network hashrate. Your hashrate shows on the Mine tab of the BrowserCoin app.": "按当前的全网算力，你的硬件大概能获得多少。你的算力显示在 BrowserCoin 应用的「Mine」标签页上。",
+"When": "时间",
+"Where to mine": "去哪里挖矿",
+"Who can enter:": "谁可以参与：",
+"Who is finding blocks": "谁在找到区块",
+"Who pays you": "谁在给你支付",
+"Winner drawn": "已开奖",
+"With": "与",
+"Write to this mailbox in BRC Post": "在 BRC Post 中给这个信箱写信",
+"Year": "年",
+"You": "你",
+"You can enter an address that isn't yours, but that only gives its owner a chance.": "你可以填写不属于你的地址，但这只会让该地址的主人获得机会。",
+"You don't have to take our word for it.": "你不必只听我们说。",
+"Your address never leaves your browser in full: the page downloads a small file of addresses that start with the same three characters and finds yours on your device. {0}": "你的完整地址永远不会离开你的浏览器：页面只会下载一个小文件，里面是开头三个字符相同的地址，然后在你的设备上找到你的地址。{0}",
+"Your balance and mining": "你的余额和挖矿",
+"Your balance, your mining and your payouts, worked out from the whole chain and kept up to date block by block. Paste a wallet {0}: 64 letters and numbers, shown in your BrowserCoin wallet. {1} No BRC Works page asks for it, except BRC Vault, to back it up.": "你的余额、挖矿和收到的支付，都根据整条区块链计算得出，并随每个区块实时更新。粘贴一个钱包{0}：由 64 个字母和数字组成，显示在你的 BrowserCoin 钱包中。{1}除了用来备份的 BRC Vault 之外，没有任何 BRC Works 页面会向你索要它。",
+"Your browser reads the public helper servers directly and checks for new blocks every 6 seconds. No middleman, no server of ours.": "你的浏览器直接读取公共辅助服务器，每 6 秒检查一次新区块。没有中间人，也没有我们自己的服务器。",
+"Your entry is in the mailbox.": "你的报名已送进信箱。",
+"Your file": "你的文件",
+"Your file is the same one, byte for byte.": "你的文件是同一个文件，逐字节完全相同。",
+"Your file matches it byte for byte.": "你的文件与它逐字节完全一致。",
+"Your secrets never leave your device.": "你的秘密信息永远不会离开你的设备。",
+"Your wallet lives in one browser. Back up the coins you mine: a password-protected file or a paper copy, offline.": "你的钱包只存在于一个浏览器里。备份你挖到的币：离线保存一个已用密码加密的文件或一份纸质备份。",
+"a year ago": "一年前",
+"address": "地址",
+"after entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached. Repeats and addresses that can't enter are set aside then.": "截止报名后，组织者会打开信件，公布参与地址的名单，不附带任何名字。重复的地址和没有资格参与的地址会在那时被剔除。",
+"ahead of": "领先于",
+"and the mailbox's own signature agrees": "且信箱自身的签名也一致",
+"around May 2027": "约 2027 年 5 月",
+"blocks to go, {0}": "个区块，{0}",
+"brc-vault.html: reading…": "brc-vault.html：正在读取…",
+"checked here": "在此验证",
+"couldn't read": "无法读取",
+"developer benchmark": "开发者基准测试",
+"developer benchmark, i7-13700KF": "开发者基准测试，i7-13700KF",
+"doesn't enter you or change anyone's chances.": "不会让你参与，也不会改变任何人的中奖机会。",
+"drand round": "drand 轮次",
+"drand, a public randomness beacon run by independent organisations, publishes round": "drand 是由多个独立机构运营的公共随机信标，它会公布轮次",
+"everything in the prize pool when the winner is drawn, sent straight to the winning address. Nothing to claim.": "开奖时奖池里的全部内容，直接发送到中奖地址。无需领取。",
+"giveaway rules": "抽奖规则",
+"holiday-photo.jpg: reading…": "holiday-photo.jpg：正在读取…",
+"implausible tip": "链顶高度不可信",
+"in the prize pool": "在奖池中",
+"it isn't on the chain": "它不在链上",
+"list commitment": "名单承诺",
+"locked the coins": "锁定了这些币",
+"look-alike!": "疑似仿冒！",
+"mailbox link": "信箱链接",
+"matches the published list": "与公布的名单一致",
+"never used yet": "尚未使用过",
+"not counted": "不计入",
+"of blocks, 24 h": "的区块，24 小时",
+"of mining power.": "的挖矿算力。",
+"pays you directly": "直接支付给你",
+"says its mailbox is": "声明其信箱为",
+"sealed letters received {0}": "已收到的密封信 {0}",
+"signature checked here": "已在此处验证签名",
+"since the last block · expected every 2:30": "距上一个区块 · 预期每 2:30 出一个块",
+"the helper server didn't answer": "辅助服务器没有响应",
+"the mailbox, the prize pool and the BRC Works addresses are set aside.": "信箱、奖池和 BRC Works 的地址会被排除在外。",
+"unknown transaction type": "未知的交易类型",
+"your address is sealed in your browser. Everyone else sees only a sealed letter.": "你的地址会在你的浏览器中密封。其他人只能看到一封密封信。",
+"{0} Entering again doesn't add a chance.": "{0} 重复参与不会增加中奖机会。",
+"{0} Every page is open source. BRC Vault is locked so it can't connect to anything at all; BRC Post can reach only the public drand time service. Both work with Wi‑Fi off.": "{0} 每个页面都是开源的。BRC Vault 被锁定，完全无法连接任何地方；BRC Post 只能访问公共的 drand 时间服务。关闭 Wi‑Fi 后两者都能正常使用。",
+"{0} No purchase, no fee, no wallet: you only paste an address.": "{0} 无需购买，无需费用，无需钱包：只要粘贴一个地址。",
+"{0} Nothing you paste, type or open is uploaded. There's no account, no tracking, and no server that ever sees your keys, backups, files or letters.": "{0} 你粘贴、输入或打开的任何内容都不会上传。没有账号，没有跟踪，也没有任何服务器会看到你的密钥、备份、文件或信件。",
+"{0} You can enter an address that isn't yours, but that only gives its owner a chance.": "{0} 你可以用不属于你的地址参与，但那只会给该地址的主人一次机会。",
+"{0} addresses, signed messages and receipts, which are safe to share. BRC Post uses its own mailbox key, which never holds coins.": "{0} 地址、签名消息和回执，这些都可以放心分享。BRC Post 使用自己的信箱密钥，它从不存放任何币。",
+"{0} after entries close, the organizer opens the letters and publishes the list of entered addresses, with no names attached. Repeats and addresses that can't enter are set aside then.": "{0} 截止报名后，组织者会打开信件并公布参与地址的名单，不附带任何名字。重复的地址和没有资格参与的地址届时会被排除。",
+"{0} and only to lock it into a password-protected backup, right there on your device. {1}": "{0}，并且只用于在你的设备上直接把它锁进已用密码加密的备份。{1}",
+"{0} doesn't enter you or change anyone's chances.": "{0} 不会让你参与，也不会改变任何人的中奖机会。",
+"{0} everything in the prize pool when the winner is drawn, sent straight to the winning address. Nothing to claim.": "{0} 开奖时奖池里的全部金额，直接发送到中奖地址。无需领取。",
+"{0} fingerprint {1}. Anyone can rebuild it from the public chain archive with {2}.": "{0} 指纹 {1}。任何人都可以用 {2} 从公开的链存档中重建它。",
+"{0} the mailbox, the prize pool and the BRC Works addresses are set aside.": "{0} 信箱、奖池和 BRC Works 的地址会被排除在外。",
+"{0} your address is sealed in your browser. Everyone else sees only a sealed letter.": "{0}你的地址在你的浏览器里被密封。其他人只能看到一封密封信。",
+"· never used yet": "· 尚未使用过",
+"…or add a file": "…或添加文件",
+"✓ Address": "✓ 地址",
+"✓ BRC Works release": "✓ BRC Works 发布版本",
+"✓ Mailbox link": "✓ 信箱链接",
+"✓ Mailbox link, signed on the chain": "✓ 信箱链接，已在链上签名",
+"✓ Message signed on the chain": "✓ 消息已在链上签名",
+"✓ Postmark receipt": "✓ 邮戳回执",
+"✓ Sealed letter": "✓ 密封信",
+"✓ Signed message": "✓ 签名消息",
+"✓ The rules are confirmed on the chain.": "✓ 规则已在链上确认。",
+"Unlabeled address {0}": "未标记的地址 {0}",
+", the latest {0}.": "，最近一个在 {0}。",
+"About {0} of mining power. {1}": "约占挖矿算力的 {0}。{1}",
+"This address hasn't found a block itself. If you mine through a pool, the pool finds the blocks and pays you out, so your earnings show under Who pays you.": "这个地址自己还没有找到过区块。如果你通过矿池挖矿，区块由矿池找到，再由矿池向你支付，所以你的收益会显示在「谁给你付款」下面。",
+"30 days agoToday": "30 天前今天",
+"Entries open {0}. Entering will need only your BrowserCoin {1}: no private key, no wallet file, nothing to sign.": "报名于 {0} 开放。参与只需要你的 BrowserCoin {1}：不需要私钥，不需要钱包文件，也不需要签名任何内容。",
+"A recent, settled block: {0}": "最近一个已确认的区块：{0}",
+"The latest drand time beacon: {0}": "最新的 drand 时间信标：{0}",
+"It's remembered on this device. {0}": "已记在这台设备上。{0}",
+"Replay{0}": "回放{0}",
+"A BrowserCoin address": "一个 BrowserCoin 地址",
+"Address to check": "要查询的地址",
+"BrowserCoin address": "BrowserCoin 地址",
+"Paste a BrowserCoin address": "粘贴一个 BrowserCoin 地址",
+"Paste a postmark receipt, a signed message or a mailbox link": "粘贴邮戳回执、签名消息或信箱链接",
+"Paste your address": "粘贴你的地址",
+"Your BrowserCoin address": "你的 BrowserCoin 地址",
+"Your hashrate in hashes per second": "你的算力（每秒哈希数）",
+"24 hours": "24 小时",
+"6 hours": "6 小时"
+},
+"p": [
+[
+"{0} these rules and the draw round were signed by the BRC Works release address%1. The entry list is signed the same way at least 6 hours before the draw, and until the draw the release address signs nothing else except release postmarks published on this page (each provably a BRC Works release, never a list), so the list can't be swapped afterwards. Its whole history is public%2. Apart from release postmarks, it should only ever hold this giveaway's launch and list; if it shows anything else, such as an earlier launch that was dropped, ask the organizer why.",
+"{0}这些规则和开奖轮次已由 BRC Works 发布地址签名%1。参与名单也会在开奖前至少 6 小时以同样方式签名；在开奖之前，除了本页面公布的发布版本邮戳（每一个都可证明是 BRC Works 发布版本，绝不是名单）之外，发布地址不会签名任何其他内容，所以名单事后无法被调换。它的全部历史都是公开的%2。除发布版本邮戳外，它应该只包含本次抽奖的启动和名单；如果它显示了其他任何内容，例如一次被放弃的早期启动，请询问组织者原因。"
+],
+[
+"these rules and the draw round were signed by the BRC Works release address%1. The entry list is signed the same way at least 6 hours before the draw, and until the draw the release address signs nothing else except release postmarks published on this page (each provably a BRC Works release, never a list), so the list can't be swapped afterwards. Its whole history is public%2. Apart from release postmarks, it should only ever hold this giveaway's launch and list; if it shows anything else, such as an earlier launch that was dropped, ask the organizer why.",
+"这些规则和开奖轮次已由 BRC Works 发布地址签名%1。参与名单会在开奖前至少 6 小时以同样的方式签名；在开奖之前，除了本页公布的发布版本邮戳（每个都可证明是 BRC Works 的发布版本，绝不是名单）之外，发布地址不会签署任何其他内容，因此名单事后无法被调换。它的全部历史都是公开的%2。除发布版本邮戳外，它只应包含本次抽奖的启动和名单；如果出现了其他内容，比如一个被放弃的早期启动，请向组织者问清原因。"
+],
+[
+"{0} any address that held at least 50 BRC at block %1, or was paid by a mining pool (Cryptec Pool or Tabpool) in the 30 days up to that block. That block had passed before the giveaway was announced, so nobody could split coins into extra addresses for it. That's %2 addresses.",
+"{0}在区块 %1 时持有至少 50 BRC 的任何地址，或在截至该区块的 30 天内收到过矿池（Cryptec Pool 或 Tabpool）支付的任何地址。这个区块在抽奖公布之前就已经过去了，所以没人能为此把币拆分到更多地址里。共 %2 个地址。"
+],
+[
+"any address that held at least 50 BRC at block %1, or was paid by a mining pool (Cryptec Pool or Tabpool) in the 30 days up to that block. That block had passed before the giveaway was announced, so nobody could split coins into extra addresses for it. That's %2 addresses.",
+"在区块 %1 时持有至少 50 BRC 的任何地址，或在截至该区块的 30 天内收到过矿池（Cryptec Pool 或 Tabpool）支付的任何地址。该区块在抽奖公布之前就已经过去了，所以没人能为此把币拆分到更多地址。共有 %2 个地址。"
+],
+[
+"{0} drand beacon round %1, published at %2. The winner is SHA-256(\"BRC Works giveaway draw v1\", the entry list's fingerprint, the round and its signature) modulo the number of entries, counting from the first address in sorted order. Anyone can rerun it here.",
+"{0} drand 信标第 %1 轮，发布于 %2。中奖者为 SHA-256(\"BRC Works giveaway draw v1\", 参与名单的指纹, 轮次及其签名) 对参与数量取模，从排序后的第一个地址开始计数。任何人都可以在这里重新运行。"
+],
+[
+"drand beacon round %1, published at %2. The winner is SHA-256(\"BRC Works giveaway draw v1\", the entry list's fingerprint, the round and its signature) modulo the number of entries, counting from the first address in sorted order. Anyone can rerun it here.",
+"drand 信标第 %1 轮，发布于 %2。中奖者 = SHA-256(\"BRC Works giveaway draw v1\"、参与名单的指纹、轮次及其签名) 对参与数量取模，从排序后的第一个地址开始计数。任何人都可以在这里重新计算。"
+],
+[
+"From the launch to the draw, the release address made %1 locks other than published release postmarks. Only two are allowed: the launch and this list, so nobody could fix several lists and pick one later. No winner is shown.",
+"从发起到开奖，发布地址除已公布的发布版本邮戳外还做了 %1 次锁定。只允许两次：发起和这份名单，这样就没人能固定多份名单、事后再挑一份。因此不显示中奖者。"
+],
+[
+"This preview can't reach the network, so it replays the last %1 real blocks before the %2 snapshot at %3× speed. Hosted on its own website or opened as a file, the page runs live and checks for new blocks every 6 seconds.",
+"这个预览无法连接网络，所以它以 %3× 速度回放 %2 快照之前最后 %1 个真实区块。放在自己的网站上或作为文件打开时，页面会实时运行，每 6 秒检查一次新区块。"
+],
+[
+"Nobody else could have written this exact text.%1 It proves which address signed it, not whose address that is: if they also sent their mailbox link signed on the chain, paste that here to check.",
+"没有其他人能写出这段完全相同的文字。%1它证明的是哪个地址签了名，而不是这个地址属于谁：如果对方也发来了在链上签名的信箱链接，把它粘贴到这里核对。"
+],
+[
+"Sealed letter #%1 of %2 in the mailbox%3. When the entry list is published, check your address is on it before the draw: after the list is fixed on the chain it can't change.",
+"信箱中的密封信 #%1（共 %2 封）%3。参与名单公布后，请在开奖前确认你的地址在名单上：名单在链上确定后就无法更改。"
+],
+[
+"This address didn't hold 50 BRC at block %1, and wasn't paid by a mining pool in the 30 days before it, so it can't enter. Check you pasted your mining or payout address.",
+"这个地址在区块 %1 时没有持有 50 BRC，在此之前的 30 天内也没有收到过矿池支付，所以不能参与。请检查你粘贴的是不是你的挖矿地址或出款地址。"
+],
+[
+"%1 %2 not answering. That is the likely cause of the \"1/2 helper server\" message in the app. Mining continues through the other helpers and direct peer links.",
+"%1 没有响应。这很可能就是官方应用里出现「1/2 helper server」提示的原因。挖矿会通过其他辅助服务器和直接的节点连接继续进行。"
+],
+[
+"The time beacon proves it was made after %1, but the block holding it claims a time more than an hour earlier. So it has no reliable \"existed by\" time.",
+"时间信标证明它是在 %1 之后创建的，但包含它的区块声称的时间却早了一个多小时。所以它没有可靠的「存在于某时间之前」的时间。"
+],
+[
+"Since the public launch, one address found more than half of a day's blocks on %1 days, peaking at %2% on %3. From the full chain archive, through block %4.",
+"自公开上线以来，有 %1 天单个地址找到了当天一半以上的区块，最高在 %3 达到 %2%。数据来自完整的链存档，截至区块 %4。"
+],
+[
+"Snapshot taken %1 from %2. This view can't reach the network. Opened as a file or on its own website, the page switches to live updates by itself.",
+"快照于 %1 从 %2 获取。此视图无法连接网络。以文件形式打开或在它自己的网站上打开时，页面会自动切换为实时更新。"
+],
+[
+"The lock holding this message was made by %1, not by %2. Anyone can copy a shared message into a lock of their own, so this proves nothing about %3.",
+"包含这条消息的锁定是由 %1 创建的，而不是 %2。任何人都可以把公开的消息复制到自己的锁定中，所以这不能证明任何关于 %3 的事。"
+],
+[
+"That looks like part of an address: it has %1 of the 64 characters, so the end was probably cut off when copying. Copy it again, all of it.",
+"这看起来只是地址的一部分：64 个字符里只有 %1 个，复制时结尾可能被截掉了。请重新完整复制。"
+],
+[
+"Against %1 of network hashrate over the last 24 hours. Averages only: solo mining is a lottery, and a pool smooths it into a daily share.%2",
+"按过去 24 小时 %1 的全网算力计算。仅为平均值：单独挖矿全凭运气，矿池会把它平摊成每日的一份收益。%2"
+],
+[
+"The release message is genuine, but the file you added is a different file: it may have been changed. Get %1 only from its official page.",
+"发布消息是真实的，但你添加的文件不是同一个文件：它可能被改动过。请只从官方页面获取 %1。"
+],
+[
+"drand, a public randomness beacon run by independent organisations, publishes round {0} at {1}%3. Nobody can know it before then.",
+"drand 是由多个独立机构运营的公共随机信标，将于 {1} 发布第 {0} 轮%3。在此之前，没人能知道它。"
+],
+[
+"This %1 isn't anywhere on the chain since postmarks began in July 2026. The coins were never locked, or the receipt was edited.",
+"自 2026 年 7 月邮戳功能上线以来，链上任何地方都找不到这个%1。这些币从未被锁定过，或者回执被改动过。"
+],
+[
+"Careful: this address looks like %1 (%2…%3), but it isn't. Someone may be imitating it. Don't send coins here unless you are sure.",
+"注意：这个地址看起来像 %1（%2…%3），但其实不是。可能有人在仿冒它。除非你确定无误，否则不要向这里发送币。"
+],
+[
+"{0} on %1. Nobody, including the organizer, can know it or change it in advance, and anyone can check the result on this page.",
+"{0} %1。任何人（包括组织者）都无法提前知道或更改它，任何人都可以在本页面核对结果。"
+],
+[
+"The list was fixed on the chain by %1, too close to the draw at %2. It must be at least 6 hours earlier, so no winner is shown.",
+"名单在链上确定的时间不早于 %1，离 %2 的开奖太近。必须至少提前 6 小时，因此不显示中奖者。"
+],
+[
+"%1 signed this link on the chain in block %2, and mailbox %3 signed it too. Letters sealed to that mailbox reach the owner of %4.",
+"%1 在区块 %2 中于链上签名了这个链接，信箱 %3 也签了名。密封给该信箱的信件会送达 %4 的所有者。"
+],
+[
+"Line %1 of the code has a typo: it doesn't match its check [%2]. Compare that line with the paper, watching for 0/D and 8/B.",
+"代码第 %1 行有输入错误：与它的校验 [%2] 不符。请把这一行和纸上的内容对照，留意 0/D 和 8/B。"
+],
+[
+"on %1. Nobody, including the organizer, can know it or change it in advance, and anyone can check the result on this page.",
+"，时间为 %1。没有人（包括组织者）能提前知道或更改它，任何人都可以在此页面上核对结果。"
+],
+[
+"That has %1 characters, but an address has exactly 64. Something extra was copied with it. Copy just the address.",
+"这里有 %1 个字符，但地址正好是 64 个字符。复制时多带了别的内容。请只复制地址。"
+],
+[
+"The postmark is real (block %1), but it's for a different file, or this one changed after it was postmarked.",
+"邮戳是真实的（区块 %1），但它对应的是另一个文件，或者这个文件在加盖邮戳后被改动过。"
+],
+[
+"This release message was signed by %1, which is not the BRC Works release address. Don't use this file.",
+"这条发布消息是由 %1 签名的，它不是 BRC Works 的发布地址。不要使用这个文件。"
+],
+[
+"Mailbox address {0}%2. Anyone can download every sealed letter from the BRC Mailbox to check the count.",
+"信箱地址 {0}%2。任何人都可以从 BRC Mailbox 下载所有密封信来核对数量。"
+],
+[
+"%1 other helper server%2 it in block %3, but %4 doesn't. Don't rely on it until they agree. Try again later.",
+"另外 %1 个辅助服务器显示它在区块 %3 中，但 %4 没有。在它们一致之前，先别依赖这个结果。请稍后再试。"
+],
+[
+"The draw round in the list commitment (%1) is not the one fixed at launch (%2), so no winner is shown.",
+"名单承诺中的开奖轮次（%1）与上线时确定的轮次（%2）不一致，因此不显示中奖者。"
+],
+[
+"%1 payment%2 into the pool so far. Its balance is read straight from the chain, block by block.",
+"到目前为止共有 %1 笔付款进入奖池。奖池余额直接从链上逐个区块读取。"
+],
+[
+"Live from %1, checked every 6 seconds. History through block %2 comes from the chain archive.",
+"实时数据来自 %1，每 6 秒检查一次。截至区块 %2 的历史数据来自区块链存档。"
+],
+[
+"Open to the %1 addresses that held 50 BRC or more at block %2, or were paid by a mining pool.",
+"面向 %1 个地址开放：在区块 %2 时持有至少 50 BRC，或收到过矿池支付的地址。"
+],
+[
+"Found {0} of the last %N1 blocks, none in the last few hours. About {1} of mining power. {2}",
+"在最近 %N1 个区块中找到了 {0} 个，过去几小时内没有新的。约占挖矿算力的 {1}。{2}"
+],
+[
+"It says block %1, but it isn't there. Delete the \"Block:\" line to look for it everywhere.",
+"上面写的是区块 %1，但那里没有。删除「Block:」这一行，即可在所有区块中查找。"
+],
+[
+"Only one operator's helper servers could be checked, so this can't be confirmed yet. %1",
+"只能检查到同一个运营者的辅助服务器，所以暂时还无法确认。%1"
+],
+[
+"The block holding the %1 cannot be confirmed by two independent helper operators yet.",
+"包含%1的区块暂时还无法由两个独立的辅助服务器运营者确认。"
+],
+[
+"%2. Anyone can download every sealed letter from the BRC Mailbox to check the count.",
+"%2。任何人都可以从 BRC 信箱下载所有密封信来核对数量。"
+],
+[
+"Nobody else could have put this exact message on the chain. Signed in block %1, by %2.",
+"没有其他人能把这条完全相同的消息放到链上。在区块 %1 中签名，时间不晚于 %2。"
+],
+[
+"This BRC Wallet file has a version (%1) BRC Vault doesn't know; it reads version 2.",
+"这个 BRC Wallet 文件的版本（%1）BRC Vault 无法识别；它只能读取版本 2。"
+],
+[
+"This was signed on the chain by %1, an address made to look like %2. Don't trust it.",
+"这是由 %1 在链上签名的，这个地址被故意做得像 %2。不要相信它。"
+],
+[
+"%1 Almost final: %2 of 6 confirmations. This page checks again at every new block.",
+"%1 即将最终确认：已有 %2/6 个确认。每出一个新区块，本页都会再检查一次。"
+],
+[
+"Found {0} of the last %N1 blocks, the latest {1}. About {2} of mining power. {3}",
+"在最近 %N1 个区块中找到了 {0} 个，最近一个在 {1}。约占挖矿算力的 {2}。{3}"
+],
+[
+"Word %1 isn't on the recovery word list. Check its spelling against the paper.",
+"第 %1 个词不在助记词列表中。请对照纸上的内容检查拼写。"
+],
+[
+"Round %N1, %2 (%N3 seconds old: this computer's clock or the relays may be off)",
+"第 %N1 轮，%2（已过 %N3 秒：可能是这台电脑的时钟或中继服务器有偏差）"
+],
+[
+"It's %1, which holds coins. A letter sealed to it can never be opened.",
+"这是 %1，它持有币。密封给它的信件永远无法打开。"
+],
+[
+"Signed on the chain by the BRC Works release address in block %1, by %2.%3",
+"已由 BRC Works 发布地址在区块 %1 中于链上签名，时间不晚于 %2。%3"
+],
+[
+"The mailbox didn't take the letter (error %1). Try again in a minute.",
+"信箱没有收下这封信（错误 %1）。请过一分钟再试。"
+],
+[
+"At least %1 characters. A short sentence you'll remember works well.",
+"至少 %1 个字符。用一句你记得住的短句就很好。"
+],
+[
+"You entered this address on %1; entering again doesn't add a chance.",
+"你已在 %1 用这个地址参与过；再次参与不会增加机会。"
+],
+[
+"It was signed by %1, an address made to look like %2. Don't trust it.",
+"它由 %1 签名，这是一个故意仿冒 %2 的地址。不要相信它。"
+],
+[
+"This backup is version %1; this copy of BRC Vault reads version %2.",
+"这个备份是版本 %1；当前这份 BRC Vault 读取的是版本 %2。"
+],
+[
+"(%1 seconds old: this computer's clock or the relays may be off)",
+"（已过 %1 秒：这台电脑的时钟或中继可能不准）"
+],
+[
+"This mailbox, %1, is made to look like %2. Don't send it anything.",
+"这个信箱 %1 被故意做得像 %2。不要向它发送任何内容。"
+],
+[
+"That is %1 words. BrowserCoin recovery words are a list of 24.",
+"这是 %1 个词。BrowserCoin 助记词一共是 24 个。"
+],
+[
+"%1 community helper%2 not answering. Both official seeds are up.",
+"%1 个社区辅助服务器没有响应。两个官方种子服务器都在线。"
+],
+[
+"The %1 in this backup is damaged (expected %2 hex characters).",
+"此备份中的%1已损坏（应为 %2 个十六进制字符）。"
+],
+[
+"It was sealed to %1, which holds coins and is not a mailbox.",
+"它被密封给了 %1，这个地址持有币，不是信箱。"
+],
+[
+"of blocks in the last 24 hours: %1 of %2%3. Last block found %4.",
+"的区块（过去 24 小时）：%2 个中的 %1 个%3。最近一次找到区块：%4。"
+],
+[
+"The %1 was not signed by the BRC Works release address.",
+"%1不是由 BRC Works 发布地址签名的。"
+],
+[
+"The receipt's \"%1:\" should be %2 characters, 0–9 and a–f.",
+"回执中的「%1:」应为 %2 个字符，只能是 0–9 和 a–f。"
+],
+[
+"The release address's lock for the %1 isn't in block %2.",
+"发布地址为%1创建的锁定不在区块 %2 中。"
+],
+[
+"in block %1 by %2, by the BRC Works release address, {0}",
+"在区块 %1 中（%2），由 BRC Works 发布地址签名，{0}"
+],
+[
+"The %1 has no \"Block:\" line, so it cannot be checked.",
+"%1没有「Block:」这一行，因此无法验证。"
+],
+[
+"in block %1 by %2, by the BRC Works release address,",
+"在区块 %1 中（不晚于 %2），由 BRC Works 发布地址，"
+],
+[
+"seed mod %1 = %2, so address number %3 in sorted order",
+"种子 mod %1 = %2，因此是排序后的第 %3 个地址"
+],
+[
+"Nobody else could have written this exact text.%1",
+"没有其他人能写出这段完全相同的文字。%1"
+],
+[
+"This %1 isn't in the block its receipt names.",
+"这个%1不在其回执所写的区块中。"
+],
+[
+"%1 independent operators agree on this block",
+"%1 个独立运营方对这个区块看法一致"
+],
+[
+"No activity found for this address yet (%1).",
+"这个地址暂时还没有任何活动（%1）。"
+],
+[
+"Block %1 isn't on the chain at this helper.",
+"这个辅助服务器的链上没有区块 %1。"
+],
+[
+"Expected %1 bytes (%2 hex characters), got %3.",
+"应为 %1 字节（%2 个十六进制字符），实际为 %3。"
+],
+[
+"On the list: entry %1 of %2 in sorted order.%3",
+"在名单上：按排序是第 %1 个，共 %2 个。%3"
+],
+[
+"The last %N1 blocks (about two weeks). {0}",
+"最近 %N1 个区块（约两周）。{0}"
+],
+[
+"The %1 in this backup code are damaged.",
+"此备份码中的%1已损坏。"
+],
+[
+"since the last block · %1 past expected",
+"距上一个区块 · 已超出预期 %1"
+],
+[
+"%1: over 1 GB, too large to check here",
+"%1：超过 1 GB，太大，无法在这里检查"
+],
+[
+"found %N1 of the last %N2 blocks (%N3 hours).",
+"在最近 %N2 个区块（%N3 小时）中找到了 %N1 个。"
+],
+[
+"The receipt's \"%1:\" line is missing.",
+"回执中缺少 \"%1:\" 这一行。"
+],
+[
+"Couldn't check the \"After\" block: %1",
+"无法检查「之后」区块：%1"
+],
+[
+"%3. Nobody can know it before then.",
+"%3。在那之前，没有人能知道它。"
+],
+[
+"Looking on the chain… blocks %1 to %2",
+"正在链上查找…区块 %1 至 %2"
+],
+[
+"This file isn't %1 %2. Don't open it.",
+"这个文件不是 %1 %2。不要打开它。"
+],
+[
+"%1 found %2 of the last %3 blocks (%4).",
+"%1 在最近 %3 个区块中找到了 %2 个（%4）。"
+],
+[
+", about %1 BRC a day at this pace",
+"，按这个速度每天约 %1 BRC"
+],
+[
+"#%1 · waited %2 · %3 · %4 transaction%5",
+"#%1 · 等待了 %2 · %3 · %4 笔交易"
+],
+[
+"Found {0} of the last %2 blocks",
+"在最近 %2 个区块中找到了 {0}"
+],
+[
+"%1 entries, fingerprint {0} {1}",
+"共 %1 个报名，指纹 {0} {1}"
+],
+[
+"#%1 · waited %2 · %3 · %4 transaction%5",
+"#%1 · 等待 %2 · %3 · %4 笔交易"
+],
+[
+"Not BRC Works. It imitates %1.",
+"不是 BRC Works。它在冒充 %1。"
+],
+[
+"Real. This file existed by %1.",
+"真实。这个文件在 %1 之前就已存在。"
+],
+[
+"· as of block %1, catching up…",
+"· 截至区块 %1，正在同步…"
+],
+[
+"%1 of 2 official helpers down",
+"2 个官方辅助服务器中有 %1 个离线"
+],
+[
+"Prize sent: %1 BRC in block %2.",
+"奖金已发送：%1 BRC，在区块 %2 中。"
+],
+[
+"%1 report a different block %2",
+"%1 个报告了不同的区块 %2"
+],
+[
+"Found, not confirmed yet. %1",
+"已找到，尚未确认。%1"
+],
+[
+"#%1 by balance of %2 holders ·",
+"在 %2 个持有者中余额排名第 %1 ·"
+],
+[
+"#%1 by balance of %2 holders ·",
+"余额排名 #%1（共 %2 个持币地址）·"
+],
+[
+"Use at least %1 characters.",
+"请至少使用 %1 个字符。"
+],
+[
+"%1 blocks, before pool fees",
+"%1 个区块，未扣除矿池费"
+],
+[
+"One miner has %1% of blocks",
+"单个矿工挖出了 %1% 的区块"
+],
+[
+"This mailbox belongs to %1.",
+"这个信箱属于 %1。"
+],
+[
+"round %2, signature checked",
+"第 %2 轮，签名已验证"
+],
+[
+"Showing the latest %1 of %2.",
+"显示最新的 %1 条（共 %2 条）。"
+],
+[
+"%1 tab%2 on the seed helper",
+"种子辅助服务器上有 %1 个标签页"
+],
+[
+"Mining concentrated (%1%)",
+"挖矿过于集中（%1%）"
+],
+[
+"Top miner near half (%1%)",
+"头部矿工接近一半（%1%）"
+],
+[
+"%1 community helper%2 down",
+"%1 个社区辅助服务器离线"
+],
+[
+"About %1 · %2 blocks to go",
+"约 %1 · 还剩 %2 个区块"
+],
+[
+"%1 entries, fingerprint",
+"%1 份报名，指纹"
+],
+[
+"A sealed letter for %1.",
+"一封给 %1 的密封信。"
+],
+[
+"Postmarked in block %1.%2",
+"已在区块 %1 中盖邮戳。%2"
+],
+[
+"between %1 and %2 UTC on %3",
+"%3 UTC %1 到 %2 之间"
+],
+[
+"Cryptec Pool: %N1 blocks",
+"Cryptec Pool：%N1 个区块"
+],
+[
+"The %1 can't be read: %2",
+"无法读取%1：%2"
+],
+[
+"Everyone else%1 miners",
+"其他所有人%1 个矿工"
+],
+[
+"Downloaded %1 letters",
+"已下载 %1 封信件"
+],
+[
+"of the last %2 blocks",
+"（过去 %2 个区块中）"
+],
+[
+"Entries closed {0}.%2",
+"已于 {0} 截止报名。%2"
+],
+[
+"%1 · %2 after the last%3",
+"%1 · 距上一个区块 %2%3"
+],
+[
+"Real. Made after %1.",
+"真实。制作时间晚于 %1。"
+],
+[
+"· real blocks at %1×",
+"· 真实区块，%1× 速度"
+],
+[
+"· %N1:%N2 after the last",
+"· 比上一个晚 %N1:%N2"
+],
+[
+"%1 sent · %2 BRC fees",
+"已发送 %1 · 手续费 %2 BRC"
+],
+[
+"A mailbox link: %1.",
+"一个信箱链接：%1。"
+],
+[
+"Preset from the %1.",
+"预设取自 %1。"
+],
+[
+"%1 {0}, block time %3",
+"%1 {0}，出块时间 %3"
+],
+[
+"· live to block %1",
+"· 实时同步到区块 %1"
+],
+[
+"%1 · #%2 · BRC Pulse",
+"%1 · #%2 · BRC Pulse"
+],
+[
+"Reading block %1…",
+"正在读取区块 %1…"
+],
+[
+"Block #%1 · %2+%3 BRC",
+"区块 #%1 · %2+%3 BRC"
+],
+[
+"%1 blocks behind",
+"落后 %1 个区块"
+],
+[
+"%1 found block #%2",
+"%1 找到了区块 #%2"
+],
+[
+"The official %1.",
+"官方%1。"
+],
+[
+"live to block %1",
+"已实时同步到区块 %1"
+],
+[
+"· last letter %1",
+"· 最后一封信 %1"
+],
+[
+"Largest miner%2%",
+"最大矿工%2%"
+],
+[
+", block time %3",
+"，区块时间 %3"
+],
+[
+", letter ID %1…",
+"，信件 ID %1…"
+],
+[
+"An address: %1.",
+"一个地址：%1。"
+],
+[
+"Block #%1 found",
+"已找到区块 #%1"
+],
+[
+"Last active #%1",
+"最近活跃于区块 #%1"
+],
+[
+"between %1 and %2",
+"%1 到 %2 之间"
+],
+[
+"in block %1 {0}",
+"在区块 %1 中{0}"
+],
+[
+"%N1 transactions",
+"%N1 笔交易"
+],
+[
+"%1% of the way",
+"已完成 %1%"
+],
+[
+"Blocks %1 pace",
+"区块进度：%1"
+],
+[
+"Real. Made %1.",
+"真实。制作于 %1。"
+],
+[
+"as of block %1",
+"截至区块 %1"
+],
+[
+"pays out at %1",
+"满 %1 时支付"
+],
+[
+"%N1 transaction",
+"%N1 笔交易"
+],
+[
+"%1 BRC earned",
+"已赚取 %1 BRC"
+],
+[
+"Signed by %1.",
+"由 %1 签名。"
+],
+[
+"used %1 time%2",
+"已使用 %1 次"
+],
+[
+"in block %1",
+"在区块 %1 中"
+],
+[
+"%N1h %N2m ago",
+"%N1 小时 %N2 分钟前"
+],
+[
+"%N1 h %N2 min",
+"%N1 小时 %N2 分钟"
+],
+[
+"%N1 blocks",
+"%N1 个区块"
+],
+[
+"%N1 miners",
+"%N1 个矿工"
+],
+[
+"%N1m ago",
+"%N1 分钟前"
+],
+[
+"%N1s ago",
+"%N1 秒前"
+],
+[
+"(in %1)",
+"（还有 %1）"
+],
+[
+"%N1 ms",
+"%N1 毫秒"
+],
+[
+"%N1d %N2h",
+"%N1 天 %N2 小时"
+],
+[
+"%N1h %N2m",
+"%N1 小时 %N2 分钟"
+],
+[
+"%N1m %N2s",
+"%N1 分 %N2 秒"
+]
+]
+}

@@ -90,6 +90,13 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .family .wordmark { font-size: .82rem; }
 .family span.cur { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(16,19,24,.08), 0 2px 8px rgba(16,19,24,.05); }
 .family a:hover { color: var(--ink); text-decoration: none; }
+.topbar .lang-toggle { margin-right: -12px; }
+@media (max-width: 1460px) { .family a .wordmark { display: none; } .family a { padding: 0 8px; } }
+.lang-toggle { display: inline-flex; align-items: center; justify-content: center; height: 32px; min-width: 44px; padding: 0 11px; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); font: 600 .8rem/1 var(--sans); color: var(--ink-2); cursor: pointer; white-space: nowrap; flex: none; -webkit-tap-highlight-color: transparent; }
+.lang-toggle:hover { color: var(--ink); border-color: var(--hairline-strong); }
+.lang-toggle:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+html[lang="zh-CN"] { --sans: "Manrope", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", "Noto Sans CJK SC", "Source Han Sans SC", ui-sans-serif, system-ui, sans-serif; }
+html[lang="zh-CN"] h1, html[lang="zh-CN"] h2, html[lang="zh-CN"] h3 { letter-spacing: 0; word-break: keep-all; overflow-wrap: anywhere; }
 .pill { display: inline-flex; align-items: center; gap: 7px; height: 32px; padding: 0 13px; border-radius: 999px; background: var(--surface); border: 1px solid var(--hairline); font-size: .82rem; font-weight: 500; color: var(--ink-2); white-space: nowrap; }
 .pill .d { width: 8px; height: 8px; border-radius: 50%; background: var(--faint); flex: none; }
 .pill.live .d { background: var(--good); animation: live 2s var(--ease) infinite; }
@@ -320,6 +327,9 @@ body[data-view="stamp"] .intro { grid-template-columns: minmax(0, 1fr); }
 .gv-winner .gv-idc { width: 46px; height: 46px; border-radius: 12px; background: var(--surface); }
 .gv-winner b { display: block; font-size: 1.15rem; }
 .gv-winner .mono { font-size: .74rem; overflow-wrap: anywhere; color: var(--ink-2); }
+.zh-only { display: none; }
+html[lang="zh-CN"] .zh-only { display: block; }
+.gv-zh-note { margin: 10px 0 0; font-size: .85rem; color: var(--muted); }
 .gv-rules { margin: 12px 0 0; padding-left: 1.2rem; display: grid; gap: 6px; font-size: .9rem; color: var(--ink-2); max-width: 50rem; }
 .gv-rules > li { min-width: 0; overflow-wrap: anywhere; }
 .gv-fair { margin-top: 14px; border-top: 1px solid var(--hairline); padding-top: 10px; }
@@ -538,7 +548,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 .fine-print p { max-width: 90ch; }
 
 /* Narrow screens: the sections become a scrolling strip under the logo, so Stamps and Giveaway stay one tap away. */
-@media (max-width: 920px) {
+@media (max-width: 1200px) {
   .topbar .wrap { flex-wrap: wrap; height: auto; padding-top: 12px; row-gap: 6px; }
   .nav { order: 10; flex: 0 0 100%; overflow-x: auto; gap: 18px; padding: 2px 0 10px; white-space: nowrap; scrollbar-width: none; -webkit-overflow-scrolling: touch; align-items: center; }
   .nav::-webkit-scrollbar { display: none; }
@@ -596,6 +606,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <a href="https://pb-hash.github.io/brc-vault/" target="_blank" rel="noopener" aria-label="Open BRC Vault"><svg aria-hidden="true"><use href="#vault-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">VAULT</span></span></a>
       <a href="https://brc-post.github.io/" target="_blank" rel="noopener" aria-label="Open BRC Post"><svg aria-hidden="true"><use href="#post-mark"/></svg><span class="wordmark"><span class="wm-l">BRC</span><span class="wm-b">POST</span></span></a>
     </nav>
+    <button type="button" class="lang-toggle" data-lang-toggle lang="zh-CN" aria-label="切换到中文" title="中文（简体）">中文</button>
     <span class="pill" id="mode" role="status"><span class="d"></span><span id="mode-text">Loading</span></span>
   </div>
 </header>
@@ -780,6 +791,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <h2 id="gv-rules-h">The rules</h2>
     </div>
     <ul class="gv-rules" id="gv-rules"></ul>
+    <p class="gv-zh-note zh-only">以上规则为中文翻译，方便阅读；如与英文原文有任何出入，以英文为准（点右上角 EN 查看）。</p>
     <details class="gv-fair" id="gv-fair"><summary>How it's fair (details)</summary><ul class="gv-rules" id="gv-rules-more"></ul></details>
   </section>
 </main>
@@ -988,6 +1000,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
 
 <script>
 /*__DRAND__*/
+/*__I18N__*/
 const GIVE = /*__GIVEAWAY__*/null;
 // BRC Works addresses (BRC Post src/official.js, through the kit) and the release postmarks in releases/.
 const OFFICIAL = /*__OFFICIAL__*/null || BRCKit.known.OFFICIAL;
@@ -2708,4 +2721,6 @@ render(); drawHistory(); ringFrame(); setInterval(ringFrame, 100); route();
 setInterval(() => { if (S.mode === 'live') tick(); }, 1000);
 let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawTrace(); if (M.addr && M.acc) drawBalance(M.per); }, 120); }).observe(document.body);
 goLive().then((ok) => { if (!ok) startReplay(); });
+// English / 中文 switch (top bar). Changes only the words on the page, never addresses, signed text or files.
+BRCI18n.start();
 </script>
