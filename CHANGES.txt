@@ -5,6 +5,12 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.1.1 (Nov 11, 2026)
+  - Chinese: the giveaway is now called 赠币活动 ("coin giveaway") instead of
+    抽奖, which browser translators turned into "Lottery". Text only.
+  - Chinese: the timeline's last step reads 开奖 ("draw") instead of 已开奖
+    ("drawn"), which said the winner was already drawn.
+
 2.1.0 (Nov 10, 2026)
   - My BRC shows the address's estimated value: its balance at the
     dashboard's Estimated value (what a BRC costs to make, compared with
