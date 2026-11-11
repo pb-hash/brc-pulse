@@ -5,6 +5,25 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.1.0 (Nov 10, 2026)
+  - My BRC shows the address's estimated value: its balance at the
+    dashboard's Estimated value (what a BRC costs to make, compared with
+    Bitcoin), in sats or dollars with the likely range. The Sats / Dollars
+    switch is shared with the Estimated value card. Not a price.
+  - Pulse reads from the most up-to-date helper server that agrees with the
+    others, not the quickest. On Nov 9 api2.browsercoin.org came back
+    thousands of blocks behind, answered fastest from some places, and Pulse
+    stayed on it: "time since the last block" kept counting while the chain
+    was fine. Pulse now leaves a helper as soon as it falls behind blocks
+    already shown, re-checks every minute, and keeps refusing a helper that
+    claims more blocks than the others or than time allows.
+  - Check it and the giveaway checks use the same choice, so a lagging helper
+    can no longer make a real postmark (or the giveaway's launch and list)
+    look "not on the chain yet".
+  - A helper more than 10 blocks behind shows as "Behind" in the helper
+    panel and the status bar, with a note that Pulse reads from the others.
+  - Chinese for all of the above.
+
 2.0.0 (Nov 7, 2026)
   - Estimated value: what one BRC costs to make, compared with Bitcoin. The
     energy behind one new BRC (from the last 24 hours of difficulty, at about

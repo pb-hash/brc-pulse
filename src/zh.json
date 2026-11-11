@@ -599,9 +599,20 @@
 "Bitcoin price": "比特币价格",
 "How it's worked out": "计算方法",
 "In dollars": "折合美元",
-"Estimated value of one BRC per day since the Sandglass fork": "自 Sandglass 分叉以来，每天一枚 BRC 的估算价值"
+"Estimated value of one BRC per day since the Sandglass fork": "自 Sandglass 分叉以来，每天一枚 BRC 的估算价值",
+"Up": "在线",
+"Behind": "落后",
+"The helper servers don't agree about the chain right now. Try again in a minute.": "辅助服务器目前对链的状态看法不一致。请过一分钟再试。"
 },
 "p": [
+[
+"Likely between %N1 and %N2 sats. What these coins cost to make, compared with Bitcoin: not a price.",
+"大约在 %N1 到 %N2 聪之间。这是这些币的生产成本与比特币相比的估算，不是价格。"
+],
+[
+"Likely between $%N1 and $%N2. What these coins cost to make, compared with Bitcoin: not a price.",
+"大约在 $%N1 到 $%N2 之间。这是这些币的生产成本与比特币相比的估算，不是价格。"
+],
 [
 "%N1 sats",
 "%N1 聪"
@@ -1329,6 +1340,26 @@
 [
 "%N1m %N2s",
 "%N1 分 %N2 秒"
+],
+[
+"%R1 answers but is behind, at block %N2, so Pulse reads from the other helpers. Mining is not affected.",
+"%R1 有响应，但进度落后，停在区块 %N2，所以 Pulse 改为从其他辅助服务器读取。挖矿不受影响。"
+],
+[
+"%R1 answer but are behind, so Pulse reads from the other helpers. Mining is not affected.",
+"%R1 有响应，但进度落后，所以 Pulse 改为从其他辅助服务器读取。挖矿不受影响。"
+],
+[
+"%N1 helper behind",
+"%N1 个辅助服务器落后"
+],
+[
+"%N1 helpers behind",
+"%N1 个辅助服务器落后"
+],
+[
+"Estimated value: %1",
+"估算价值：%1"
 ]
 ]
 }

@@ -391,6 +391,11 @@ body[data-view="my"] .nav a.my-link { background: var(--brand); color: #fff; }
 .bal.bump { animation: bump 1.4s var(--ease); }
 @keyframes bump { 0% { color: var(--good); transform: translateY(-3px); } 100% { color: var(--ink); transform: none; } }
 .sub { color: var(--muted); font-size: .9rem; margin-top: 10px; }
+.aval { margin-top: 12px; font-size: 1.05rem; font-weight: 650; color: var(--ink); display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+.aval .alt { font-weight: 600; color: var(--muted); }
+.aval .aval-seg { margin-left: 4px; align-self: center; }
+.aval .aval-seg button { height: 24px; padding: 0 10px; font-size: .75rem; }
+.aval .fine { flex-basis: 100%; font-size: .82rem; font-weight: 500; color: var(--muted); }
 .btn-ghost { appearance: none; height: 34px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--hairline); background: var(--surface); color: var(--ink-2); font: 600 .8rem var(--sans); cursor: pointer; white-space: nowrap; }
 .btn-ghost:hover { border-color: var(--hairline-strong); color: var(--ink); }
 .kpi .v.sm { font-size: 1.3rem; }
@@ -686,6 +691,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
         <div class="addr" id="a-addr"></div>
         <p class="lookalike-warn" id="a-lookalike" hidden></p>
         <div class="bal" id="a-bal">–</div>
+        <div class="aval" id="a-val" hidden><span id="a-val-main"></span><span class="alt" id="a-val-alt"></span><span class="seg aval-seg" role="group" aria-label="Show the value in"><button type="button" data-v="sats" aria-pressed="true">Sats</button><button type="button" data-v="usd" aria-pressed="false">Dollars</button></span><span class="fine" id="a-val-fine"></span></div>
         <p class="sub" id="a-sub"></p>
       </div>
       <button type="button" class="btn-ghost" id="a-copy">Copy address</button>
@@ -1051,6 +1057,7 @@ const SNAP = /*__SNAPSHOT__*/null;
 const BTC = /*__BTC__*/null;
 const REWARD = 50, TARGET = 150, HALVING = 210000, CAP = 21e6, HOUR = 3600, DAY = 86400, TRACE_WIN = 45 * 60;
 const SEEDS = ['api1.browsercoin.org', 'api2.browsercoin.org', 'api1.cryptec.tech', 'api1.taitech.eu'];
+const BEHIND = 10;   // a helper this many blocks behind the page is shown as "Behind"
 const LABELS = {
   'ff811ae0d83c0bde47bc10db95d1e869641d897975c1fe7fc61884efa6d5c698': { name: 'Cryptec Pool', url: 'https://brcpool.cryptec.tech/' },
   '89d081ad360f4ee55e704b449b6f4491619fa8bddf0c35eedaafa0b6a306b768': { name: 'Tabpool', url: 'https://tabpool.xhash.xyz/' },
@@ -1281,7 +1288,9 @@ function renderStatus() {
   items.push(top >= 50 ? ['danger', `One miner has ${top.toFixed(0)}% of blocks`] : top >= 40 ? ['danger', `Top miner near half (${top.toFixed(0)}%)`] : top >= 25 ? ['caution', `Mining concentrated (${top.toFixed(0)}%)`] : ['good', 'Mining well spread']);
   if (seedsDown) items.push(['caution', `${seedsDown} of 2 official helpers down`]);
   if (othersDown) items.push(['', `${othersDown} community helper${othersDown > 1 ? 's' : ''} down`]);
-  if (!seedsDown && !othersDown) items.push(['good', 'All helpers up']);
+  const behindN = S.helpers.filter((h) => h.ok && last().h - h.height > BEHIND).length;
+  if (behindN) items.push(['caution', `${behindN} helper${behindN > 1 ? 's' : ''} behind`]);
+  if (!seedsDown && !othersDown && !behindN) items.push(['good', 'All helpers up']);
   const worst = items.some(([c]) => c === 'danger') ? 'danger' : items.some(([c]) => c === 'caution') ? 'caution' : 'good';
   $('status').className = `status ${worst}`;
   $('status-lead').textContent = worst === 'good' ? 'Network healthy' : worst === 'caution' ? 'Running, with warnings' : 'Network at risk';
@@ -1292,14 +1301,17 @@ function renderHelpers() {
   renderStatus();
   const box = $('helpers'); box.textContent = ''; const tipH = last().h;
   for (const h of S.helpers) {
-    const d = document.createElement('div'); d.className = 'helper'; const lag = h.ok ? tipH - h.height : 0;
-    d.innerHTML = `<div class="rw"><span>${h.host.endsWith('browsercoin.org') ? 'Official seed' : 'Community'}</span><span class="flag ${h.ok ? 'good' : 'danger'}" style="height:24px"><span class="d"></span>${h.ok ? 'Up' : 'Down'}</span></div><div class="h">${h.host}</div><div class="rw"><span>${h.ok ? `${h.ms} ms` : h.error}</span><span>${h.ok ? (lag > 2 ? `${lag} blocks behind` : 'In sync') : ''}</span></div>`;
+    const d = document.createElement('div'); d.className = 'helper'; const lag = h.ok ? tipH - h.height : 0, late = h.ok && lag > BEHIND;
+    d.innerHTML = `<div class="rw"><span>${h.host.endsWith('browsercoin.org') ? 'Official seed' : 'Community'}</span><span class="flag ${!h.ok ? 'danger' : late ? 'caution' : 'good'}" style="height:24px"><span class="d"></span>${!h.ok ? 'Down' : late ? 'Behind' : 'Up'}</span></div><div class="h">${h.host}</div><div class="rw"><span>${h.ok ? `${h.ms} ms` : h.error}</span><span>${h.ok ? (lag > 2 ? `${fmt(lag)} blocks behind` : 'In sync') : ''}</span></div>`;
     box.append(d);
   }
   const off = S.helpers.filter((h) => !h.ok && h.host.endsWith('browsercoin.org')).map((h) => h.host), downN = S.helpers.filter((h) => !h.ok).length;
-  $('callout').className = off.length || downN ? 'note' : 'note ok';
+  const late = S.helpers.filter((h) => h.ok && tipH - h.height > BEHIND);
+  $('callout').className = off.length || downN || late.length ? 'note' : 'note ok';
   $('callout-text').textContent = off.length
     ? `${off.join(' and ')} ${off.length > 1 ? 'are' : 'is'} not answering. That is the likely cause of the "1/2 helper server" message in the app. Mining continues through the other helpers and direct peer links.`
+    : late.length === 1 ? `${late[0].host} answers but is behind, at block ${fmt(late[0].height)}, so Pulse reads from the other helpers. Mining is not affected.`
+    : late.length > 1 ? `${late.map((h) => h.host).join(' and ')} answer but are behind, so Pulse reads from the other helpers. Mining is not affected.`
     : downN ? `${downN} community helper${downN > 1 ? 's are' : ' is'} not answering. Both official seeds are up.` : 'Every known helper is answering.';
 }
 
@@ -1582,8 +1594,8 @@ function drawValue() {
   hit.addEventListener('pointerleave', () => { tip.hidden = true; cross.setAttribute('stroke-opacity', 0); dot.setAttribute('opacity', 0); });
 }
 for (const b of document.querySelectorAll('[data-v]')) b.addEventListener('click', () => {
-  S.val = b.dataset.v; for (const o of document.querySelectorAll('[data-v]')) o.setAttribute('aria-pressed', String(o === b));
-  renderValue(); drawValue();
+  S.val = b.dataset.v; for (const o of document.querySelectorAll('[data-v]')) o.setAttribute('aria-pressed', String(o.dataset.v === S.val));   // both switches (card, My BRC) stay in step
+  renderValue(); drawValue(); renderAcct();
 });
 
 /* ---------- My BRC ----------
@@ -1703,6 +1715,19 @@ function renderAcct() {
   if (fake) $('a-lookalike').textContent = `Careful: this address looks like ${fake.name} (${fake.address.slice(0, 6)}…${fake.address.slice(-6)}), but it isn't. Someone may be imitating it. Don't send coins here unless you are sure.`;
   const bal = $('a-bal'), html = brc(a.bal);
   if (bal.innerHTML !== html) { bal.innerHTML = html; if (a.fresh && performance.now() - a.fresh < 3000) replay(bal, 'bump'); }
+  // Estimated value (2.1.0): this balance at the dashboard's Estimated value, what a BRC costs to make
+  // compared with Bitcoin (24-hour difficulty, energy per hash, Bitcoin's difficulty and price). Not a price.
+  const V = valueNow(), coins = Number(BigInt(a.bal)) / 1e8, showV = !!V && coins > 0;
+  $('a-val').hidden = !showV;
+  if (showV) {
+    const inSats = S.val !== 'usd', sat = (k) => coins * V[k] * 1e8, usd = (k) => coins * V[k] * V.usd;
+    const tinySats = (v) => (v >= 0.1 ? fmtSats(v) : v.toPrecision(1)), satsT = (v) => `${tinySats(v)} sats`;
+    $('a-val-main').textContent = `Estimated value: ${inSats ? satsT(sat('btc')) : fmtUsd(usd('btc'))}`;
+    $('a-val-alt').textContent = `≈ ${inSats ? fmtUsd(usd('btc')) : satsT(sat('btc'))}`;
+    $('a-val-fine').textContent = inSats
+      ? `Likely between ${tinySats(sat('lo'))} and ${tinySats(sat('hi'))} sats. What these coins cost to make, compared with Bitcoin: not a price.`
+      : `Likely between ${fmtUsd(usd('lo'))} and ${fmtUsd(usd('hi'))}. What these coins cost to make, compared with Bitcoin: not a price.`;
+  }
   const asOf = M.applied > (M.idxH || 0) ? `live to block ${fmt(M.applied)}` : M.idxH ? `as of block ${fmt(M.idxH)}` : 'live';
   $('a-sub').textContent = !M.known && !a.no && !a.ni && !a.m ? `No activity found for this address yet (${asOf}).`
     : `${a.rk ? `#${fmt(a.rk)} by balance of ${fmt(M.hd)} holders · ` : ''}${asOf}`;
@@ -1933,9 +1958,9 @@ async function readChainBlock(hexBlock) {
 async function stampHelpers() {
   const up = (await probe()).filter((x) => x.ok);
   if (!up.length) throw new Error("Couldn't reach any BrowserCoin helper server. Check your connection and try again.");
-  const hs = up.map((x) => x.height).sort((a, b) => a - b), med = hs[Math.floor((hs.length - 1) / 2)];
-  const sane = up.filter((x) => x.height <= med + 2).sort((a, b) => (a.host === S.source ? -1 : 0) - (b.host === S.source ? -1 : 0) || a.ms - b.ms);
-  return { host: sane[0].host, tip: sane[0].height, all: up };
+  const best = bestHelper(up, S.source);
+  if (!best) throw new Error("The helper servers don't agree about the chain right now. Try again in a minute.");
+  return { host: best.host, tip: best.height, all: up };
 }
 /* Fetch the window of blocks around a height (so the helper doesn't learn exactly which block is being checked). */
 async function blocksNear(host, h, span = 25) {
@@ -2420,28 +2445,43 @@ const probe = () => Promise.all(SEEDS.map(async (host) => {
   try { const r = await get(host, '/tip'); return { host, ok: true, ms: Math.round(performance.now() - t0), height: r.height }; }
   catch (e) { return { host, ok: false, error: /HTTP/.test(e.message) ? e.message : 'No response' }; }
 }));
+/* Which helper to read from (2.1.0): the most up-to-date helper that agrees with the others. A helper can
+   answer quickly and still be thousands of blocks behind (api2.browsercoin.org came back on Nov 9 restarted
+   at Oct 30's tip), so speed only breaks ties between helpers that are equally current. A helper claiming
+   more blocks than the others (above the upper median), or more than time allows since the newest block
+   this page holds, is never followed. On a tie the current helper is kept, so the page doesn't hop. */
+function bestHelper(list, cur) {
+  const up = list.filter((x) => x.ok && Number.isSafeInteger(x.height) && x.height >= 0); if (!up.length) return null;
+  const hs = up.map((x) => x.height).sort((a, b) => a - b), med = hs[Math.floor(hs.length / 2)];
+  const L = last(), cap = L ? L.h + 30 + Math.ceil((4 * Math.max(0, Date.now() / 1000 - L.ts)) / TARGET) : Infinity;
+  const ok = up.filter((x) => x.height <= med + 2 && x.height <= cap); if (!ok.length) return null;
+  const top = Math.max(...ok.map((x) => x.height)), eq = ok.filter((x) => x.height >= top - 2);
+  return eq.find((x) => x.host === cur) || eq.sort((a, b) => a.ms - b.ms)[0];
+}
 async function range(host, from, to) { const out = []; for (let f = from; f <= to; f += 200) out.push(...(await get(host, `/blocks?fromHeight=${f}&max=200`, 15000)).blocks.map(decode)); return out; }
 function merge(nb) { const m = new Map(S.blocks.map((b) => [b.h, b])); for (const b of nb) m.set(b.h, b); S.blocks = [...m.values()].sort((a, b) => a.h - b.h).slice(-900); }
 async function goLive() {
   let p; try { p = await probe(); } catch { return false; }
-  let up = p.filter((x) => x.ok).sort((a, b) => b.height - a.height || a.ms - b.ms); if (!up.length) return false;
-  // Never follow a helper that claims a tip far above the others (review, Oct 31).
-  const hs0 = up.map((x) => x.height).sort((a, b) => a - b), med0 = hs0[Math.floor((hs0.length - 1) / 2)];
-  up = up.filter((x) => x.height <= med0 + 2);
+  // The most up-to-date helper that agrees with the others; never one claiming far more (review, Oct 31).
+  const best = bestHelper(p, null); if (!best) return false;
   try {
-    merge(await range(up[0].host, Math.max(last().h - 5, up[0].height - 799), up[0].height));
-    try { S.peers = (await get(up[0].host, '/stats')).peerCount; } catch {}
-    Object.assign(S, { mode: 'live', source: up[0].host, helpers: p, at: Date.now() }); render();
+    merge(await range(best.host, Math.max(last().h - 5, best.height - 799), best.height));
+    try { S.peers = (await get(best.host, '/stats')).peerCount; } catch {}
+    Object.assign(S, { mode: 'live', source: best.host, helpers: p, at: Date.now() }); render();
   } catch { return false; }
   let n = 0;
+  // Re-choose the helper after any failure, as soon as the current one falls behind blocks already shown,
+  // and every minute anyway (a helper that catches up again can be chosen back).
+  const choose = (q) => { S.helpers = q; const b = bestHelper(q, S.source); if (b && b.host !== S.source) { S.source = b.host; render(); } else renderHelpers(); };
   setInterval(async () => {
     n++;
     try {
       const t = await get(S.source, '/tip'), have = last().h;
       if (!Number.isSafeInteger(t.height) || t.height > have + 5000) throw new Error('implausible tip');
+      if (t.height < have - 2) throw new Error('helper behind');
       if (t.height > have) { const at = Date.now() / 1000; S.freshFrom = have + 1; merge(await range(S.source, Math.max(have - 3, t.height - 899), t.height)); for (const b of S.blocks) if (b.h > have && !S.seen[b.h]) S.seen[b.h] = at; render(); }
-      if (n % 10 === 0) { S.helpers = await probe(); try { S.peers = (await get(S.source, '/stats')).peerCount; } catch {} renderHelpers(); }
-    } catch { const q = await probe(), alt = q.filter((x) => x.ok).sort((a, b) => a.ms - b.ms)[0]; S.helpers = q; if (alt) S.source = alt.host; renderHelpers(); }
+      if (n % 10 === 0) { const q = await probe(); try { S.peers = (await get(S.source, '/stats')).peerCount; } catch {} choose(q); }
+    } catch { choose(await probe()); }
   }, 6000);
   return true;
 }

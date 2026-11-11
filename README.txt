@@ -46,8 +46,9 @@ given is a genuine release. Nothing you check is uploaded.
 My BRC
 ------
 Paste any address (https://pb-hash.github.io/brc-pulse/#my) to see its
-balance, the blocks it found and its 30-day mining, who pays it (pool payouts),
-and its recent transfers. Click any miner name on the dashboard to look it up.
+balance and its estimated value, the blocks it found and its 30-day mining,
+who pays it (pool payouts), and its recent transfers. Click any miner name on
+the dashboard to look it up.
 
 - Balances come from replaying the whole chain with BrowserCoin's own rules
   (tools/accounts.py, following src/chain/state.ts): transfers, script locks
@@ -80,9 +81,10 @@ figures.
 
 How it gets its data
 --------------------
-- Live: every 6 seconds the page asks the fastest synced helper server
-  (api1/api2.browsercoin.org, api1.cryptec.tech, api1.taitech.eu) for new
-  blocks, and re-checks all helpers every minute. Block headers are decoded in
+- Live: every 6 seconds the page asks the most up-to-date helper server that
+  agrees with the others (api1/api2.browsercoin.org, api1.cryptec.tech,
+  api1.taitech.eu) for new blocks; speed only breaks ties. It leaves a helper
+  that falls behind and re-checks all helpers every minute. Block headers are decoded in
   the page. Hashrate is the expected work behind each block's difficulty,
   divided by elapsed time.
 - Snapshot: each build embeds the last 800 blocks and a daily history replayed
