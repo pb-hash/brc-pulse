@@ -1169,7 +1169,7 @@ function render() {
     $('foot-mode').textContent = `Live from ${S.source}, checked every 6 seconds. History through block ${fmt(SNAP.history.archivedHeight)} comes from the chain archive.`;
   } else if (S.mode === 'replay') {
     $('mode').className = 'pill replay'; $('mode-text').innerHTML = `Replay<span class="pt"> · real blocks at ${SPEED}×</span>`;
-    $('foot-mode').textContent = `This preview can't reach the network, so it replays the last ${REPLAY_N} real blocks before the ${when} snapshot at ${SPEED}× speed. Hosted on its own website or opened as a file, the page runs live and checks for new blocks every 6 seconds.`;
+    $('foot-mode').textContent = `Pulse can't reach the helper servers right now, so it replays the last ${REPLAY_N} real blocks before the ${when} snapshot at ${SPEED}× speed. It keeps trying and switches to live by itself as soon as one answers.`;
   } else {
     $('mode').className = 'pill'; $('mode-text').innerHTML = `Snapshot<span class="pt"> · ${when}</span>`;
     $('foot-mode').textContent = `Snapshot taken ${when} from ${S.source}. This view can't reach the network. Opened as a file or on its own website, the page switches to live updates by itself.`;
@@ -2460,15 +2460,21 @@ function bestHelper(list, cur) {
 }
 async function range(host, from, to) { const out = []; for (let f = from; f <= to; f += 200) out.push(...(await get(host, `/blocks?fromHeight=${f}&max=200`, 15000)).blocks.map(decode)); return out; }
 function merge(nb) { const m = new Map(S.blocks.map((b) => [b.h, b])); for (const b of nb) m.set(b.h, b); S.blocks = [...m.values()].sort((a, b) => a.h - b.h).slice(-900); }
-async function goLive() {
+// before(): run just before the first live blocks go in (leaving replay restores the full snapshot first).
+async function goLive(before) {
   let p; try { p = await probe(); } catch { return false; }
   // The most up-to-date helper that agrees with the others; never one claiming far more (review, Oct 31).
   const best = bestHelper(p, null); if (!best) return false;
+  let nb, peers;
   try {
-    merge(await range(best.host, Math.max(last().h - 5, best.height - 799), best.height));
-    try { S.peers = (await get(best.host, '/stats')).peerCount; } catch {}
-    Object.assign(S, { mode: 'live', source: best.host, helpers: p, at: Date.now() }); render();
+    nb = await range(best.host, Math.max(last().h - 5, best.height - 799), best.height);
+    try { peers = (await get(best.host, '/stats')).peerCount; } catch {}
   } catch { return false; }
+  if (before) before();
+  merge(nb); if (peers != null) S.peers = peers;
+  Object.assign(S, { mode: 'live', source: best.host, helpers: p, at: Date.now() });
+  // Live from here on: a display error must never send the page back to replay (2.1.2).
+  try { render(); } catch (e) { console.error(e); }
   let n = 0;
   // Re-choose the helper after any failure, as soon as the current one falls behind blocks already shown,
   // and every minute anyway (a helper that catches up again can be chosen back).
@@ -2907,12 +2913,25 @@ function startReplay() {
     if (fresh) render(); else tick();
     if (next >= all.length && S.vnow >= end) hold = 30;
   }, 100);
+  // Pulse used to try the helpers only once, when the page opened: a blip at that moment (Wi-Fi waking up, a
+  // laptop out of sleep) left it replaying until reload (Nov 11). Now it keeps trying every 15 seconds, and at
+  // once when the connection comes back or the tab is shown again, and goes live by itself.
+  let trying = false;
+  const retry = async () => {
+    if (S.mode !== 'replay' || trying) return; trying = true;
+    try {
+      await goLive(() => { S.blocks = all.slice(); S.freshFrom = Infinity; document.body.classList.remove('replaying'); });
+    } finally { trying = false; }
+  };
+  setInterval(retry, 15000);
+  addEventListener('online', () => setTimeout(retry, 1000));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) retry(); });
 }
 
 render(); drawHistory(); S.valReady = true; S.valTip = last().h; drawValue(); ringFrame(); setInterval(ringFrame, 100); route();
 setInterval(() => { if (S.mode === 'live') tick(); }, 1000);
 let rz; new ResizeObserver(() => { clearTimeout(rz); rz = setTimeout(() => { drawHistory(); drawValue(); drawTrace(); if (M.addr && M.acc) drawBalance(M.per); }, 120); }).observe(document.body);
-goLive().then((ok) => { if (!ok) startReplay(); });
+goLive().then((ok) => { if (!ok) startReplay(); }, () => startReplay());
 // English / 中文 switch (top bar). Changes only the words on the page, never addresses, signed text or files.
 BRCI18n.start();
 </script>

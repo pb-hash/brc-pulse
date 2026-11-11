@@ -694,8 +694,8 @@
 "从发起到开奖，发布地址除已公布的发布版本邮戳外还做了 %1 次锁定。只允许两次：发起和这份名单，这样就没人能固定多份名单、事后再挑一份。因此不显示中奖者。"
 ],
 [
-"This preview can't reach the network, so it replays the last %1 real blocks before the %2 snapshot at %3× speed. Hosted on its own website or opened as a file, the page runs live and checks for new blocks every 6 seconds.",
-"这个预览无法连接网络，所以它以 %3× 速度回放 %2 快照之前最后 %1 个真实区块。放在自己的网站上或作为文件打开时，页面会实时运行，每 6 秒检查一次新区块。"
+"Pulse can't reach the helper servers right now, so it replays the last %1 real blocks before the %2 snapshot at %3× speed. It keeps trying and switches to live by itself as soon as one answers.",
+"Pulse 目前无法连接辅助服务器，所以它以 %3× 速度回放 %2 快照之前最后 %1 个真实区块。它会继续尝试，一旦有服务器响应就会自动切换到实时。"
 ],
 [
 "Nobody else could have written this exact text.%1 It proves which address signed it, not whose address that is: if they also sent their mailbox link signed on the chain, paste that here to check.",

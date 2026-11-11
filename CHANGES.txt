@@ -5,6 +5,18 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.1.2 (Nov 11, 2026)
+  - Pulse no longer gets stuck replaying. It tried the helper servers only
+    once, when the page opened; if the connection blipped at that moment
+    (Wi-Fi waking up, a laptop out of sleep) it replayed old blocks until
+    reloaded. In replay it now keeps trying every 15 seconds, and at once when
+    the connection comes back or the tab is shown again, and switches to live
+    by itself with no blocks missing.
+  - An error while drawing the first live view no longer sends the page back
+    to replay.
+  - The replay note says the helper servers can't be reached right now and
+    that Pulse keeps trying (it used to say "this preview"). Chinese updated.
+
 2.1.1 (Nov 11, 2026)
   - Chinese: the giveaway is now called 赠币活动 ("coin giveaway") instead of
     抽奖, which browser translators turned into "Lottery". Text only.
