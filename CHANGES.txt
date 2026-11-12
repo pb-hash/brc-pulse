@@ -5,6 +5,14 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.1.3 (Nov 11, 2026)
+  - Giveaway: entries closed with 40 letters: 31 entries, one per eligible
+    address (9 repeat entries set aside). The entry list is published
+    (giveaway/entries.json, fingerprint ad6fee32...7202) and was fixed on the
+    chain by the BRC Works release address in block 99,670, with the draw
+    round 33929812. The giveaway page now shows the list, and anyone can
+    check their address is on it. Data only; the page's code is unchanged.
+
 2.1.2 (Nov 11, 2026)
   - Pulse no longer gets stuck replaying. It tried the helper servers only
     once, when the page opened; if the connection blipped at that moment

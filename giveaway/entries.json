@@ -1,0 +1,80 @@
+{
+ "v": 1,
+ "mailbox": "b4b31b7337deecf2cd29d5ff22809520f819fa6b8ebfa05e029aa4709699997b",
+ "round": 33929812,
+ "letters": 40,
+ "count": 31,
+ "fingerprint": "ad6fee323340c04975b2fb1781f087c950b45f509118486a2b6a345d04337202",
+ "eligibleFingerprint": "a77643e54d48705fa9b390f386534490115b22a36dc3b386397579b41dbd07a4",
+ "addresses": [
+  "04cdb95039338b8bfedd9fe3761afd45b362e1056d7910aaa6c1fac9ad2a9bb0",
+  "189cb2fc510c8ea33a75e753aa09552819d59ed21335541c80cec0a90cb8c9b6",
+  "1bee98a4936485c7f8d082c74c438f7f998678b1175fe16936ecaabb134d6007",
+  "23843d77f0c7ffbc5c40a82bdd2edd7985d3c6ce1e74b06e4a4198425af62b7a",
+  "28ba93e41ae2f9551905d43278a30bdbb8180c7baf59b857ab16e394fbdecff4",
+  "2eee0ba34809ffbb4b8dda9a82d18bc4d30101df2b122f134f2dd27e1341ade4",
+  "2f33a9ecba625d6d25fe93341db94132d0274171d43a81e84c6d6fe4c024f46f",
+  "38d16844e85c95f7d048061745a5648eadc21bf3cf42d6ef24a8b33de464072d",
+  "3cf08623c4b68609ced0d41afd75c08a33bf7c2e9d588f237b71819fac36590f",
+  "437120a48d2fe9efceb380555fc2e34effd514309d9b376308c60bc73b2d35e1",
+  "48c14bd7fe2028e7d464a2d8b4787309e78b7dd229fea81f694b854aa8878144",
+  "547aed729f5a5982dba80c41c99bea2424747a849a243cf4247a9ed5743edb69",
+  "6bd53e7dc17b3c96cd2c7eccd94edb9903e56904a3c782e3e63a9befc5a83bd6",
+  "710e7dbfc5634bbc11531b8c5cf7cf9f842a7b637cc1d1efe378b310d7993b32",
+  "76f485e680da180a6fc568672be1da23e540c06970fdce8f52429ef0427a8492",
+  "79e4f1901fd6429d10b442cd072194dcf9dd05306c4f0df899e212f5d80ab192",
+  "869ffed98595d88c780de063102f61ccc4d9af1ba716807a014a5aab65f25232",
+  "8a6622b22273d7b98e72792c8f1b200cef084f9673a732f734601a270a79d9a4",
+  "8bc5762e436ab1218d1806a686a23af98fe34ac08571ed4ad076ec887a6040dc",
+  "8e7aa077d52f1fab31f64693b53607907efeb9c4e8e0f06f16177346ac41a3da",
+  "bb75e40b359f93775b10c54a66074433cf05bd2e4f873952e010af039c506c5e",
+  "c48173b266ff1ef5c01375a6e2620f8d89cd0b4dc083e329134eb93e481a1337",
+  "c6eabfb3e159e35b076038f08605a931a57aebde1cc658782eda23547c249fd9",
+  "c835cb2c71e396add33a378ddac4d99a3e1bcac5e071e55b854ef9c2cd523022",
+  "db1115029ce15f56be5f0923ce94ed9f4e9c14c5491e0332da9042cf3ebc9d51",
+  "dd9055e922fda1a89e12c4d1f88ace5da1d79366ec911458d835a2b6b331dbd2",
+  "e63b41e942b3fb30f9e5a2f87d0c2fa11b5cda2878a6e0c2c3ebfe1dc1787e0b",
+  "e86e4108df7efa9295398f4a7d554753237653292eb61557bb9c4fc4bfbed07e",
+  "f0e3050b9fee9ad2007fdc431c197fc85f258a686ebc9f1a63c7a0ca20023ffa",
+  "fdd0a4edf0b5d1cee1cb9f66b81d24cbd3b451951d06069ae1dc43e880f7ffe3",
+  "ffe1fd38fc00eff48b2f821fe9231cf5b8c330f8e7eb2f0f53d4385a4e41373a"
+ ],
+ "setAside": [
+  {
+   "seq": 14,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 15,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 21,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 25,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 26,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 29,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 30,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 31,
+   "reason": "This address already entered."
+  },
+  {
+   "seq": 32,
+   "reason": "This address already entered."
+  }
+ ]
+}
