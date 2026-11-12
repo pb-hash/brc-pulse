@@ -124,6 +124,17 @@ Python 3, no packages needed.
     python3 tools/btc.py btc.json                   # Bitcoin figures (estimated value)
     python3 build.py history.json --site _site      # the site, plus dist/
 
+Check the giveaway draw yourself
+--------------------------------
+tools/check_draw.py recomputes the block 100,000 giveaway winner without BRC
+Pulse: Python 3, nothing to install. It downloads the published entry list,
+checks it against the fingerprint signed on the chain, fetches drand's beacon
+for the draw round from two relays run by different operators, and prints the
+winner. Run it after Fri Nov 13, 2026, 18:00 UTC:
+    python3 tools/check_draw.py
+BRC Pulse also checks drand's signature cryptographically; this script instead
+requires the two relays to agree, so it needs no crypto library.
+
 Pool labels
 -----------
 Pool names are shown only where a payout address is confirmed from the pool's

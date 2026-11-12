@@ -5,6 +5,14 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.1.4 (Nov 12, 2026)
+  - tools/check_draw.py: anyone can recompute the giveaway winner without
+    BRC Pulse, in Python with nothing to install. It checks the published list
+    against the fingerprint signed on the chain, fetches the drand round from
+    two independent relays and prints the winner. Tested against the page's
+    own draw code on a past drand round: same seed, same winner. The page
+    itself is unchanged.
+
 2.1.3 (Nov 11, 2026)
   - Giveaway: entries closed with 40 letters: 31 entries, one per eligible
     address (9 repeat entries set aside). The entry list is published
