@@ -5,6 +5,14 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.2.1 (Nov 14, 2026)
+  - Giveaway: the winner's full address now shows at the top as soon as the
+    page opens, not only after the page's own rerun of the draw (about a
+    minute). The line under it says "rerunning the draw to confirm it", then
+    "Confirmed by this page's own rerun", or flags a different address.
+  - Giveaway: the explanation card is now "How the draw was run, and why",
+    written without "I". Same content, English and Chinese.
+
 2.2.0 (Nov 14, 2026)
   - Giveaway: the result. The draw on Nov 13 picked entry 27 of 31,
     e63b41e9...1787e0b, and the whole prize pool, 3,150.00788 BRC, was sent

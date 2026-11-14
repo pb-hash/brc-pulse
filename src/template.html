@@ -293,8 +293,10 @@ body[data-view="stamp"] .intro { grid-template-columns: minmax(0, 1fr); }
 @media (max-width: 720px) { .gv-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .gv-hero-win { margin: 10px 0 0; font-size: .92rem; color: var(--ink-2); max-width: 46rem; }
 .gv-hero-win .mono { display: block; font-size: .8rem; overflow-wrap: anywhere; color: var(--ink); }
+.gv-hero-win .gv-hw-s { display: block; font-size: .8rem; color: var(--muted); margin-top: 2px; }
+.gv-hero-win .gv-hw-s.ok { color: var(--good); } .gv-hero-win .gv-hw-s.bad { color: var(--danger); font-weight: 600; }
 .gv-why { margin: 14px 0 0; padding-left: 1.2rem; display: grid; gap: 10px; font-size: .92rem; color: var(--ink-2); max-width: 46rem; }
-.gv-why-sign { margin: 14px 0 0; color: var(--muted); font-size: .9rem; }
+
 #give-main { display: grid; gap: 20px; }
 #give-main .lookup { margin-top: 14px; }
 #gv-go:disabled { opacity: .5; cursor: progress; }
@@ -806,19 +808,18 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
   <section class="card pad" aria-labelledby="gv-why-h" id="gv-why" hidden>
     <div class="sh">
       <svg class="ic" aria-hidden="true"><use href="#i-calc"/></svg>
-      <h2 id="gv-why-h">How I ran the draw, and why</h2>
-      <p>Nobody, including me, could pick the winner. Here's what I did to make sure of that, and why.</p>
+      <h2 id="gv-why-h">How the draw was run, and why</h2>
+      <p>Nobody could pick the winner, not even the organizer. Here's how the draw made sure of that, and why each choice was made.</p>
     </div>
     <ol class="gv-why">
-      <li><b>I didn't use a block hash.</b> A miner who finds the deciding block can throw it away and try again if they don't like the result. It's a small edge, but I wanted a draw nobody could nudge, miners included.</li>
-      <li><b>I used drand instead.</b> It's a public random number run jointly by independent organisations, the League of Entropy. A new signed number comes out every 3 seconds, and nobody, not its operators and not me, can know or change one before it's published.</li>
-      <li><b>I fixed the draw round before anyone could enter.</b> The round was signed on the chain with the rules, so I couldn't later choose a round that suited me.</li>
-      <li><b>I fixed the entry list on the chain after entries closed,</b> at least 6 hours before that round came out. Nobody could add, drop or reorder an entry once the random number was known. The chain is only the timestamp here: it proves the list came first.</li>
-      <li><b>Then the formula decided.</b> The drand number and the list's fingerprint pick one position on the sorted list. No step needed a decision from me.</li>
-      <li><b>I sent the whole pool straight to the winning address.</b> There was nothing to claim, and anyone can see the payment on the chain.</li>
-      <li><b>You don't have to trust me.</b> The list, the formula and the code are all public. This page reruns the draw in your browser, and <a href="https://github.com/pb-hash/brc-pulse/blob/main/tools/check_draw.py" target="_blank" rel="noopener">check_draw.py</a> does it from scratch in Python, with nothing to install.</li>
+      <li><b>No block hash.</b> A miner who finds the deciding block can throw it away and try again if they don't like the result. It's a small edge, but the draw was meant to be something nobody could nudge, miners included.</li>
+      <li><b>drand instead.</b> It's a public random number run jointly by independent organisations, the League of Entropy. A new signed number comes out every 3 seconds, and nobody, not its operators and not the organizer, can know or change one before it's published.</li>
+      <li><b>The draw round was fixed before anyone could enter.</b> It was signed on the chain with the rules, so no round could be chosen later to suit anyone.</li>
+      <li><b>The entry list was fixed on the chain after entries closed,</b> at least 6 hours before that round came out. Nobody could add, drop or reorder an entry once the random number was known. The chain is only the timestamp here: it proves the list came first.</li>
+      <li><b>Then the formula decided.</b> The drand number and the list's fingerprint pick one position on the sorted list. No step needed anyone's decision.</li>
+      <li><b>The whole pool went straight to the winning address.</b> There was nothing to claim, and anyone can see the payment on the chain.</li>
+      <li><b>No need to trust anyone.</b> The list, the formula and the code are all public. This page reruns the draw in your browser, and <a href="https://github.com/pb-hash/brc-pulse/blob/main/tools/check_draw.py" target="_blank" rel="noopener">check_draw.py</a> does it from scratch in Python, with nothing to install.</li>
     </ol>
-    <p class="gv-why-sign">pb-hash, BRC Works</p>
   </section>
 
   <section class="card pad" aria-labelledby="gv-mine-h" id="gv-mine" hidden>
@@ -2869,8 +2870,7 @@ function gvShowWinner() {
   const tx = document.createElement('div');
   const paidOk = gvPaid() && (!GIVE.payout.to || GIVE.payout.to === d.winner);
   tx.innerHTML = `<b>The winner</b><span class="mono">${esc(d.winner)}</span>${paidOk ? `<span class="fine" style="display:block;margin-top:4px">Prize sent: ${esc(GIVE.payout.amount)} BRC in block ${fmt(GIVE.payout.block)}.</span>` : gvPaid() ? `<span style="display:block;margin-top:4px;color:var(--danger);font-weight:600">The prize recorded here went to a different address than the one drawn.</span>` : ''}`;
-  const hw = $('gv-hero-win');
-  if (paidOk) { hw.hidden = false; hw.innerHTML = `The winner, drawn by drand round ${fmt(d.round)}: <span class="mono">${esc(d.winner)}</span>`; }
+  if (gvPaid()) gvHeroWin(paidOk ? { cls: 'ok', text: `\u2713 Confirmed by this page's own rerun of the draw, drand round ${fmt(d.round)}.` } : { cls: 'bad', text: "This page's own rerun of the draw picked a different address." });
   w.append(p, tx);
   const facts = [
     ['Entry list', `${fmt(d.count)} entries, fingerprint <span class="mono">${esc(d.fingerprint)}</span> <span class="ok">matches the published list</span>`],
@@ -2914,8 +2914,16 @@ $('gv-dl').addEventListener('click', async () => {
 });
 $('gv-pool-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(GIVE.pool); $('gv-pool-copy').textContent = 'Copied'; setTimeout(() => ($('gv-pool-copy').textContent = 'Copy'), 1500); } catch {} });
 
+// The winner's address, shown as soon as the page opens; the line under it says whether the page's own rerun agrees.
+function gvHeroWin(status) {
+  const hw = $('gv-hero-win');
+  if (!gvPaid()) { hw.hidden = true; return; }
+  hw.hidden = false;
+  hw.innerHTML = `<b>The winner</b><span class="mono">${esc(GIVE.payout.to)}</span><span class="gv-hw-s ${status ? status.cls : ''}">${esc(status ? status.text : 'This page is rerunning the draw to confirm it…')}</span>`;
+}
 function gvShow() {
   $('gv-why').hidden = !gvPaid();
+  if (!GV.drawn) gvHeroWin();
   if (gvPaid()) $('gv-pool-p').textContent = "Everything people added went to the winner in one payment, straight from the pool's address. The pool is closed: please don't send to it any more.";
   $('gv-draw-h').textContent = gvPhase() === 'drawn' ? 'How the winner was picked' : 'How the winner is picked';
   gvSteps(); gvRules(); gvEnterState(); gvHow(); gvWall(); gvPool(); gvLoadLists();

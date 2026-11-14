@@ -607,26 +607,27 @@
 "Straight after the draw": "开奖后立即发送",
 "won": "已赢得",
 "How the winner was picked": "中奖者是如何选出的",
-"How I ran the draw, and why": "我是如何开奖的，以及为什么这样做",
-"Nobody, including me, could pick the winner. Here's what I did to make sure of that, and why.": "没有人能挑选中奖者，包括我自己。下面是我为确保这一点所做的事，以及原因。",
-"pb-hash, BRC Works": "pb-hash，BRC Works",
-"I didn't use a block hash.": "我没有用区块哈希。",
-"I used drand instead.": "我改用了 drand。",
-"I fixed the draw round before anyone could enter.": "在任何人报名之前，我就固定了开奖轮次。",
-"I fixed the entry list on the chain after entries closed,": "报名截止后，我把报名名单固定在链上，",
 "Then the formula decided.": "然后由公式决定。",
-"I sent the whole pool straight to the winning address.": "我把整个奖池直接发送到了中奖地址。",
-"You don't have to trust me.": "你不必相信我。",
 "check_draw.py": "check_draw.py",
-"{0} A miner who finds the deciding block can throw it away and try again if they don't like the result. It's a small edge, but I wanted a draw nobody could nudge, miners included.": "{0} 找到决定性区块的矿工，如果不喜欢结果，可以把这个区块丢掉重新挖。这只是一点小优势，但我希望开奖结果谁都无法左右，矿工也不例外。",
-"{0} It's a public random number run jointly by independent organisations, the League of Entropy. A new signed number comes out every 3 seconds, and nobody, not its operators and not me, can know or change one before it's published.": "{0} 它是由多个独立机构（League of Entropy，熵联盟）共同运营的公共随机数。每 3 秒发布一个新的带签名的随机数，在发布之前，没有人能知道或更改它，包括它的运营者和我。",
-"{0} The round was signed on the chain with the rules, so I couldn't later choose a round that suited me.": "{0} 开奖轮次和规则一起在链上签名，所以我事后无法另选一个对我有利的轮次。",
 "{0} at least 6 hours before that round came out. Nobody could add, drop or reorder an entry once the random number was known. The chain is only the timestamp here: it proves the list came first.": "{0}比该轮次发布早至少 6 小时。在随机数揭晓之后，没有人能再增加、删除或调换任何报名。链在这里只起时间戳的作用：它证明名单在先。",
-"{0} The drand number and the list's fingerprint pick one position on the sorted list. No step needed a decision from me.": "{0} drand 随机数和名单指纹在排序后的名单中选出一个位置。整个过程没有一步需要我来做决定。",
-"{0} There was nothing to claim, and anyone can see the payment on the chain.": "{0} 无需领取，任何人都可以在链上看到这笔付款。",
 "{0} The list, the formula and the code are all public. This page reruns the draw in your browser, and {1} does it from scratch in Python, with nothing to install.": "{0} 名单、公式和代码全部公开。这个页面会在你的浏览器里重新开奖，{1} 则用 Python 从头计算一遍，无需安装任何东西。",
 "The prize recorded here went to a different address than the one drawn.": "这里记录的奖金发送到的地址与开奖选出的地址不同。",
-"Everything people added went to the winner in one payment, straight from the pool's address. The pool is closed: please don't send to it any more.": "大家加入奖池的全部 BRC 已从奖池地址一次性直接发送给中奖者。奖池已关闭：请不要再向它发送。"
+"Everything people added went to the winner in one payment, straight from the pool's address. The pool is closed: please don't send to it any more.": "大家加入奖池的全部 BRC 已从奖池地址一次性直接发送给中奖者。奖池已关闭：请不要再向它发送。",
+"How the draw was run, and why": "开奖是如何进行的，以及为什么这样做",
+"Nobody could pick the winner, not even the organizer. Here's how the draw made sure of that, and why each choice was made.": "没有人能挑选中奖者，组织者也不能。下面说明开奖如何确保这一点，以及每个选择的原因。",
+"No block hash.": "不用区块哈希。",
+"{0} A miner who finds the deciding block can throw it away and try again if they don't like the result. It's a small edge, but the draw was meant to be something nobody could nudge, miners included.": "{0} 找到决定性区块的矿工，如果不喜欢结果，可以把这个区块丢掉重新挖。这只是一点小优势，但这次开奖要做到谁都无法左右，矿工也不例外。",
+"drand instead.": "改用 drand。",
+"{0} It's a public random number run jointly by independent organisations, the League of Entropy. A new signed number comes out every 3 seconds, and nobody, not its operators and not the organizer, can know or change one before it's published.": "{0} 它是由多个独立机构（League of Entropy，熵联盟）共同运营的公共随机数。每 3 秒发布一个新的带签名的随机数，在发布之前，没有人能知道或更改它，包括它的运营者和组织者。",
+"The draw round was fixed before anyone could enter.": "在任何人报名之前，开奖轮次就已固定。",
+"{0} It was signed on the chain with the rules, so no round could be chosen later to suit anyone.": "{0} 它和规则一起在链上签名，所以事后无法为了任何人另选轮次。",
+"The entry list was fixed on the chain after entries closed,": "报名截止后，报名名单被固定在链上，",
+"{0} The drand number and the list's fingerprint pick one position on the sorted list. No step needed anyone's decision.": "{0} drand 随机数和名单指纹在排序后的名单中选出一个位置。整个过程没有一步需要任何人做决定。",
+"The whole pool went straight to the winning address.": "整个奖池直接发送到了中奖地址。",
+"{0} There was nothing to claim, and anyone can see the payment on the chain.": "{0} 无需领取，任何人都可以在链上看到这笔付款。",
+"No need to trust anyone.": "无需相信任何人。",
+"This page is rerunning the draw to confirm it…": "本页正在重新开奖以确认……",
+"This page's own rerun of the draw picked a different address.": "本页自己重新开奖选出的是另一个地址。"
 },
 "p": [
 [
@@ -1406,8 +1407,8 @@
 "共有 %N1 笔付款进入奖池。全部 %N2 BRC 已在第 %N3 区块发送给中奖者。奖池余额直接从链上逐个区块读取。"
 ],
 [
-"The winner, drawn by drand round %N1: {0}",
-"中奖者（由 drand 第 %N1 轮选出）：{0}"
+"✓ Confirmed by this page's own rerun of the draw, drand round %N1.",
+"✓ 已由本页自己重新开奖确认，drand 第 %N1 轮。"
 ]
 ]
 }
