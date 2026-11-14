@@ -283,7 +283,7 @@ body[data-view="stamp"] .intro { grid-template-columns: minmax(0, 1fr); }
 .gv-pool-v small { font-size: .45em; font-weight: 700; color: var(--muted); }
 .gv-pool-l { color: var(--muted); font-size: .92rem; }
 .gv-pool-l span { display: block; font-size: .78rem; }
-.gv-steps { list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; max-width: 820px; }
+.gv-steps { list-style: none; margin: 6px 0 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; max-width: 820px; }
 .gv-steps li { padding: 10px 12px; border-radius: 12px; background: var(--surface); border: 1px solid var(--hairline); display: grid; gap: 2px; min-width: 0; }
 .gv-steps li b { font-size: .84rem; }
 .gv-steps li span { font-size: .76rem; color: var(--muted); }
@@ -291,6 +291,10 @@ body[data-view="stamp"] .intro { grid-template-columns: minmax(0, 1fr); }
 .gv-steps li.done { opacity: .62; }
 .gv-steps li.done b::after { content: " ✓"; color: var(--good); }
 @media (max-width: 720px) { .gv-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.gv-hero-win { margin: 10px 0 0; font-size: .92rem; color: var(--ink-2); max-width: 46rem; }
+.gv-hero-win .mono { display: block; font-size: .8rem; overflow-wrap: anywhere; color: var(--ink); }
+.gv-why { margin: 14px 0 0; padding-left: 1.2rem; display: grid; gap: 10px; font-size: .92rem; color: var(--ink-2); max-width: 46rem; }
+.gv-why-sign { margin: 14px 0 0; color: var(--muted); font-size: .9rem; }
 #give-main { display: grid; gap: 20px; }
 #give-main .lookup { margin-top: 14px; }
 #gv-go:disabled { opacity: .5; cursor: progress; }
@@ -660,8 +664,9 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <p class="eyebrow">BRC Works · Block 100,000</p>
     <h1>The block 100,000 giveaway.</h1>
     <p id="gv-hero-p">One winner takes the whole prize pool. <strong>Entering is free and needs only your address.</strong> Your entry goes in as a sealed letter: nobody can see which address you entered except the organizer's mailbox.</p>
-    <div class="gv-pool-hero"><span class="gv-pool-v" id="gv-pool-v">–</span><span class="gv-pool-l">in the prize pool<span id="gv-pool-asof"></span></span></div>
+    <div class="gv-pool-hero"><span class="gv-pool-v" id="gv-pool-v">–</span><span class="gv-pool-l"><span id="gv-pool-l">in the prize pool</span><span id="gv-pool-asof"></span></span></div>
     <ol class="gv-steps" id="gv-steps"></ol>
+    <p class="gv-hero-win" id="gv-hero-win" hidden></p>
   </div>
   <figure class="live-mark" aria-label="Time since the last block">
     <svg viewBox="227.6 10 1476 1721.9" aria-hidden="true">
@@ -780,7 +785,7 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
       <div class="sh">
         <svg class="ic" aria-hidden="true"><use href="#i-pool"/></svg>
         <h2 id="gv-pool-h">Prize pool</h2>
-        <p>The whole pool goes to the winner. Anyone can add to it: send any amount of BRC to the pool's address. <strong>Adding doesn't enter you or change anyone's chances.</strong></p>
+        <p id="gv-pool-p">The whole pool goes to the winner. Anyone can add to it: send any amount of BRC to the pool's address. <strong>Adding doesn't enter you or change anyone's chances.</strong></p>
       </div>
       <div class="gv-addrline"><span class="gv-idc" id="gv-pool-idc"></span><span><b>BRC Works prize pool</b><span class="mono" id="gv-pool-addr"></span></span><button type="button" class="btn-ghost" id="gv-pool-copy">Copy</button></div>
       <p class="fine" id="gv-pool-note"></p>
@@ -796,6 +801,24 @@ footer .fl svg { width: 20px; height: 20px; color: var(--mark); }
     <ol class="gv-how" id="gv-how"></ol>
     <div class="gv-winner" id="gv-winner" hidden></div>
     <dl class="stamp-facts" id="gv-proof" hidden></dl>
+  </section>
+
+  <section class="card pad" aria-labelledby="gv-why-h" id="gv-why" hidden>
+    <div class="sh">
+      <svg class="ic" aria-hidden="true"><use href="#i-calc"/></svg>
+      <h2 id="gv-why-h">How I ran the draw, and why</h2>
+      <p>Nobody, including me, could pick the winner. Here's what I did to make sure of that, and why.</p>
+    </div>
+    <ol class="gv-why">
+      <li><b>I didn't use a block hash.</b> A miner who finds the deciding block can throw it away and try again if they don't like the result. It's a small edge, but I wanted a draw nobody could nudge, miners included.</li>
+      <li><b>I used drand instead.</b> It's a public random number run jointly by independent organisations, the League of Entropy. A new signed number comes out every 3 seconds, and nobody, not its operators and not me, can know or change one before it's published.</li>
+      <li><b>I fixed the draw round before anyone could enter.</b> The round was signed on the chain with the rules, so I couldn't later choose a round that suited me.</li>
+      <li><b>I fixed the entry list on the chain after entries closed,</b> at least 6 hours before that round came out. Nobody could add, drop or reorder an entry once the random number was known. The chain is only the timestamp here: it proves the list came first.</li>
+      <li><b>Then the formula decided.</b> The drand number and the list's fingerprint pick one position on the sorted list. No step needed a decision from me.</li>
+      <li><b>I sent the whole pool straight to the winning address.</b> There was nothing to claim, and anyone can see the payment on the chain.</li>
+      <li><b>You don't have to trust me.</b> The list, the formula and the code are all public. This page reruns the draw in your browser, and <a href="https://github.com/pb-hash/brc-pulse/blob/main/tools/check_draw.py" target="_blank" rel="noopener">check_draw.py</a> does it from scratch in Python, with nothing to install.</li>
+    </ol>
+    <p class="gv-why-sign">pb-hash, BRC Works</p>
   </section>
 
   <section class="card pad" aria-labelledby="gv-mine-h" id="gv-mine" hidden>
@@ -2533,13 +2556,17 @@ function gvSteps() {
     ['Entries close', localWhen(tsOf(GIVE.closesAt)), ['closed', 'listed', 'drawn'].includes(ph), ph === 'open'],
     ['Block 100,000', tipH >= 100000 ? 'Reached' : `About ${new Date(eta * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} · ${fmt(100000 - tipH)} blocks to go`, tipH >= 100000, false],
     ['Winner drawn', localWhen(tsOf(GIVE.drawAt)), ph === 'drawn' && !!GV.drawn, ['closed', 'listed'].includes(ph) || (ph === 'drawn' && !GV.drawn)],
+    ['Prize sent', gvPaid() ? `Block ${fmt(GIVE.payout.block)}` : 'Straight after the draw', gvPaid(), ph === 'drawn' && !!GV.drawn && !gvPaid()],
   ];
   $('gv-steps').innerHTML = steps.map(([b, s, done, now]) => `<li class="${done ? 'done' : now ? 'now' : ''}"><b>${esc(b)}</b><span>${esc(s)}</span></li>`).join('');
 }
 
+// The prize has been paid, as recorded in giveaway/config.json "payout": {to, amount, block}.
+const gvPaid = () => !!(GIVE.payout && gvPhase() === 'drawn');
 function gvRules() {
   const e = GIVE.eligible;
-  $('gv-hero-p').innerHTML = `One winner takes the whole prize pool. <strong>Open to the ${fmt(e.count)} addresses that held 50 BRC or more at block ${fmt(e.cutoff)}, or were paid by a mining pool.</strong> Entering is free and needs only your address: paste it below to see if it can enter.`;
+  if (gvPaid()) $('gv-hero-p').innerHTML = `The giveaway is over. <strong>The whole prize pool, ${esc(GIVE.payout.amount)} BRC, was sent to the winner in block ${fmt(GIVE.payout.block)}.</strong> The winner, how the draw worked and how to check it yourself are below.`;
+  else $('gv-hero-p').innerHTML = `One winner takes the whole prize pool. <strong>Open to the ${fmt(e.count)} addresses that held 50 BRC or more at block ${fmt(e.cutoff)}, or were paid by a mining pool.</strong> Entering is free and needs only your address: paste it below to see if it can enter.`;
   const rules = [
     `<b>Who can enter:</b> any address that held at least 50 BRC at block ${fmt(e.cutoff)}, or was paid by a mining pool (Cryptec Pool or Tabpool) in the 30 days up to that block. That block had passed before the giveaway was announced, so nobody could split coins into extra addresses for it. That's ${fmt(e.count)} addresses.`,
     '<b>One entry per address.</b> Entering again doesn\'t add a chance.',
@@ -2694,8 +2721,13 @@ async function gvPool() {
     GV.pool = { bal, h, ins };
     // "Live" only once every block up to the tip is counted; before that, say which block it's as of.
     const fresh = S.mode === 'live' && h >= tipH;
-    $('gv-pool-v').innerHTML = brc(bal); $('gv-pool-asof').textContent = fresh ? ` · live to block ${fmt(h)}` : ` · as of block ${fmt(h)}, catching up…`;
-    $('gv-pool-note').textContent = `${fmt(ins)} payment${ins === 1 ? '' : 's'} into the pool so far. Its balance is read straight from the chain, block by block.`;
+    if (gvPaid()) {
+      $('gv-pool-v').innerHTML = `${esc(GIVE.payout.amount)}<small> BRC</small>`; $('gv-pool-l').textContent = 'won'; $('gv-pool-asof').textContent = ` · sent to the winner in block ${fmt(GIVE.payout.block)}`;
+      $('gv-pool-note').textContent = `${fmt(ins)} payments came into the pool. All of it, ${GIVE.payout.amount} BRC, was sent to the winner in block ${fmt(GIVE.payout.block)}. Its balance is read straight from the chain, block by block.`;
+    } else {
+      $('gv-pool-v').innerHTML = brc(bal); $('gv-pool-asof').textContent = fresh ? ` · live to block ${fmt(h)}` : ` · as of block ${fmt(h)}, catching up…`;
+      $('gv-pool-note').textContent = `${fmt(ins)} payment${ins === 1 ? '' : 's'} into the pool so far. Its balance is read straight from the chain, block by block.`;
+    }
   } catch { GV.poolAt = Date.now() + 15000; $('gv-pool-note').textContent = "Couldn't read the pool's balance just now."; }
 }
 
@@ -2835,7 +2867,10 @@ function gvShowWinner() {
   w.hidden = false; w.innerHTML = '';
   const p = document.createElement('span'); p.className = 'gv-idc'; identicon(p, d.winner);
   const tx = document.createElement('div');
-  tx.innerHTML = `<b>The winner</b><span class="mono">${esc(d.winner)}</span>${GIVE.payout ? `<span class="fine" style="display:block;margin-top:4px">Prize sent: ${esc(GIVE.payout.amount)} BRC in block ${fmt(GIVE.payout.block)}.</span>` : ''}`;
+  const paidOk = gvPaid() && (!GIVE.payout.to || GIVE.payout.to === d.winner);
+  tx.innerHTML = `<b>The winner</b><span class="mono">${esc(d.winner)}</span>${paidOk ? `<span class="fine" style="display:block;margin-top:4px">Prize sent: ${esc(GIVE.payout.amount)} BRC in block ${fmt(GIVE.payout.block)}.</span>` : gvPaid() ? `<span style="display:block;margin-top:4px;color:var(--danger);font-weight:600">The prize recorded here went to a different address than the one drawn.</span>` : ''}`;
+  const hw = $('gv-hero-win');
+  if (paidOk) { hw.hidden = false; hw.innerHTML = `The winner, drawn by drand round ${fmt(d.round)}: <span class="mono">${esc(d.winner)}</span>`; }
   w.append(p, tx);
   const facts = [
     ['Entry list', `${fmt(d.count)} entries, fingerprint <span class="mono">${esc(d.fingerprint)}</span> <span class="ok">matches the published list</span>`],
@@ -2880,6 +2915,9 @@ $('gv-dl').addEventListener('click', async () => {
 $('gv-pool-copy').addEventListener('click', async () => { try { await navigator.clipboard.writeText(GIVE.pool); $('gv-pool-copy').textContent = 'Copied'; setTimeout(() => ($('gv-pool-copy').textContent = 'Copy'), 1500); } catch {} });
 
 function gvShow() {
+  $('gv-why').hidden = !gvPaid();
+  if (gvPaid()) $('gv-pool-p').textContent = "Everything people added went to the winner in one payment, straight from the pool's address. The pool is closed: please don't send to it any more.";
+  $('gv-draw-h').textContent = gvPhase() === 'drawn' ? 'How the winner was picked' : 'How the winner is picked';
   gvSteps(); gvRules(); gvEnterState(); gvHow(); gvWall(); gvPool(); gvLoadLists();
 }
 if (GIVE) {

@@ -5,6 +5,23 @@ features, first number for changes to the page's data sources or security
 model. Test builds carry "-test.N" and are never published. The build code
 comes from the page's code alone, so the hourly data never changes it.
 
+2.2.0 (Nov 14, 2026)
+  - Giveaway: the result. The draw on Nov 13 picked entry 27 of 31,
+    e63b41e9...1787e0b, and the whole prize pool, 3,150.00788 BRC, was sent
+    to it in block 100,790 (giveaway/config.json "payout"). Once the prize is
+    paid the giveaway page says so at the top, shows the winner as soon as its
+    own rerun of the draw agrees with the payout, adds a fifth step, "Prize
+    sent", closes the prize pool, and shows "Prize sent" under the winner. A
+    payout recorded to any other address than the one drawn is flagged
+    instead.
+  - Giveaway: "How I ran the draw, and why", the organizer's own account of
+    each choice: drand instead of a block hash, the round fixed before entries,
+    the list fixed on the chain before the round, the pool sent straight to the
+    winner, and how to check it all without trusting anyone (with a link to
+    tools/check_draw.py). In English and Chinese.
+  - Tests: a giveaway page check for the paid state, in both languages, and
+    for a payout to the wrong address.
+
 2.1.4 (Nov 12, 2026)
   - tools/check_draw.py: anyone can recompute the giveaway winner without
     BRC Pulse, in Python with nothing to install. It checks the published list

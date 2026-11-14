@@ -8,6 +8,7 @@ from playwright.sync_api import sync_playwright, expect
 open_page, drawn_page, chain_path, fx_path, core_path, out = sys.argv[1:7]
 nocommit_page, late_page, nolaunch_page, moved_page = sys.argv[7:11]
 rel_page = sys.argv[11]
+paid_page, paid_wrong_page = sys.argv[12:14]
 out = pathlib.Path(out); out.mkdir(parents=True, exist_ok=True)
 chains = json.load(open(chain_path)); fx = json.load(open(fx_path))
 CHAIN = {'name': 'good'}
@@ -175,6 +176,36 @@ console.log(c.parseEntryText(c.openNote({json.dumps(letter)}, w).message));"""
     expect(px.locator('#gv-winner')).to_contain_text(fx['expected']['winner'], timeout=40000)
     px.close(); CHAIN['name'] = 'good'
     ok('a release postmark published on the page may sit between launch and draw; an unpublished one, or any other lock, still blocks the winner')
+    # ---------- After the payout ----------
+    px = ctx.new_page(); px.on('pageerror', lambda e: errors.append(str(e))); px.route('**/*', handle)
+    px.goto(pathlib.Path(paid_page).resolve().as_uri() + '#giveaway')
+    expect(px.locator('#gv-winner')).to_contain_text('Prize sent: 49.99999 BRC in block 92,700.', timeout=40000)
+    expect(px.locator('#gv-hero-p')).to_contain_text('The giveaway is over.')
+    expect(px.locator('#gv-pool-v')).to_contain_text('49.99999')
+    expect(px.locator('#gv-pool-asof')).to_contain_text('sent to the winner in block 92,700')
+    expect(px.locator('#gv-hero-win')).to_contain_text(fx['expected']['winner'])
+    expect(px.locator('#gv-steps li').nth(4)).to_have_class('done')
+    expect(px.locator('#gv-draw-h')).to_have_text('How the winner was picked')
+    expect(px.locator('#gv-why')).to_be_visible()
+    expect(px.locator('#gv-pool-p')).to_contain_text('The pool is closed')
+    expect(px.locator('#gv-why a')).to_have_attribute('href', 'https://github.com/pb-hash/brc-pulse/blob/main/tools/check_draw.py')
+    px.screenshot(path=str(out / 'giveaway-paid.png'), full_page=True)
+    px.click('[data-lang-toggle]'); px.wait_for_timeout(800)
+    for sel in ['#gv-why', '#gv-pool-p', '#gv-hero-p', '#gv-hero-win', '#gv-pool-note', '#gv-steps', '#gv-winner']:
+        txt = px.locator(sel).inner_text().replace('check_draw.py', '').replace('pb-hash', '')
+        left = [w for w in re.findall(r"[A-Za-z][A-Za-z']{3,}", txt) if w not in ('drand', 'League', 'Entropy', 'Works', 'Python')]
+        assert not left, (sel, left[:8], txt[:200])
+    assert fx['expected']['winner'] in px.locator('#gv-hero-win').inner_text(), 'the winning address must show exactly in Chinese'
+    px.screenshot(path=str(out / 'giveaway-paid-zh.png'), full_page=True)
+    px.click('[data-lang-toggle]'); px.wait_for_timeout(300)
+    px.close()
+    py = ctx.new_page(); py.on('pageerror', lambda e: errors.append(str(e))); py.route('**/*', handle)
+    py.goto(pathlib.Path(paid_wrong_page).resolve().as_uri() + '#giveaway')
+    expect(py.locator('#gv-winner')).to_contain_text('went to a different address than the one drawn', timeout=40000)
+    expect(py.locator('#gv-winner')).not_to_contain_text('Prize sent')
+    expect(py.locator('#gv-hero-win')).to_be_hidden()
+    py.close()
+    ok('after the payout: the result, the paid prize and the organizer\'s explanation show in English and Chinese; a payout to anyone but the drawn winner is flagged')
     pn = ctx.new_page(); pn.route('**/*', handle)
     pn.goto(pathlib.Path(nolaunch_page).resolve().as_uri() + '#giveaway')
     expect(pn.locator('#gv-msg')).to_contain_text("rules haven't been fixed on the chain", timeout=30000)

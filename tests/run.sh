@@ -12,6 +12,11 @@ for v in open open-nolaunch drawn drawn-nocommit drawn-late drawn-moved; do
   python3 build.py history.json --official $POST/build/giveaway-official.json --giveaway $POST/build/giveaway-$v.json > /dev/null || exit 1; cp dist/brc-pulse.html build-test/gv-$v.html
 done
 python3 build.py history.json --official $POST/build/giveaway-official.json --giveaway $POST/build/giveaway-drawn.json --releases $POST/build/giveaway-releases > /dev/null || exit 1; cp dist/brc-pulse.html build-test/gv-drawn-rel.html
-python3 tests/giveaway_page_test.py build-test/gv-open.html build-test/gv-drawn.html $POST/build/giveaway-chain.json $POST/build/giveaway-fixture.json $POST/build/seal-core.mjs build-test build-test/gv-drawn-nocommit.html build-test/gv-drawn-late.html build-test/gv-open-nolaunch.html build-test/gv-drawn-moved.html build-test/gv-drawn-rel.html
+# After the payout: the drawn fixture plus a recorded payout, to the drawn winner and to some other address.
+python3 tests/paid_fixture.py $POST/build/giveaway-drawn.json $POST/build/giveaway-fixture.json build-test
+for v in paid paid-wrong; do
+  python3 build.py history.json --official $POST/build/giveaway-official.json --giveaway build-test/giveaway-$v.json > /dev/null || exit 1; cp dist/brc-pulse.html build-test/gv-$v.html
+done
+python3 tests/giveaway_page_test.py build-test/gv-open.html build-test/gv-drawn.html $POST/build/giveaway-chain.json $POST/build/giveaway-fixture.json $POST/build/seal-core.mjs build-test build-test/gv-drawn-nocommit.html build-test/gv-drawn-late.html build-test/gv-open-nolaunch.html build-test/gv-drawn-moved.html build-test/gv-drawn-rel.html build-test/gv-paid.html build-test/gv-paid-wrong.html
 python3 tests/i18n_page_test.py build-test/stamps.html build-test/gv-open.html $POST/build/seal-core.mjs build-test/i18n
 git checkout -q dist   # test builds never replace the published page
